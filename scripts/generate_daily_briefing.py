@@ -1,5 +1,6 @@
 import base64
 import html
+import json
 import urllib.parse
 import urllib.request
 import xml.etree.ElementTree as ET
@@ -11,7 +12,6 @@ from zoneinfo import ZoneInfo
 
 import matplotlib.pyplot as plt
 import numpy as np
-import requests
 import yfinance as yf
 from matplotlib import font_manager
 from matplotlib.patches import FancyBboxPatch
@@ -211,6 +211,30 @@ def metric_text_signed(value, suffix="") -> str:
     if value is None:
         return "조회 제한"
     return f"{value:+.2f}{suffix}"
+
+
+def write_summary_json(rows: list[PriceRow], macro: dict, today: datetime, out: Path) -> None:
+    out.parent.mkdir(parents=True, exist_ok=True)
+    payload = {
+        "date": today.strftime("%Y-%m-%d"),
+        "site_url": "https://js1876.github.io/daily-briefing/public/",
+        "latest_url": "https://js1876.github.io/daily-briefing/public/latest.html",
+        "cycle_summary": "반도체 사이클은 호황 중반~후반 구간으로 판단하며, 추세는 유효하지만 신규 진입은 눌림과 수급 확인이 우선입니다.",
+        "prices": [
+            {
+                "ticker": row.ticker,
+                "name": row.name,
+                "close": row.close,
+                "prev_close": row.prev_close,
+                "change": row.change,
+                "change_pct": row.change_pct,
+                "basis_date": row.basis_date.strftime("%Y-%m-%d"),
+            }
+            for row in rows
+        ],
+        "macro": macro,
+    }
+    out.write_text(json.dumps(payload, ensure_ascii=False, indent=2), encoding="utf-8")
 
 
 def format_krw_short(value: int) -> str:
@@ -644,57 +668,6 @@ def make_self_contained_html(source: Path, chart_files: dict, out: Path) -> None
     out.write_text(text, encoding="utf-8")
 
 
-def read_webhook_url() -> str | None:
-    import os
-
-    value = os.environ.get("DISCORD_WEBHOOK_URL", "").strip().lstrip("\ufeff")
-    if value:
-        return value
-    if WEBHOOK_FILE.exists():
-        value = WEBHOOK_FILE.read_text(encoding="utf-8-sig").strip().lstrip("\ufeff")
-        if value and not value.startswith("#"):
-            return value
-    return None
-
-
-def discord_message(rows: list[PriceRow], macro: dict, today: datetime) -> str:
-    today_s = today.strftime("%Y-%m-%d")
-    up_count = sum(1 for row in rows if row.change_pct >= 0)
-    down_count = len(rows) - up_count
-    max_up = max(rows, key=lambda row: row.change_pct)
-    max_down = min(rows, key=lambda row: row.change_pct)
-
-    fx = macro.get("원/달러", {})
-    tnx = macro.get("미국 10년물", {})
-    oil = macro.get("WTI", {})
-
-    price_lines = "\n".join(
-        f"- {row.name}: {money_krw(row.close)} ({signed_money(row.change)}, {signed_pct(row.change_pct)})"
-        for row in rows
-    )
-    return (
-        f"{today_s} 오늘의 브리핑 전달드립니다\n\n"
-        f"핵심 요약\n"
-        f"- 반도체 사이클은 호황 중반~후반 구간으로 판단하며, 추세는 유효하지만 신규 진입은 눌림과 수급 확인이 우선입니다.\n"
-        f"- 상승 {up_count}개 / 하락 {down_count}개, 최대 상승은 {max_up.name} {signed_pct(max_up.change_pct)}, 최대 하락은 {max_down.name} {signed_pct(max_down.change_pct)}입니다.\n"
-        f"- 매크로: 원/달러 {metric_text(fx.get('value'), '원')} ({metric_text_signed(fx.get('change_pct'), '%')}), 미국 10년물 {metric_text(tnx.get('value'), '%')}, WTI {metric_text(oil.get('value'), '달러')} ({metric_text_signed(oil.get('change_pct'), '%')}).\n\n"
-        f"종목별 가격정보\n"
-        f"{price_lines}\n\n"
-        f"세부정보는 아래 첨부 HTML에서 확인하세요."
-    )
-
-
-def send_discord_webhook(webhook_url: str, rows: list[PriceRow], macro: dict, today: datetime, html_file: Path) -> None:
-    payload = {"content": discord_message(rows, macro, today)}
-    with html_file.open("rb") as f:
-        files = {
-            "payload_json": (None, __import__("json").dumps(payload, ensure_ascii=False), "application/json"),
-            "files[0]": (html_file.name, f, "text/html"),
-        }
-        response = requests.post(webhook_url, files=files, timeout=30)
-    response.raise_for_status()
-
-
 def main() -> None:
     setup_font()
     PUBLIC_DIR.mkdir(parents=True, exist_ok=True)
@@ -733,13 +706,7 @@ def main() -> None:
     make_self_contained_html(latest, chart_files, bundle)
     make_self_contained_html(latest, chart_files, dated)
     make_self_contained_html(latest, chart_files, public_dated)
-
-    webhook_url = read_webhook_url()
-    if webhook_url:
-        send_discord_webhook(webhook_url, rows, macro, today, bundle)
-        print("Discord webhook sent")
-    else:
-        print("Discord webhook skipped: set DISCORD_WEBHOOK_URL or discord_webhook_url.txt")
+    write_summary_json(rows, macro, today, LOG_DIR / "latest_summary.json")
 
     print(latest)
     print(index)

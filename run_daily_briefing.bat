@@ -7,5 +7,9 @@ python scripts\generate_daily_briefing.py >> logs\daily_briefing_task.log 2>&1
 "%GIT%" diff --cached --quiet
 if errorlevel 1 (
   "%GIT%" commit -m "Update daily briefing" >> logs\daily_briefing_task.log 2>&1
+  if errorlevel 1 exit /b %errorlevel%
   "%GIT%" push >> logs\daily_briefing_task.log 2>&1
+  if errorlevel 1 exit /b %errorlevel%
 )
+
+python scripts\send_discord_notification.py >> logs\daily_briefing_task.log 2>&1
