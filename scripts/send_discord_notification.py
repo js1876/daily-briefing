@@ -1,7 +1,9 @@
 import json
 import os
 import time
+from datetime import datetime, time as wall_time
 from pathlib import Path
+from zoneinfo import ZoneInfo
 
 import requests
 
@@ -12,6 +14,8 @@ LOG_DIR = ROOT / "logs"
 WEBHOOK_FILE = CONFIG_DIR / "discord_webhook_url.txt"
 SUMMARY_FILE = LOG_DIR / "latest_summary.json"
 MENTION_USER_ID = "750311358855381087"
+KST = ZoneInfo("Asia/Seoul")
+NOTIFY_AFTER = wall_time(9, 30)
 
 
 def read_webhook_url() -> str:
@@ -78,6 +82,16 @@ def verify_public_page(url: str, expected_date: str, attempts: int = 20, delay_s
     raise RuntimeError(f"GitHub Pages verification failed: {last_error}")
 
 
+def wait_until_notify_time() -> None:
+    now = datetime.now(KST)
+    target = datetime.combine(now.date(), NOTIFY_AFTER, tzinfo=KST)
+    if now >= target:
+        return
+    wait_seconds = int((target - now).total_seconds())
+    print(f"Waiting until {target.strftime('%Y-%m-%d %H:%M:%S %Z')} before Discord notification.")
+    time.sleep(wait_seconds)
+
+
 def build_message(summary: dict) -> str:
     prices = summary["prices"]
     macro = summary.get("macro", {})
@@ -118,6 +132,7 @@ def send_message(webhook_url: str, content: str) -> None:
 def main() -> None:
     summary = load_summary()
     verify_public_page(summary["site_url"], summary["date"])
+    wait_until_notify_time()
     webhook_url = read_webhook_url()
     send_message(webhook_url, build_message(summary))
     print("Discord link notification sent")
