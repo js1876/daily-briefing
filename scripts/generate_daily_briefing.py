@@ -2,6 +2,7 @@ import base64
 import html
 import json
 import os
+import re
 import urllib.parse
 import urllib.request
 import xml.etree.ElementTree as ET
@@ -38,6 +39,18 @@ FONT_CANDIDATES = [
     "/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf",
 ]
 WEBHOOK_FILE = CONFIG_DIR / "discord_webhook_url.txt"
+CYCLE_ANALYSIS_FILE = LOG_DIR / "cycle_analysis.json"
+DEFAULT_CYCLE_ANALYSIS = {
+    "headline": "반도체 사이클 호황 검증 구간",
+    "summary_line": "메모리 사이클은 호황 중반~후반 구간에 있고, 가격·실적 모멘텀은 유효하지만 수급·금리·환율 리스크 확인이 필요합니다.",
+    "cycle_summary": "반도체 사이클은 호황 중반~후반 구간으로 판단하며, 추세는 유효하지만 신규 진입은 눌림과 수급 확인이 우선입니다.",
+    "chart_caption": "사인파형으로 표현한 반도체 메모리 사이클입니다. 현재는 회복 초입이 아니라 호황 중반~후반, 즉 실적 호황과 CAPEX 증가 사이에 가까운 위치로 표시했습니다.",
+    "report_html": """
+      <h3>1. 요약</h3>
+      <p><strong>현재 메모리 사이클은 공급 부족 - 가격 상승 - 실적 폭증 - 주가 상승 구간에 있으며, 동시에 CAPEX 확대와 밸류에이션 피크아웃 리스크가 같이 켜진 중후반부 진입 국면입니다.</strong></p>
+      <p class=\"note\">투자 결론은 “추세 추종은 유효하지만, 신규 진입은 가격 눌림·외국인 매도 완화·금리 안정 확인 후 분할 접근”입니다.</p>
+    """.strip(),
+}
 
 DOMESTIC_STOCKS = [
     ("396500", "TIGER 반도체TOP10", "TIGER 반도체TOP10 396500"),
@@ -228,13 +241,52 @@ def metric_text_signed(value, suffix="") -> str:
     return f"{value:+.2f}{suffix}"
 
 
-def write_summary_json(rows: list[PriceRow], macro: dict, today: datetime, out: Path) -> None:
+def sanitize_cycle_report_html(value: str) -> str:
+    """Allow simple report markup while removing dangerous tags/attributes."""
+    value = re.sub(r"<\s*(script|style)[^>]*>.*?<\s*/\s*\1\s*>", "", value, flags=re.IGNORECASE | re.DOTALL)
+    value = re.sub(r"\s+on[a-zA-Z]+\s*=\s*(['\"]).*?\1", "", value, flags=re.IGNORECASE | re.DOTALL)
+    value = re.sub(r"\s+(href|src)\s*=\s*(['\"])\s*javascript:.*?\2", "", value, flags=re.IGNORECASE | re.DOTALL)
+    allowed = {"h3", "h4", "p", "strong", "em", "ul", "ol", "li", "table", "thead", "tbody", "tr", "th", "td", "br", "blockquote"}
+
+    def clean_tag(match: re.Match) -> str:
+        closing, tag = match.group(1), match.group(2).lower()
+        if tag not in allowed:
+            return ""
+        return f"<{closing}{tag}>"
+
+    return re.sub(r"<\s*(/?)\s*([a-zA-Z0-9]+)(?:\s+[^>]*)?>", clean_tag, value).strip()
+
+
+def load_cycle_analysis(today: datetime, path: Path = CYCLE_ANALYSIS_FILE) -> dict:
+    analysis = dict(DEFAULT_CYCLE_ANALYSIS)
+    if not path.exists():
+        return analysis
+    try:
+        raw = json.loads(path.read_text(encoding="utf-8"))
+    except Exception:
+        return analysis
+    if raw.get("date") != today.strftime("%Y-%m-%d"):
+        return analysis
+    for key in ["headline", "summary_line", "cycle_summary", "chart_caption"]:
+        value = str(raw.get(key, "")).strip()
+        if value:
+            analysis[key] = html.escape(value)
+    report_html = str(raw.get("report_html", "")).strip()
+    if report_html:
+        analysis["report_html"] = sanitize_cycle_report_html(report_html)
+    analysis["source"] = raw.get("source", "daily_research")
+    return analysis
+
+
+def write_summary_json(rows: list[PriceRow], macro: dict, today: datetime, out: Path, cycle_analysis: dict | None = None) -> None:
     out.parent.mkdir(parents=True, exist_ok=True)
+    cycle_analysis = cycle_analysis or DEFAULT_CYCLE_ANALYSIS
     payload = {
         "date": today.strftime("%Y-%m-%d"),
         "site_url": "https://js1876.github.io/daily-briefing/public/",
         "latest_url": "https://js1876.github.io/daily-briefing/public/latest.html",
-        "cycle_summary": "반도체 사이클은 호황 중반~후반 구간으로 판단하며, 추세는 유효하지만 신규 진입은 눌림과 수급 확인이 우선입니다.",
+        "cycle_summary": html.unescape(cycle_analysis["cycle_summary"]),
+        "cycle_headline": html.unescape(cycle_analysis["headline"]),
         "prices": [
             {
                 "ticker": row.ticker,
@@ -464,7 +516,8 @@ def news_article_html(name: str, items: list[dict]) -> str:
         </article>"""
 
 
-def render_html(rows: list[PriceRow], news: dict, macro: dict, valuation: dict, today: datetime, chart_files: dict) -> str:
+def render_html(rows: list[PriceRow], news: dict, macro: dict, valuation: dict, today: datetime, chart_files: dict, cycle_analysis: dict | None = None) -> str:
+    cycle_analysis = cycle_analysis or DEFAULT_CYCLE_ANALYSIS
     css = css_from_existing()
     basis_date = rows[0].basis_date.strftime("%Y-%m-%d")
     today_s = today.strftime("%Y-%m-%d")
@@ -474,9 +527,7 @@ def render_html(rows: list[PriceRow], news: dict, macro: dict, valuation: dict, 
     max_up = max(rows, key=lambda row: row.change_pct)
     max_down = min(rows, key=lambda row: row.change_pct)
 
-    summary_line = (
-        "메모리 사이클은 호황 중반~후반 구간에 있고, 가격·실적 모멘텀은 유효하지만 수급·금리·환율 리스크 확인이 필요합니다."
-    )
+    summary_line = cycle_analysis["summary_line"]
     table_rows = "\n".join(
         f"""
             <tr>
@@ -526,7 +577,7 @@ def render_html(rows: list[PriceRow], news: dict, macro: dict, valuation: dict, 
     <div class="summary">
       <div class="tile">
         <div class="tile-label">오늘의 핵심 한 줄</div>
-        <div class="tile-value">반도체 사이클 호황 검증 구간</div>
+        <div class="tile-value">{cycle_analysis['headline']}</div>
         <p class="meta">{summary_line}</p>
       </div>
       <div class="tile">
@@ -581,7 +632,7 @@ def render_html(rows: list[PriceRow], news: dict, macro: dict, valuation: dict, 
       <h2>반도체 사이클 위치</h2>
       <figure>
         <img src="{chart_files['cycle']}" alt="반도체 메모리 사이클 위치 추정">
-        <figcaption>사인파형으로 표현한 반도체 메모리 사이클입니다. 현재는 회복 초입이 아니라 호황 중반~후반, 즉 실적 호황과 CAPEX 증가 사이에 가까운 위치로 표시했습니다.</figcaption>
+        <figcaption>{cycle_analysis['chart_caption']}</figcaption>
       </figure>
     </section>
 
@@ -589,66 +640,7 @@ def render_html(rows: list[PriceRow], news: dict, macro: dict, valuation: dict, 
       <h2>반도체 섹터 투자 분석 리포트</h2>
       <p class="meta">분석 대상: 삼성전자, SK하이닉스, TIGER 반도체TOP10, KODEX 200타겟위클리커버드콜 | 데이터 기준: {basis_date} 종가 및 {today_s} 확인 자료</p>
 
-      <h3>1. 요약</h3>
-      <p><strong>현재 메모리 사이클은 공급 부족 - 가격 상승 - 실적 폭증 - 주가 상승 구간에 있으며, 동시에 CAPEX 확대와 밸류에이션 피크아웃 리스크가 같이 켜진 중후반부 진입 국면입니다.</strong></p>
-      <p class="note">투자 결론은 “추세 추종은 유효하지만, 신규 진입은 가격 눌림·외국인 매도 완화·금리 안정 확인 후 분할 접근”입니다.</p>
-
-      <h3>2. 반도체 사이클 진단</h3>
-      <div class="table-wrap">
-        <table>
-          <thead><tr><th>지표</th><th>현재 관찰값</th><th>사이클 해석</th><th>투자 함의</th></tr></thead>
-          <tbody>
-            <tr><td>수요·공급</td><td>DRAM/NAND/HBM 가격 상승 및 AI 서버 수요 중심</td><td>공급 부족과 가격 상승 구간</td><td>메모리 업체 실적 모멘텀은 유효</td></tr>
-            <tr><td>영업이익 방향</td><td>실적 변화율이 강한 회복·확장 국면</td><td>절대 이익보다 변화율이 중요한 구간</td><td>실적 상향은 주가 하방 지지, 피크아웃 감시 필요</td></tr>
-            <tr><td>PER의 역설</td><td>삼성전자 forward PER {metric_text(samsung.get('forward_pe'), '배')}, SK하이닉스 {metric_text(hynix.get('forward_pe'), '배')}</td><td>호황기 저PER은 싸 보이는 착시일 수 있음</td><td>PER 단독 저평가 판단은 위험</td></tr>
-            <tr><td>PBR 위치</td><td>삼성전자 PBR {metric_text(samsung.get('price_to_book'), '배')}, SK하이닉스 {metric_text(hynix.get('price_to_book'), '배')}</td><td>저점권보다 모멘텀 프리미엄 구간 여부 확인</td><td>PBR보다 이익·수급 검증이 중요</td></tr>
-            <tr><td>CAPEX</td><td>HBM·AI 메모리 공급 확대 경쟁</td><td>공급 부족이 설비투자 증가 단계로 이동</td><td>단기 호재, 중장기 공급 과잉 리스크</td></tr>
-          </tbody>
-        </table>
-      </div>
-
-      <h3>3. 기업별 상대 비교 분석</h3>
-      <div class="table-wrap">
-        <table>
-          <thead><tr><th>기업</th><th>현재 강점</th><th>약점·리스크</th><th>시장 평가</th><th>주가 탄력성 판단</th></tr></thead>
-          <tbody>
-            <tr><td>삼성전자</td><td>메모리·파운드리·패키징 턴키 포트폴리오와 HBM 추격 모멘텀</td><td>HBM 고객 승인·수율 확인 필요, 범용 제품 비중 존재</td><td>시가총액 {cap_text(samsung.get('market_cap'))}, forward PER {metric_text(samsung.get('forward_pe'), '배')}</td><td>후발 모멘텀. HBM 확인 시 탄력 가능</td></tr>
-            <tr><td>SK하이닉스</td><td>HBM 선두 프리미엄, AI 메모리 순도 높음</td><td>선두주자 프리미엄과 CAPEX 부담, 단기 급등 피로</td><td>시가총액 {cap_text(hynix.get('market_cap'))}, forward PER {metric_text(hynix.get('forward_pe'), '배')}</td><td>선두주자. 추가 상승은 HBM 가격 지속성과 외국인 수급이 좌우</td></tr>
-            <tr><td>TIGER 반도체TOP10</td><td>개별 종목 리스크를 줄인 반도체 바스켓 노출</td><td>대형 반도체주 쏠림 영향이 큼</td><td>{signed_pct(next(row.change_pct for row in rows if row.ticker == '396500'))}</td><td>섹터 베타 투자에 적합</td></tr>
-            <tr><td>KODEX 200타겟위클리커버드콜</td><td>옵션 프리미엄·분배형 목적 가능</td><td>강한 추세장에서 초과수익 제한 가능</td><td>{signed_pct(next(row.change_pct for row in rows if row.ticker == '498400'))}</td><td>방어·현금흐름형 포지션</td></tr>
-          </tbody>
-        </table>
-      </div>
-
-      <h3>4. 매크로 및 리스크 팩터 분석</h3>
-      <div class="table-wrap">
-        <table>
-          <thead><tr><th>요인</th><th>현재 데이터</th><th>반도체주 영향</th><th>해석</th></tr></thead>
-          <tbody>
-            <tr><td>FOMO·급등 피로</td><td>KOSPI {metric_text(kospi.get('value'))}, 전일 대비 {metric_text(kospi.get('change_pct'), '%')}</td><td>추격 매수 리스크 상승</td><td>사이클은 좋지만 주가 선반영 점검 필요</td></tr>
-            <tr><td>환율</td><td>원/달러 {metric_text(fx.get('value'), '원')}, 전일 대비 {metric_text(fx.get('change_pct'), '%')}</td><td>수출주 이익에는 우호적이나 외국인 자금 이탈 우려</td><td>수급·금융시장 불안 변수</td></tr>
-            <tr><td>미국 10년물 금리</td><td>{metric_text(tnx.get('value'), '%')}</td><td>성장주 밸류에이션 할인율 상승</td><td>AI 기대와 금리 부담이 공존</td></tr>
-            <tr><td>유가·인플레이션</td><td>WTI {metric_text(oil.get('value'), '달러')}, 전일 대비 {metric_text(oil.get('change_pct'), '%')}</td><td>물가·금리 경계로 기술주 투자심리 압박</td><td>외부 충격 변수</td></tr>
-            <tr><td>정책 리스크</td><td>AI 초과이익 과세·규제성 발언 확인 필요</td><td>AI 수혜주 프리미엄 할인 가능</td><td>실적 변수보다 심리 변수로 관리</td></tr>
-          </tbody>
-        </table>
-      </div>
-
-      <h3>5. 실전 투자 체크리스트</h3>
-      <div class="table-wrap">
-        <table>
-          <thead><tr><th>구분</th><th>체크 질문</th><th>매수·보유 쪽 신호</th><th>비중 축소 쪽 신호</th></tr></thead>
-          <tbody>
-            <tr><td>저점 판단</td><td>실적 변화율이 개선되고 있는가?</td><td>영업이익 상향, 적자 축소, 가격 상승 지속</td><td>이익 추정치 하향 전환</td></tr>
-            <tr><td>고점 판단</td><td>저PER이 이익 피크 착시인가?</td><td>가격 상승률이 아직 이익 추정 상향보다 빠르지 않음</td><td>PER은 낮지만 메모리 가격·주문 증가율 둔화</td></tr>
-            <tr><td>수급</td><td>외국인 매도가 멈추는가?</td><td>외국인 순매수 전환 또는 매도 강도 완화</td><td>대형주 외국인 매도 지속</td></tr>
-            <tr><td>HBM 순도</td><td>HBM 물량·가격·고객사가 확인되는가?</td><td>장기계약, 샘플 승인, 수율 개선</td><td>로드맵 발표만 있고 매출 반영 지연</td></tr>
-            <tr><td>매크로</td><td>환율·금리·유가가 안정되는가?</td><td>10년물 금리 하락, 원화 안정, 유가 진정</td><td>금리 상승, 원/달러 급등, 유가 상승</td></tr>
-          </tbody>
-        </table>
-      </div>
-    </section>
-
+      {cycle_analysis['report_html']}
     <section>
       <h2>종목별 뉴스</h2>
       <p class="meta">KST 기준 {today_s} 발행분만 포함했습니다. Google News RSS 검색은 when:1d 파라미터를 사용했습니다.</p>
@@ -700,6 +692,7 @@ def main() -> None:
     news = {ticker: fetch_news(query, today) for ticker, _, query in DOMESTIC_STOCKS}
     macro = fetch_macro()
     valuation = fetch_valuation()
+    cycle_analysis = load_cycle_analysis(today)
 
     chart_files = {
         "change": f"assets/charts/daily_briefing_change_chart_{date_slug}.png",
@@ -710,7 +703,7 @@ def main() -> None:
     save_price_trends(rows, PUBLIC_DIR / chart_files["trend"])
     save_cycle_chart(PUBLIC_DIR / chart_files["cycle"])
 
-    rendered = render_html(rows, news, macro, valuation, today, chart_files)
+    rendered = render_html(rows, news, macro, valuation, today, chart_files, cycle_analysis)
     latest = PUBLIC_DIR / "latest.html"
     index = PUBLIC_DIR / "index.html"
     dated = REPORT_ARCHIVE_DIR / f"daily_briefing_{date_slug}.html"
@@ -721,7 +714,7 @@ def main() -> None:
     make_self_contained_html(latest, chart_files, bundle)
     make_self_contained_html(latest, chart_files, dated)
     make_self_contained_html(latest, chart_files, public_dated)
-    write_summary_json(rows, macro, today, LOG_DIR / "latest_summary.json")
+    write_summary_json(rows, macro, today, LOG_DIR / "latest_summary.json", cycle_analysis)
 
     print(latest)
     print(index)
