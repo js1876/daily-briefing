@@ -63,3 +63,24 @@ def test_weather_message_is_omitted_when_weather_missing():
 
     assert "오늘 서울 날씨" not in message
     assert "미세먼지" not in message
+
+
+def test_calendar_message_lists_today_events():
+    summary = base_summary()
+    summary["calendar_events"] = [
+        {"summary": "치과", "time": "10:30"},
+        {"summary": "저녁 약속", "time": None},
+    ]
+
+    message = dcr.build_message(summary)
+
+    assert "오늘 일정은 10:30 치과, 저녁 약속이 있습니다." in message
+
+
+def test_calendar_message_says_no_events_when_empty():
+    summary = base_summary()
+    summary["calendar_events"] = []
+
+    message = dcr.build_message(summary)
+
+    assert "오늘은 특별한 일정이 없습니다." in message
