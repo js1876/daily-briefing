@@ -47,3 +47,22 @@ def test_sanitize_report_html_removes_script():
     assert "onclick" not in html.lower()
     assert "<h3>제목</h3>" in html
     assert "본문" in html
+
+
+def test_load_cycle_analysis_uses_market_based_action_items(tmp_path):
+    analysis_file = tmp_path / "cycle_analysis.json"
+    analysis_file.write_text(
+        '{"date":"2026-06-11","action_items":["눌림 구간에서 분할 접근", "<script>bad()</script>금리 급등 시 비중 축소"]}',
+        encoding="utf-8",
+    )
+
+    result = gdb.load_cycle_analysis(datetime(2026, 6, 11, tzinfo=ZoneInfo("Asia/Seoul")), analysis_file)
+
+    assert result["action_items"] == ["눌림 구간에서 분할 접근", "금리 급등 시 비중 축소"]
+
+
+def test_action_items_html_renders_market_based_actions():
+    html = gdb.action_items_html(["외국인 순매수 전환 확인", "HBM 뉴스 후 추격매수 금지"])
+
+    assert "<li>외국인 순매수 전환 확인</li>" in html
+    assert "<li>HBM 뉴스 후 추격매수 금지</li>" in html

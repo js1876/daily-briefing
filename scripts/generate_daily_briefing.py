@@ -50,6 +50,12 @@ DEFAULT_CYCLE_ANALYSIS = {
       <p><strong>현재 메모리 사이클은 공급 부족 - 가격 상승 - 실적 폭증 - 주가 상승 구간에 있으며, 동시에 CAPEX 확대와 밸류에이션 피크아웃 리스크가 같이 켜진 중후반부 진입 국면입니다.</strong></p>
       <p class=\"note\">투자 결론은 “추세 추종은 유효하지만, 신규 진입은 가격 눌림·외국인 매도 완화·금리 안정 확인 후 분할 접근”입니다.</p>
     """.strip(),
+    "action_items": [
+        "신규 매수·매도 판단은 장 시작 후 가격 갭과 거래대금 확인 뒤 진행합니다.",
+        "반도체 대형주는 사이클 모멘텀이 유효하지만, 추격 매수보다는 눌림·수급 완화 확인이 우선입니다.",
+        "SK하이닉스와 TIGER 반도체TOP10은 HBM·반도체 업황 뉴스가 가격 반등으로 이어지는지 확인합니다.",
+        "KODEX 200타겟위클리커버드콜은 분배·옵션 프리미엄 목적의 보유 전략 점검에 집중합니다.",
+    ],
 }
 
 DOMESTIC_STOCKS = [
@@ -257,6 +263,10 @@ def sanitize_cycle_report_html(value: str) -> str:
     return re.sub(r"<\s*(/?)\s*([a-zA-Z0-9]+)(?:\s+[^>]*)?>", clean_tag, value).strip()
 
 
+def action_items_html(items: list[str]) -> str:
+    return "\n".join(f"        <li>{html.escape(item)}</li>" for item in items if item.strip())
+
+
 def load_cycle_analysis(today: datetime, path: Path = CYCLE_ANALYSIS_FILE) -> dict:
     analysis = dict(DEFAULT_CYCLE_ANALYSIS)
     if not path.exists():
@@ -274,6 +284,15 @@ def load_cycle_analysis(today: datetime, path: Path = CYCLE_ANALYSIS_FILE) -> di
     report_html = str(raw.get("report_html", "")).strip()
     if report_html:
         analysis["report_html"] = sanitize_cycle_report_html(report_html)
+    raw_action_items = raw.get("action_items")
+    if isinstance(raw_action_items, list):
+        action_items = []
+        for item in raw_action_items:
+            clean = sanitize_cycle_report_html(str(item)).strip()
+            if clean:
+                action_items.append(clean)
+        if action_items:
+            analysis["action_items"] = action_items[:6]
     analysis["source"] = raw.get("source", "daily_research")
     return analysis
 
@@ -287,6 +306,7 @@ def write_summary_json(rows: list[PriceRow], macro: dict, today: datetime, out: 
         "latest_url": "https://js1876.github.io/daily-briefing/public/latest.html",
         "cycle_summary": html.unescape(cycle_analysis["cycle_summary"]),
         "cycle_headline": html.unescape(cycle_analysis["headline"]),
+        "action_items": [html.unescape(item) for item in cycle_analysis.get("action_items", [])],
         "prices": [
             {
                 "ticker": row.ticker,
@@ -557,6 +577,7 @@ def render_html(rows: list[PriceRow], news: dict, macro: dict, valuation: dict, 
     tnx = macro.get("미국 10년물", {})
     oil = macro.get("WTI", {})
     kospi = macro.get("KOSPI", {})
+    action_items = action_items_html(cycle_analysis.get("action_items", DEFAULT_CYCLE_ANALYSIS["action_items"]))
 
     return f"""<!doctype html>
 <html lang="ko">
@@ -641,6 +662,7 @@ def render_html(rows: list[PriceRow], news: dict, macro: dict, valuation: dict, 
       <p class="meta">분석 대상: 삼성전자, SK하이닉스, TIGER 반도체TOP10, KODEX 200타겟위클리커버드콜 | 데이터 기준: {basis_date} 종가 및 {today_s} 확인 자료</p>
 
       {cycle_analysis['report_html']}
+    </section>
     <section>
       <h2>종목별 뉴스</h2>
       <p class="meta">KST 기준 {today_s} 발행분만 포함했습니다. Google News RSS 검색은 when:1d 파라미터를 사용했습니다.</p>
@@ -651,10 +673,7 @@ def render_html(rows: list[PriceRow], news: dict, macro: dict, valuation: dict, 
     <section>
       <h2>오늘의 액션</h2>
       <ol class="actions">
-        <li>신규 매수·매도 판단은 장 시작 후 가격 갭과 거래대금 확인 뒤 진행합니다.</li>
-        <li>반도체 대형주는 사이클 모멘텀이 유효하지만, 추격 매수보다는 눌림·수급 완화 확인이 우선입니다.</li>
-        <li>SK하이닉스와 TIGER 반도체TOP10은 HBM·반도체 업황 뉴스가 가격 반등으로 이어지는지 확인합니다.</li>
-        <li>KODEX 200타겟위클리커버드콜은 분배·옵션 프리미엄 목적의 보유 전략 점검에 집중합니다.</li>
+{action_items}
       </ol>
       <p class="note">이 파일은 자동 생성 결과입니다. 투자 판단 전 원문 뉴스와 실시간 호가를 다시 확인하세요.</p>
     </section>

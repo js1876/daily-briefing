@@ -32,6 +32,7 @@
 - `cycle_summary`: Discord 직접 보고에 들어갈 핵심 사이클 요약. 1문장.
 - `chart_caption`: “반도체 사이클 위치” 차트 하단 설명. 1~2문장.
 - `report_html`: HTML 본문에 삽입할 리포트 조각. 반드시 `<h3>1. 요약</h3>`부터 `<h3>5. 실전 투자 체크리스트</h3>`까지 포함한다. 허용 태그는 h3, h4, p, strong, em, ul, ol, li, table, thead, tbody, tr, th, td, br, blockquote 정도만 사용한다.
+- `action_items`: HTML 하단 “오늘의 액션”에 들어갈 시장추세 기반 실행 항목 배열. 매일 같은 고정 문구를 쓰지 말고 당일 시장 흐름, 가격 움직임, 수급/환율/금리/유가, HBM·메모리 뉴스를 반영해 3~6개 문장으로 작성한다.
 - `sources`: 참고한 URL/출처 배열.
 
 ## 리포트 구조
