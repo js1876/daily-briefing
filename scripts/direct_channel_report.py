@@ -4,8 +4,6 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 SUMMARY_FILE = ROOT / "logs" / "latest_summary.json"
-BUNDLE_FILE = ROOT / "public" / "latest_bundle.html"
-
 MENTION_USER_ID = "750311358855381087"
 
 
@@ -74,8 +72,6 @@ def build_message(summary: dict) -> str:
 
 def main() -> None:
     message = build_message(load_summary())
-    if BUNDLE_FILE.exists():
-        message += f"\n\nHTML 파일 첨부: MEDIA:{BUNDLE_FILE}"
     print(message)
 
 
