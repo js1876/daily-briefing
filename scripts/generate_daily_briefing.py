@@ -1,6 +1,7 @@
 import base64
 import html
 import json
+import os
 import urllib.parse
 import urllib.request
 import xml.etree.ElementTree as ET
@@ -28,7 +29,14 @@ MARKDOWN_ARCHIVE_DIR = ARCHIVE_DIR / "markdown"
 CONFIG_DIR = ROOT / "config"
 LOG_DIR = ROOT / "logs"
 KST = ZoneInfo("Asia/Seoul")
-FONT_PATH = "C:/Windows/Fonts/malgun.ttf"
+FONT_CANDIDATES = [
+    os.environ.get("DAILY_BRIEFING_FONT", ""),
+    "C:/Windows/Fonts/malgun.ttf",
+    "/usr/share/fonts/truetype/nanum/NanumGothic.ttf",
+    "/usr/share/fonts/opentype/noto/NotoSansCJK-Regular.ttc",
+    "/usr/share/fonts/opentype/noto/NotoSansCJKkr-Regular.otf",
+    "/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf",
+]
 WEBHOOK_FILE = CONFIG_DIR / "discord_webhook_url.txt"
 
 DOMESTIC_STOCKS = [
@@ -64,9 +72,16 @@ class PriceRow:
 
 
 def setup_font() -> None:
-    font_manager.fontManager.addfont(FONT_PATH)
-    font_name = font_manager.FontProperties(fname=FONT_PATH).get_name()
-    plt.rcParams["font.family"] = font_name
+    """Configure a Korean-capable font when available, with a portable fallback."""
+    for font_path in FONT_CANDIDATES:
+        if font_path and Path(font_path).exists():
+            font_manager.fontManager.addfont(font_path)
+            font_name = font_manager.FontProperties(fname=font_path).get_name()
+            plt.rcParams["font.family"] = font_name
+            break
+    else:
+        # Last-resort fallback; charts still render even if Korean glyphs are missing.
+        plt.rcParams["font.family"] = "DejaVu Sans"
     plt.rcParams["axes.unicode_minus"] = False
 
 
