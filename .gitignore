@@ -4,3 +4,4 @@ public/latest_bundle.html
 __pycache__/
 *.pyc
 .env
+.venv/
