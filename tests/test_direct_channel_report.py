@@ -84,3 +84,23 @@ def test_calendar_message_says_no_events_when_empty():
     message = dcr.build_message(summary)
 
     assert "오늘은 특별한 일정이 없습니다." in message
+
+
+def test_all_day_event_ending_today_is_not_today_event():
+    ics = """BEGIN:VCALENDAR
+BEGIN:VEVENT
+DTSTART;VALUE=DATE:20260611
+DTEND;VALUE=DATE:20260612
+SUMMARY:어제 종일 일정
+END:VEVENT
+BEGIN:VEVENT
+DTSTART;TZID=Asia/Seoul:20260612T100000
+DTEND;TZID=Asia/Seoul:20260612T110000
+SUMMARY:오늘 일정
+END:VEVENT
+END:VCALENDAR
+"""
+
+    events = dcr.parse_ics_events(ics, target_date=dcr.datetime(2026, 6, 12, tzinfo=dcr.KST).date())
+
+    assert events == [{"summary": "오늘 일정", "time": "10:00", "sort": "2026-06-12T10:00:00+09:00"}]

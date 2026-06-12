@@ -356,15 +356,24 @@ def parse_ics_datetime(line: str) -> tuple[datetime | None, bool]:
     return None, False
 
 
-def parse_ics_events(ics_text: str) -> list[dict]:
+def event_occurs_on_target(start: datetime, end: datetime | None, all_day: bool, target_date) -> bool:
+    if all_day:
+        end_date = end.date() if end else start.date() + timedelta(days=1)
+        return start.date() <= target_date < end_date
+    return start.astimezone(KST).date() == target_date
+
+
+def parse_ics_events(ics_text: str, target_date=None) -> list[dict]:
+    target_date = target_date or datetime.now(KST).date()
     events = []
     current = None
     for line in unfold_ics_lines(ics_text):
         if line == "BEGIN:VEVENT":
-            current = {"summary": "제목 없는 일정", "start": None, "all_day": True}
+            current = {"summary": "제목 없는 일정", "start": None, "end": None, "all_day": True}
         elif line == "END:VEVENT" and current is not None:
-            if current.get("start"):
-                start = current["start"]
+            start = current.get("start")
+            end = current.get("end")
+            if start and event_occurs_on_target(start, end, bool(current.get("all_day")), target_date):
                 events.append({
                     "summary": current["summary"],
                     "time": None if current.get("all_day") else start.strftime("%H:%M"),
@@ -377,6 +386,9 @@ def parse_ics_events(ics_text: str) -> list[dict]:
             start, all_day = parse_ics_datetime(line)
             current["start"] = start
             current["all_day"] = all_day
+        elif current is not None and line.startswith("DTEND"):
+            end, _ = parse_ics_datetime(line)
+            current["end"] = end
     return sorted(events, key=lambda event: event["sort"])
 
 
