@@ -632,7 +632,7 @@ def css_from_existing() -> str:
       h2 { font-size: 21px; }
       .tile { padding: 16px; }
 
-      .price-table, .price-table thead, .price-table tbody, .price-table tr, .price-table td {
+      .price-table, .price-table thead, .price-table tbody, .price-table tr {
         display: block;
         width: 100%;
       }
@@ -640,35 +640,49 @@ def css_from_existing() -> str:
       .price-table thead { display: none; }
 
       .price-table tr {
-        display: grid;
-        grid-template-columns: minmax(0, 1fr) auto;
-        gap: 8px 12px;
-        padding: 14px 0;
+        padding: 16px 0;
         border-bottom: 1px solid var(--line);
       }
 
       .price-table td {
+        display: grid;
+        grid-template-columns: 92px minmax(0, 1fr);
+        gap: 12px;
+        align-items: baseline;
+        width: 100%;
         border: 0;
-        padding: 0;
+        padding: 7px 0;
         text-align: right;
         min-width: 0;
-        font-size: 14px;
+        font-size: 15px;
+        white-space: normal;
+        word-break: keep-all;
+        overflow-wrap: normal;
       }
 
       .price-table td::before {
         content: attr(data-label);
-        display: block;
         color: var(--muted);
-        font-size: 12px;
+        font-size: 13px;
         font-weight: 700;
-        margin-bottom: 2px;
+        text-align: left;
+        white-space: nowrap;
       }
 
       .price-table td:first-child {
-        grid-column: 1 / -1;
+        display: block;
         text-align: left;
-        font-size: 17px;
+        font-size: 22px;
         font-weight: 800;
+        line-height: 1.35;
+        padding-bottom: 12px;
+        word-break: keep-all;
+        overflow-wrap: normal;
+      }
+
+      .price-table td:first-child::before {
+        display: block;
+        margin-bottom: 4px;
       }
 
       .cycle-report table, .cycle-report thead, .cycle-report tbody, .cycle-report tr, .cycle-report th, .cycle-report td {

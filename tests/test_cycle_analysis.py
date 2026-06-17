@@ -73,7 +73,9 @@ def test_report_css_uses_mobile_card_layout_instead_of_wide_forced_table():
 
     assert "@media (max-width: 640px)" in css
     assert ".price-table tr" in css
-    assert "grid-template-columns: minmax(0, 1fr) auto" in css
+    assert "grid-template-columns: 92px minmax(0, 1fr)" in css
+    assert "grid-template-columns: minmax(0, 1fr) auto" not in css
+    assert "word-break: keep-all" in css
     assert "min-width: 760px" not in css
     assert "overflow-wrap: anywhere" in css
 
