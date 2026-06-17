@@ -644,12 +644,13 @@ def css_from_existing() -> str:
         border-bottom: 1px solid var(--line);
       }
 
-      .price-table td {
+      .price-table td,
+      .price-table td:nth-child(n) {
         display: grid;
         grid-template-columns: 92px minmax(0, 1fr);
         gap: 12px;
         align-items: baseline;
-        width: 100%;
+        width: 100% !important;
         border: 0;
         padding: 7px 0;
         text-align: right;
