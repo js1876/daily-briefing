@@ -502,162 +502,236 @@ def css_from_existing() -> str:
     return """
     :root {
       --bg: #eef3f8;
-      --bg2: #f7f9fc;
-      --panel: #ffffff;
-      --panel-soft: #f8fafc;
-      --line: rgba(26, 46, 80, 0.10);
-      --text: #142033;
-      --muted: #66758a;
+      --bg2: #f8fbff;
+      --surface: rgba(255, 255, 255, 0.78);
+      --surface-elevated: #ffffff;
+      --surface-muted: #f4f7fb;
+      --text: #101828;
+      --text-muted: #667085;
+      --border: rgba(15, 23, 42, 0.10);
+      --accent: #2563eb;
+      --accent-strong: #1d4ed8;
+      --accent-soft: rgba(37, 99, 235, 0.11);
       --up: #d92d20;
       --down: #2563eb;
-      --accent: #2563eb;
-      --accent-soft: #e8f1ff;
-      --shadow: 0 14px 34px rgba(22, 34, 51, 0.08);
-      --hero-panel: rgba(255,255,255,.92);
-      --body-end: #f9fafb;
-      --card-shadow: 0 8px 22px rgba(15,23,42,.045);
-      --summary-text: #334155;
+      --neutral: #64748b;
+      --shadow: 0 20px 55px rgba(30, 41, 59, 0.10);
+      --shadow-soft: 0 10px 28px rgba(15, 23, 42, 0.055);
+      --radius-xl: 32px;
+      --radius-lg: 24px;
+      --radius-md: 18px;
+      --space: clamp(14px, 2.4vw, 28px);
+      --content-max: 1320px;
       --chart-bg: #ffffff;
       --bar-track: #e5edf7;
-      --radius: 22px;
       color-scheme: light;
+
+      /* backward-compatible aliases used by older generated fragments */
+      --panel: var(--surface-elevated);
+      --panel-soft: var(--surface-muted);
+      --line: var(--border);
+      --muted: var(--text-muted);
+      --hero-panel: var(--surface);
+      --body-end: #f9fafb;
+      --card-shadow: var(--shadow-soft);
+      --summary-text: #344054;
     }
 
     html[data-theme="dark"] {
       --bg: #07111f;
-      --bg2: #0f172a;
-      --panel: #111c2f;
-      --panel-soft: #16243a;
-      --line: rgba(148, 163, 184, 0.18);
-      --text: #e6eefb;
-      --muted: #9fb0c8;
-      --up: #ff6b6b;
-      --down: #60a5fa;
+      --bg2: #111827;
+      --surface: rgba(17, 28, 47, 0.78);
+      --surface-elevated: #111c2f;
+      --surface-muted: #17243a;
+      --text: #edf4ff;
+      --text-muted: #a7b4c8;
+      --border: rgba(148, 163, 184, 0.20);
       --accent: #7dd3fc;
-      --accent-soft: rgba(125, 211, 252, 0.14);
-      --shadow: 0 18px 40px rgba(0, 0, 0, 0.34);
-      --hero-panel: rgba(17, 28, 47, .92);
-      --body-end: #09111f;
-      --card-shadow: 0 12px 28px rgba(0,0,0,.22);
-      --summary-text: #cbd5e1;
+      --accent-strong: #38bdf8;
+      --accent-soft: rgba(125, 211, 252, 0.15);
+      --up: #ff7a70;
+      --down: #60a5fa;
+      --neutral: #94a3b8;
+      --shadow: 0 24px 60px rgba(0, 0, 0, 0.36);
+      --shadow-soft: 0 14px 34px rgba(0, 0, 0, 0.24);
       --chart-bg: #f8fafc;
       --bar-track: #26364f;
+      --body-end: #09111f;
+      --summary-text: #cbd5e1;
       color-scheme: dark;
     }
-    * { box-sizing: border-box; }
+
+    *, *::before, *::after { box-sizing: border-box; }
     html, body { width: 100%; max-width: 100%; overflow-x: hidden; }
     body {
       margin: 0;
-      background: radial-gradient(circle at 10% 0%, rgba(37,99,235,.10), transparent 32%), linear-gradient(180deg, var(--bg) 0%, var(--bg2) 45%, var(--body-end) 100%);
+      min-height: 100vh;
+      background:
+        radial-gradient(circle at 10% -8%, rgba(37,99,235,.18), transparent 30%),
+        radial-gradient(circle at 88% 12%, rgba(125,211,252,.13), transparent 26%),
+        linear-gradient(180deg, var(--bg) 0%, var(--bg2) 48%, var(--body-end) 100%);
       color: var(--text);
-      font-family: "Malgun Gothic", "Apple SD Gothic Neo", "Noto Sans KR", Arial, sans-serif;
-      line-height: 1.58;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "SF Pro Display", "Apple SD Gothic Neo", "Noto Sans KR", "Malgun Gothic", sans-serif;
+      line-height: 1.66;
       word-break: keep-all;
       overflow-wrap: anywhere;
       -webkit-font-smoothing: antialiased;
+      text-rendering: optimizeLegibility;
     }
-    img, svg, canvas { display: block; max-width: 100%; height: auto; }
+    img, svg, canvas, video { display: block; max-width: 100%; height: auto; }
     p, li, span, div, a, h1, h2, h3, h4 { overflow-wrap: anywhere; word-break: keep-all; }
-    a { color: var(--accent); text-decoration: none; }
+    a { color: var(--accent-strong); text-decoration: none; }
     a:hover { text-decoration: underline; }
-    main { width: min(1180px, calc(100% - 28px)); margin: 0 auto; padding: 18px 0 44px; }
-    .section, .card, .stock-card, .factor-card, .company-card, .news-card, .hero-card, .chart-card, .cycle-card, .check-card { min-width: 0; }
-    .topbar { display: flex; justify-content: flex-end; margin: 14px 0 0; }
+    main { width: min(var(--content-max), calc(100% - clamp(24px, 5vw, 56px))); margin: 0 auto; padding: clamp(14px, 2.2vw, 28px) 0 clamp(44px, 6vw, 76px); }
+    .section, .card, .stock-card, .factor-card, .news-card, .action-card, .company-card, .hero-card, .chart-card, .cycle-card, .check-card, .metric-card, .side-card { min-width: 0; }
+
+    .topbar { display: flex; justify-content: flex-end; margin: 4px 0 12px; }
     .theme-toggle {
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      min-height: 40px;
-      border: 1px solid var(--line);
-      border-radius: 999px;
-      padding: 9px 13px;
-      background: var(--hero-panel);
-      color: var(--text);
-      box-shadow: var(--card-shadow);
-      font: inherit;
-      font-size: 13px;
-      font-weight: 900;
-      cursor: pointer;
+      display: inline-flex; align-items: center; gap: 8px; min-height: 44px;
+      border: 1px solid var(--border); border-radius: 999px; padding: 10px 14px;
+      background: color-mix(in srgb, var(--surface-elevated) 84%, transparent);
+      color: var(--text); box-shadow: var(--shadow-soft); font: inherit; font-size: 13px; font-weight: 850; cursor: pointer;
+      backdrop-filter: blur(18px); -webkit-backdrop-filter: blur(18px); transition: transform .18s ease, background .18s ease, border-color .18s ease;
     }
-    .theme-toggle:focus-visible { outline: 3px solid var(--accent-soft); outline-offset: 2px; }
+    .theme-toggle:hover { transform: translateY(-1px); }
+    .theme-toggle:focus-visible { outline: 3px solid var(--accent-soft); outline-offset: 3px; }
     .theme-icon { font-size: 15px; line-height: 1; }
-    .hero-card, .section { background: var(--hero-panel); border: 1px solid var(--line); border-radius: 22px; box-shadow: var(--shadow); }
-    .hero-card { padding: 22px; margin: 12px 0 18px; overflow: hidden; }
-    .eyebrow, .section-kicker, .card-label { color: var(--accent); font-size: 12px; font-weight: 800; letter-spacing: .02em; }
-    h1 { margin: 6px 0 8px; font-size: clamp(28px, 7vw, 48px); line-height: 1.08; letter-spacing: -.04em; }
-    h2 { margin: 0; font-size: clamp(21px, 5vw, 28px); line-height: 1.22; letter-spacing: -.03em; }
-    h3 { margin: 0; font-size: 18px; line-height: 1.32; letter-spacing: -.02em; }
+
+    .dashboard-shell { display: grid; gap: var(--space); align-items: start; }
+    .main-column, .side-column { display: grid; gap: var(--space); min-width: 0; }
+    .side-column { align-content: start; }
+
+    .hero-card, .section, .side-card {
+      background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-xl); box-shadow: var(--shadow);
+      backdrop-filter: blur(22px); -webkit-backdrop-filter: blur(22px);
+    }
+    .hero-card { padding: clamp(22px, 5vw, 44px); overflow: hidden; position: relative; }
+    .hero-card::after { content: ""; position: absolute; inset: auto -18% -38% 36%; height: 180px; border-radius: 999px; background: rgba(37,99,235,.12); filter: blur(34px); pointer-events: none; }
+    .hero-content { position: relative; z-index: 1; display: grid; gap: 12px; }
+    .eyebrow, .section-kicker, .card-label { color: var(--accent-strong); font-size: 12px; font-weight: 900; letter-spacing: .045em; text-transform: uppercase; }
+    h1 { margin: 0; font-size: clamp(32px, 8vw, 64px); line-height: .98; letter-spacing: -.06em; }
+    h2 { margin: 0; font-size: clamp(22px, 4vw, 34px); line-height: 1.12; letter-spacing: -.045em; }
+    h3 { margin: 0; font-size: clamp(17px, 2vw, 21px); line-height: 1.28; letter-spacing: -.025em; }
     p { margin: 0; }
-    .meta, .muted { color: var(--muted); font-size: 13px; }
-    .hero-summary { margin-top: 10px; color: var(--summary-text); font-size: 15px; }
+    .meta, .muted { color: var(--text-muted); font-size: clamp(13px, 1.5vw, 14px); }
+    .hero-summary { color: var(--summary-text); font-size: clamp(15px, 2.1vw, 18px); max-width: 860px; }
+    .hero-summary strong { color: var(--text); font-size: clamp(18px, 3vw, 28px); letter-spacing: -.035em; }
+
     .badge-row, .tag-row, .metric-row { display: flex; flex-wrap: wrap; gap: 8px; min-width: 0; }
-    .badge, .tag { display: inline-flex; align-items: center; gap: 5px; max-width: 100%; border-radius: 999px; padding: 7px 10px; background: var(--accent-soft); color: var(--accent); font-size: 12px; font-weight: 800; }
-    .badge.neutral { background: var(--panel-soft); color: var(--muted); }
-    .badge.up, .tag.up { background: rgba(255, 107, 107, .13); color: var(--up); }
-    .badge.down, .tag.down { background: rgba(96, 165, 250, .14); color: var(--down); }
-    .section { padding: 20px; margin: 16px 0; }
-    .section-head { display: flex; flex-direction: column; gap: 6px; margin-bottom: 14px; }
-    .stock-grid, .company-grid, .factor-grid, .chart-grid { display: grid; grid-template-columns: 1fr; gap: 12px; }
-    .stock-card, .company-card, .factor-card, .chart-card, .cycle-card, .news-card, .check-card { background: var(--panel); border: 1px solid var(--line); border-radius: 20px; padding: 16px; box-shadow: var(--card-shadow); }
-    .stock-top { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; margin-bottom: 12px; }
-    .stock-name { font-size: 19px; font-weight: 900; letter-spacing: -.03em; }
-    .ticker { color: var(--muted); font-size: 12px; font-weight: 800; margin-top: 2px; }
+    .badge, .tag {
+      display: inline-flex; align-items: center; gap: 5px; max-width: 100%; border-radius: 999px; padding: 7px 11px;
+      background: var(--accent-soft); color: var(--accent-strong); font-size: 12px; font-weight: 850; border: 1px solid color-mix(in srgb, var(--accent) 22%, transparent);
+    }
+    .badge.neutral { background: var(--surface-muted); color: var(--text-muted); border-color: var(--border); }
+    .badge.up, .tag.up { background: rgba(255, 107, 107, .13); color: var(--up); border-color: rgba(255,107,107,.20); }
+    .badge.down, .tag.down { background: rgba(96, 165, 250, .14); color: var(--down); border-color: rgba(96,165,250,.24); }
+
+    .section, .side-card { padding: clamp(18px, 3vw, 30px); }
+    .section-head { display: flex; flex-direction: column; gap: 7px; margin-bottom: clamp(14px, 2.4vw, 22px); }
+    .section-subtitle { max-width: 760px; }
+
+    .metric-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; margin-top: 8px; }
+    .metric-card { background: var(--surface-elevated); border: 1px solid var(--border); border-radius: var(--radius-md); padding: 13px; box-shadow: var(--shadow-soft); }
+    .metric-value { font-size: clamp(22px, 5vw, 32px); font-weight: 950; letter-spacing: -.045em; line-height: 1; margin-top: 5px; }
+
+    .stock-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 238px), 1fr)); gap: clamp(12px, 2vw, 18px); }
+    .company-grid, .chart-grid { display: grid; grid-template-columns: 1fr; gap: clamp(12px, 2vw, 18px); }
+    .factor-grid { display: grid; grid-template-columns: 1fr; gap: 12px; }
+    .stock-card, .company-card, .factor-card, .chart-card, .cycle-card, .news-card, .check-card, .metric-card, .report-card {
+      background: var(--surface-elevated); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: clamp(15px, 2.4vw, 20px); box-shadow: var(--shadow-soft);
+      transition: transform .18s ease, box-shadow .18s ease, border-color .18s ease;
+    }
+    .stock-card:hover, .company-card:hover, .factor-card:hover, .news-card:hover { transform: translateY(-2px); border-color: color-mix(in srgb, var(--accent) 24%, var(--border)); }
+    .stock-card { container-type: inline-size; display: grid; gap: 13px; }
+    .stock-top { display: flex; align-items: flex-start; justify-content: space-between; gap: 14px; }
+    .stock-name { font-size: clamp(18px, 4vw, 22px); font-weight: 950; letter-spacing: -.04em; }
+    .ticker { color: var(--text-muted); font-size: 12px; font-weight: 850; margin-top: 2px; }
     .price-box { text-align: right; flex: 0 0 auto; }
-    .price { font-size: 20px; font-weight: 900; letter-spacing: -.03em; white-space: nowrap; }
+    .price { font-size: clamp(20px, 5vw, 28px); font-weight: 950; letter-spacing: -.045em; white-space: nowrap; line-height: 1.05; }
     .change-line { font-size: 13px; font-weight: 900; white-space: nowrap; }
     .up { color: var(--up); }
     .down { color: var(--down); }
-    .stock-summary, .company-copy, .factor-copy, .cycle-copy { color: var(--summary-text); font-size: 14px; margin-top: 12px; }
-    .mini-bars { display: grid; gap: 10px; }
-    .mini-bar-row { display: grid; grid-template-columns: minmax(0,1fr) auto; gap: 10px; align-items: center; font-size: 13px; }
-    .bar-track { grid-column: 1 / -1; height: 9px; border-radius: 999px; background: var(--bar-track); overflow: hidden; }
+    .stock-summary, .company-copy, .factor-copy, .cycle-copy { color: var(--summary-text); font-size: 15px; margin-top: 2px; line-height: 1.62; }
+
+    .mini-bars { display: grid; gap: 12px; }
+    .mini-bar-row { display: grid; grid-template-columns: minmax(0,1fr) auto; gap: 10px; align-items: center; font-size: 14px; }
+    .bar-track { grid-column: 1 / -1; height: 10px; border-radius: 999px; background: var(--bar-track); overflow: hidden; }
     .bar-fill { height: 100%; border-radius: 999px; }
     .bar-fill.up-bg { background: var(--up); }
     .bar-fill.down-bg { background: var(--down); }
+
     figure { margin: 0; }
-    .chart-card img { width: 100%; border-radius: 16px; background: var(--chart-bg); }
-    figcaption { margin-top: 10px; color: var(--muted); font-size: 12px; }
-    .cycle-grid { display: grid; grid-template-columns: 1fr; gap: 10px; margin-top: 14px; }
-    .cycle-point { background: var(--panel-soft); border: 1px solid var(--line); border-radius: 16px; padding: 12px; }
-    .cycle-point strong { display: block; margin-bottom: 4px; }
-    .cycle-report { margin-top: 14px; display: grid; gap: 12px; }
-    .report-card { background: var(--panel-soft); border: 1px solid var(--line); border-radius: 16px; padding: 12px; display: grid; gap: 8px; }
-    .report-field { display: grid; gap: 3px; font-size: 14px; }
-    .report-field strong { color: var(--muted); font-size: 12px; }
+    .chart-card { overflow: hidden; }
+    .chart-card img { width: 100%; border-radius: 20px; background: var(--chart-bg); }
+    figcaption { margin-top: 10px; color: var(--text-muted); font-size: 13px; }
+
+    .cycle-card { display: grid; gap: clamp(14px, 2vw, 22px); }
+    .cycle-grid { display: grid; grid-template-columns: 1fr; gap: 10px; }
+    .cycle-point { background: var(--surface-muted); border: 1px solid var(--border); border-radius: var(--radius-md); padding: 13px; }
+    .cycle-point strong { display: block; margin-bottom: 4px; color: var(--text); }
+    details.detail-pack { border: 1px solid var(--border); border-radius: var(--radius-lg); background: var(--surface-muted); padding: 4px; }
+    details.detail-pack > summary { cursor: pointer; list-style: none; padding: 13px 14px; font-weight: 900; color: var(--text); }
+    details.detail-pack > summary::-webkit-details-marker { display: none; }
+    details.detail-pack > summary::after { content: "＋"; float: right; color: var(--accent-strong); }
+    details.detail-pack[open] > summary::after { content: "－"; }
+    .cycle-report { display: grid; gap: 12px; padding: 0 10px 12px; }
+    .report-card { border-radius: var(--radius-md); display: grid; gap: 8px; }
+    .report-field { display: grid; gap: 3px; font-size: 14px; line-height: 1.58; }
+    .report-field strong { color: var(--text-muted); font-size: 12px; }
     .cycle-report table { display: block; width: 100%; border: 0; }
     .cycle-report thead { display: none; }
     .cycle-report tbody, .cycle-report tr, .cycle-report th, .cycle-report td { display: block; width: 100%; }
-    .cycle-report tr { background: var(--panel-soft); border: 1px solid var(--line); border-radius: 16px; padding: 12px; margin-bottom: 10px; }
-    .cycle-report th, .cycle-report td { border: 0; padding: 3px 0; text-align: left; font-size: 14px; }
-    .cycle-report ul, .cycle-report ol { padding-left: 20px; margin: 8px 0 0; }
-    .cycle-report li { margin: 6px 0; }
-    .cycle-report p { margin-bottom: 8px; }
-    .company-card .position { margin: 8px 0 10px; }
-    .split-list { display: grid; gap: 8px; margin-top: 10px; }
-    .split-list div { background: var(--panel-soft); border-radius: 14px; padding: 10px; font-size: 13px; }
-    .split-list strong { display: block; margin-bottom: 3px; }
+
+    .company-card { display: grid; gap: 12px; }
+    .company-card .position { width: fit-content; }
+    .split-list { display: grid; gap: 8px; }
+    .split-list div { background: var(--surface-muted); border: 1px solid var(--border); border-radius: var(--radius-md); padding: 11px; font-size: 14px; }
+    .split-list strong { display: block; margin-bottom: 3px; color: var(--text); }
+    .checkpoint-row { display: flex; flex-wrap: wrap; gap: 8px; }
+
     .factor-card { display: grid; gap: 8px; }
-    .factor-value { font-size: 22px; font-weight: 900; letter-spacing: -.03em; }
+    .factor-value { font-size: clamp(22px, 5vw, 30px); font-weight: 950; letter-spacing: -.045em; line-height: 1.05; }
+
     .news-timeline { display: grid; gap: 10px; }
-    .news-card { position: relative; padding-left: 18px; }
-    .news-card::before { content: ""; position: absolute; left: 7px; top: 19px; width: 7px; height: 7px; border-radius: 999px; background: var(--accent); }
-    .news-meta { color: var(--muted); font-size: 12px; margin-bottom: 4px; }
-    .news-title { font-size: 14px; font-weight: 800; line-height: 1.45; }
-    .check-card { background: linear-gradient(180deg,var(--panel) 0%,var(--panel-soft) 100%); }
+    .news-card { position: relative; padding-left: 20px; }
+    .news-card::before { content: ""; position: absolute; left: 8px; top: 22px; width: 8px; height: 8px; border-radius: 999px; background: var(--accent-strong); box-shadow: 0 0 0 5px var(--accent-soft); }
+    .news-meta { color: var(--text-muted); font-size: 12px; margin-bottom: 5px; }
+    .news-title { display: block; font-size: 15px; font-weight: 850; line-height: 1.48; }
+    .news-desc { margin-top: 6px; color: var(--summary-text); font-size: 13px; }
+
+    .check-card { background: linear-gradient(180deg,var(--surface-elevated) 0%,var(--surface-muted) 100%); }
     .check-list { display: grid; gap: 10px; margin: 12px 0 0; padding: 0; list-style: none; }
-    .check-item { display: grid; grid-template-columns: 24px minmax(0,1fr); gap: 10px; align-items: start; background: var(--panel-soft); border: 1px solid var(--line); border-radius: 15px; padding: 12px; font-size: 14px; }
-    .check-box { width: 18px; height: 18px; border: 2px solid var(--accent); border-radius: 6px; margin-top: 2px; }
-    .footer-note { color: var(--muted); font-size: 12px; margin-top: 14px; }
-    @media (min-width: 700px) {
-      main { padding-top: 28px; }
-      .hero-card, .section { padding: 26px; }
-      .stock-grid, .factor-grid { grid-template-columns: repeat(2, minmax(0,1fr)); }
-      .chart-grid, .company-grid { grid-template-columns: repeat(2, minmax(0,1fr)); }
-      .cycle-grid { grid-template-columns: repeat(2, minmax(0,1fr)); }
+    .check-item { display: grid; grid-template-columns: 26px minmax(0,1fr); gap: 11px; align-items: start; background: var(--surface-elevated); border: 1px solid var(--border); border-radius: var(--radius-md); padding: 13px; font-size: 15px; min-height: 48px; }
+    .check-box { width: 19px; height: 19px; border: 2px solid var(--accent-strong); border-radius: 7px; margin-top: 2px; background: var(--accent-soft); }
+    .footer-note { color: var(--text-muted); font-size: 12px; margin-top: 14px; }
+
+    @container (min-width: 360px) {
+      .stock-card { grid-template-rows: auto 1fr auto; }
     }
-    @media (min-width: 1040px) {
-      .stock-grid { grid-template-columns: repeat(4, minmax(0,1fr)); }
-      .factor-grid { grid-template-columns: repeat(4, minmax(0,1fr)); }
+    @media (min-width: 720px) {
+      .metric-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+      .company-grid, .chart-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .factor-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .cycle-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    }
+    @media (min-width: 1100px) {
+      .dashboard-shell { grid-template-columns: minmax(0, 2fr) minmax(320px, .82fr); }
+      .side-column { position: sticky; top: 18px; max-height: calc(100vh - 28px); overflow: auto; padding-right: 2px; }
+      .hero-card { min-height: 360px; display: flex; align-items: end; }
+      .side-column .section { padding: 20px; border-radius: 26px; }
+      .side-column h2 { font-size: 22px; }
+      .stock-grid { grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); }
+    }
+    @media (max-width: 520px) {
+      main { width: min(100% - 24px, 100%); }
+      .metric-grid { grid-template-columns: 1fr; }
+      .stock-top { flex-direction: column; }
+      .price-box { text-align: left; }
+      .side-column { gap: 16px; }
+      .hero-card, .section { border-radius: 26px; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; scroll-behavior: auto !important; transition-duration: 0.01ms !important; }
     }
   """
 
@@ -806,24 +880,33 @@ def macro_factor_html(macro: dict) -> str:
 
 def company_cards_html(rows: list[PriceRow], valuation: dict) -> str:
     specs = [
-        ("삼성전자", "HBM 추격형 · 복합 회복형", "메모리, NAND, 파운드리까지 회복 레버리지가 넓습니다.", "HBM 경쟁력 확인과 파운드리 부담이 같이 남아 있습니다."),
-        ("SK하이닉스", "HBM 순도 우위", "AI 서버와 HBM 사이클을 가장 직접적으로 반영합니다.", "급등 후 밸류에이션 부담과 CAPEX 확대 속도를 확인해야 합니다."),
+        ("삼성전자", "HBM 추격형 · 복합 회복형", "메모리, NAND, 파운드리까지 회복 레버리지가 넓습니다.", "HBM 경쟁력 확인과 파운드리 부담이 같이 남아 있습니다.", ["HBM 수주", "저가 매수", "파운드리 손익"]),
+        ("SK하이닉스", "HBM 순도 우위", "AI 서버와 HBM 사이클을 가장 직접적으로 반영합니다.", "급등 후 밸류에이션 부담과 CAPEX 확대 속도를 확인해야 합니다.", ["HBM 가격", "거래대금", "고객 다변화"]),
     ]
     cards = []
     row_map = {row.name: row for row in rows}
-    for name, position, strength, risk in specs:
+    for name, position, strength, risk, checkpoints in specs:
         row = row_map.get(name)
         val = valuation.get(name, {})
         today = f"오늘 변동률은 {signed_pct(row.change_pct)}입니다." if row else "오늘 가격 데이터는 제한적입니다."
+        chips = "".join(f'<span class="tag">{html.escape(point)}</span>' for point in checkpoints)
         cards.append(f"""
         <article class="company-card">
-          <h3>{html.escape(name)}</h3>
-          <div class="badge neutral position">{html.escape(position)}</div>
+          <div>
+            <h3>{html.escape(name)}</h3>
+            <div class="badge neutral position">{html.escape(position)}</div>
+          </div>
+          <div class="checkpoint-row" aria-label="핵심 체크포인트">{chips}</div>
           <div class="split-list">
             <div><strong>강점</strong>{html.escape(strength)}</div>
             <div><strong>리스크</strong>{html.escape(risk)}</div>
-            <div><strong>오늘의 해석</strong>{html.escape(today)} 시총 {cap_text(val.get('market_cap'))}, Forward PE {metric_text(val.get('forward_pe'))} 기준으로 추세 지속성을 점검합니다.</div>
           </div>
+          <details class="detail-pack company-detail">
+            <summary>오늘의 해석 자세히 보기</summary>
+            <div class="split-list">
+              <div><strong>오늘의 해석</strong>{html.escape(today)} 시총 {cap_text(val.get('market_cap'))}, Forward PE {metric_text(val.get('forward_pe'))} 기준으로 추세 지속성을 점검합니다.</div>
+            </div>
+          </details>
         </article>""")
     return "\n".join(cards)
 
@@ -852,6 +935,29 @@ def checklist_html(items: list[str]) -> str:
     return "\n".join(f'<li class="check-item"><span class="check-box" aria-hidden="true"></span><span>{html.escape(str(item))}</span></li>' for item in clean_items)
 
 
+
+def summary_metrics_html(up_count: int, down_count: int, max_row: PriceRow, max_up: PriceRow, max_down: PriceRow) -> str:
+    direction = "up" if max_row.change_pct >= 0 else "down"
+    return f"""
+      <div class="metric-grid dashboard-metrics">
+        <article class="metric-card">
+          <div class="card-label">상승 종목</div>
+          <div class="metric-value up">{up_count}</div>
+          <p class="muted">포트폴리오 내 상승 마감</p>
+        </article>
+        <article class="metric-card">
+          <div class="card-label">하락 종목</div>
+          <div class="metric-value down">{down_count}</div>
+          <p class="muted">포트폴리오 내 하락 마감</p>
+        </article>
+        <article class="metric-card">
+          <div class="card-label">최대 변동</div>
+          <div class="metric-value {direction}">{signed_pct(max_row.change_pct)}</div>
+          <p class="muted">{html.escape(max_row.name)} · 상승 {html.escape(max_up.name)} {signed_pct(max_up.change_pct)} / 하락 {html.escape(max_down.name)} {signed_pct(max_down.change_pct)}</p>
+        </article>
+      </div>"""
+
+
 def render_html(rows: list[PriceRow], news: dict, macro: dict, valuation: dict, today: datetime, chart_files: dict, cycle_analysis: dict | None = None) -> str:
     cycle_analysis = cycle_analysis or DEFAULT_CYCLE_ANALYSIS
     css = css_from_existing()
@@ -871,6 +977,7 @@ def render_html(rows: list[PriceRow], news: dict, macro: dict, valuation: dict, 
     company_cards = company_cards_html(rows, valuation)
     timeline = news_timeline_html(rows, news)
     checks = checklist_html(cycle_analysis.get("action_items", DEFAULT_CYCLE_ANALYSIS["action_items"]))
+    metrics = summary_metrics_html(up_count, down_count, max_row, max_up, max_down)
 
     return f"""<!doctype html>
 <html lang="ko">
@@ -889,120 +996,135 @@ def render_html(rows: list[PriceRow], news: dict, macro: dict, valuation: dict, 
         <span class="theme-label">다크모드</span>
       </button>
     </div>
-    <header class="hero-card">
-      <div class="eyebrow">DAILY SEMICONDUCTOR BRIEFING</div>
-      <h1>일일 포트폴리오 브리핑</h1>
-      <p class="meta">작성일: {today_s} KST · 가격 기준: {basis_date} 종가</p>
-      <div class="badge-row" aria-label="오늘 요약 지표">
-        <span class="badge up">상승 {up_count}</span>
-        <span class="badge down">하락 {down_count}</span>
-        <span class="badge {max_direction}">최대 변동 {html.escape(max_row.name)} {signed_pct(max_row.change_pct)}</span>
-      </div>
-      <p class="hero-summary"><strong>{cycle_analysis['headline']}</strong></p>
-      <p class="hero-summary">{summary_line}</p>
-    </header>
 
-    <section class="section" aria-labelledby="stocks-title">
-      <div class="section-head">
-        <div class="section-kicker">PORTFOLIO</div>
-        <h2 id="stocks-title">오늘의 종목 카드</h2>
-        <p class="meta">표 대신 카드로 가격, 등락, 핵심 태그와 짧은 해석을 한 번에 확인합니다.</p>
-      </div>
-      <div class="stock-grid">{stock_cards}
-      </div>
-    </section>
+    <div class="dashboard-shell">
+      <div class="main-column">
+        <header class="hero-card">
+          <div class="hero-content">
+            <div class="eyebrow">DAILY SEMICONDUCTOR BRIEFING</div>
+            <h1>일일 포트폴리오 브리핑</h1>
+            <p class="meta">작성일: {today_s} KST · 가격 기준: {basis_date} 종가</p>
+            <div class="badge-row" aria-label="오늘 요약 지표">
+              <span class="badge up">상승 {up_count}</span>
+              <span class="badge down">하락 {down_count}</span>
+              <span class="badge {max_direction}">최대 변동 {html.escape(max_row.name)} {signed_pct(max_row.change_pct)}</span>
+              <span class="badge neutral">반도체 사이클 점검</span>
+            </div>
+            <p class="hero-summary"><strong>{cycle_analysis['headline']}</strong></p>
+            <p class="hero-summary">{summary_line}</p>
+            {metrics}
+          </div>
+        </header>
 
-    <section class="section" aria-labelledby="visual-title">
-      <div class="section-head">
-        <div class="section-kicker">VISUAL</div>
-        <h2 id="visual-title">시각화</h2>
-        <p class="meta">기존 차트는 유지하되 모바일 카드 안에서 잘리지 않도록 배치했습니다.</p>
-      </div>
-      <div class="chart-grid">
-        <figure class="chart-card">
-          <img src="{chart_files['change']}" alt="전 거래일 대비 변동률 차트">
-          <figcaption>전 거래일 대비 변동률 차트입니다.</figcaption>
-        </figure>
-        <figure class="chart-card">
-          <img src="{chart_files['trend']}" alt="종목별 최근 4거래일 종가 흐름 차트">
-          <figcaption>종목별 최근 4거래일 종가 흐름입니다.</figcaption>
-        </figure>
-      </div>
-    </section>
+        <section class="section" aria-labelledby="stocks-title">
+          <div class="section-head">
+            <div class="section-kicker">Portfolio</div>
+            <h2 id="stocks-title">오늘의 종목 브리핑</h2>
+            <p class="meta section-subtitle">가격표 대신 종목별 앱 카드로 현재가, 등락, 핵심 태그와 한 줄 해석을 먼저 보여줍니다.</p>
+          </div>
+          <div class="stock-grid">{stock_cards}
+          </div>
+        </section>
 
-    <section class="section" aria-labelledby="bars-title">
-      <div class="section-head">
-        <div class="section-kicker">MOMENTUM</div>
-        <h2 id="bars-title">변동률 스냅샷</h2>
-      </div>
-      <div class="mini-bars">{mini_bars}
-      </div>
-    </section>
+        <section class="section" aria-labelledby="visual-title">
+          <div class="section-head">
+            <div class="section-kicker">Visual</div>
+            <h2 id="visual-title">시각화 대시보드</h2>
+            <p class="meta section-subtitle">기존 차트를 유지하면서 넓은 화면에서는 메인 분석 카드처럼, 모바일에서는 잘리지 않는 이미지 카드처럼 보이도록 배치했습니다.</p>
+          </div>
+          <div class="chart-grid">
+            <figure class="chart-card">
+              <img src="{chart_files['change']}" alt="전 거래일 대비 변동률 차트">
+              <figcaption>전 거래일 대비 변동률 차트입니다.</figcaption>
+            </figure>
+            <figure class="chart-card">
+              <img src="{chart_files['trend']}" alt="종목별 최근 4거래일 종가 흐름 차트">
+              <figcaption>종목별 최근 4거래일 종가 흐름입니다.</figcaption>
+            </figure>
+          </div>
+        </section>
 
-    <section class="section" aria-labelledby="cycle-title">
-      <div class="section-head">
-        <div class="section-kicker">CYCLE CHECK</div>
-        <h2 id="cycle-title">사이클 진단</h2>
-        <p class="meta">현재 구간, 판단, 근거, 주의점을 카드로 분리했습니다.</p>
-      </div>
-      <article class="cycle-card">
-        <figure>
-          <img src="{chart_files['cycle']}" alt="반도체 메모리 사이클 위치 추정">
-          <figcaption>{cycle_analysis['chart_caption']}</figcaption>
-        </figure>
-        <div class="cycle-grid">
-          <div class="cycle-point"><strong>현재 구간</strong><span>{cycle_analysis['headline']}</span></div>
-          <div class="cycle-point"><strong>판단</strong><span>{cycle_analysis['cycle_summary']}</span></div>
-          <div class="cycle-point"><strong>근거</strong><span>가격 흐름, HBM 수요, 수급, 환율·금리·유가를 함께 확인합니다.</span></div>
-          <div class="cycle-point"><strong>주의점</strong><span>급등 후 추격보다 장중 수급과 매크로 변화를 먼저 봅니다.</span></div>
-        </div>
-        <div class="cycle-report">
-          {cycle_report_cards_html(cycle_analysis['report_html'])}
-        </div>
-      </article>
-    </section>
+        <section class="section" aria-labelledby="cycle-title">
+          <div class="section-head">
+            <div class="section-kicker">Cycle Check</div>
+            <h2 id="cycle-title">사이클 진단</h2>
+            <p class="meta section-subtitle">모바일에서는 요약을 먼저 보고, 상세 근거는 접어서 확인하는 구조입니다.</p>
+          </div>
+          <article class="cycle-card">
+            <figure class="chart-card">
+              <img src="{chart_files['cycle']}" alt="반도체 메모리 사이클 위치 추정">
+              <figcaption>{cycle_analysis['chart_caption']}</figcaption>
+            </figure>
+            <div class="cycle-grid">
+              <div class="cycle-point"><strong>현재 구간</strong><span>{cycle_analysis['headline']}</span></div>
+              <div class="cycle-point"><strong>판단</strong><span>{cycle_analysis['cycle_summary']}</span></div>
+              <div class="cycle-point"><strong>근거</strong><span>가격 흐름, HBM 수요, 수급, 환율·금리·유가를 함께 확인합니다.</span></div>
+              <div class="cycle-point"><strong>주의점</strong><span>급등 후 추격보다 장중 수급과 매크로 변화를 먼저 봅니다.</span></div>
+            </div>
+            <details class="detail-pack cycle-detail">
+              <summary>상세 분석 카드 펼치기</summary>
+              <div class="cycle-report">
+                {cycle_report_cards_html(cycle_analysis['report_html'])}
+              </div>
+            </details>
+          </article>
+        </section>
 
-    <section class="section" aria-labelledby="company-title">
-      <div class="section-head">
-        <div class="section-kicker">COMPANY</div>
-        <h2 id="company-title">기업별 분석</h2>
+        <section class="section" aria-labelledby="company-title">
+          <div class="section-head">
+            <div class="section-kicker">Company</div>
+            <h2 id="company-title">기업별 분석</h2>
+            <p class="meta section-subtitle">비교표 대신 각 기업의 포지션, 강점, 리스크, 체크포인트를 독립 카드로 정리했습니다.</p>
+          </div>
+          <div class="company-grid">{company_cards}
+          </div>
+        </section>
       </div>
-      <div class="company-grid">{company_cards}
-      </div>
-    </section>
 
-    <section class="section" aria-labelledby="macro-title">
-      <div class="section-head">
-        <div class="section-kicker">MACRO</div>
-        <h2 id="macro-title">매크로 팩터</h2>
-      </div>
-      <div class="factor-grid">{factor_cards}
-      </div>
-    </section>
+      <aside class="side-column" aria-label="요약, 매크로, 뉴스, 액션 사이드 패널">
+        <section class="section side-card" aria-labelledby="momentum-title">
+          <div class="section-head">
+            <div class="section-kicker">Snapshot</div>
+            <h2 id="momentum-title">요약 지표</h2>
+          </div>
+          <div class="mini-bars">{mini_bars}
+          </div>
+        </section>
 
-    <section class="section" aria-labelledby="news-title">
-      <div class="section-head">
-        <div class="section-kicker">NEWS</div>
-        <h2 id="news-title">뉴스 타임라인</h2>
-        <p class="meta">KST 기준 {today_s} 발행분만 포함했습니다.</p>
-      </div>
-      <div class="news-timeline">{timeline}
-      </div>
-    </section>
+        <section class="section side-card" aria-labelledby="macro-title">
+          <div class="section-head">
+            <div class="section-kicker">Macro</div>
+            <h2 id="macro-title">매크로 팩터</h2>
+          </div>
+          <div class="factor-grid">{factor_cards}
+          </div>
+        </section>
 
-    <section class="section" aria-labelledby="actions-title">
-      <article class="check-card">
-        <div class="section-head">
-          <div class="section-kicker">ACTION</div>
-          <h2 id="actions-title">오늘의 액션</h2>
-          <p class="meta">장 시작 전 체크리스트처럼 확인하세요.</p>
-        </div>
-        <ul class="check-list">
-          {checks}
-        </ul>
-        <p class="footer-note">이 파일은 자동 생성 결과입니다. 투자 판단 전 원문 뉴스와 실시간 호가를 다시 확인하세요.</p>
-      </article>
-    </section>
+        <section class="section side-card" aria-labelledby="news-title">
+          <div class="section-head">
+            <div class="section-kicker">News</div>
+            <h2 id="news-title">뉴스 타임라인</h2>
+            <p class="meta">KST 기준 {today_s} 발행분입니다.</p>
+          </div>
+          <div class="news-timeline">{timeline}
+          </div>
+        </section>
+
+        <section class="section side-card action-card" aria-labelledby="actions-title">
+          <article class="check-card">
+            <div class="section-head">
+              <div class="section-kicker">Action</div>
+              <h2 id="actions-title">오늘의 액션</h2>
+              <p class="meta">장 시작 전 체크리스트처럼 확인하세요.</p>
+            </div>
+            <ul class="check-list">
+              {checks}
+            </ul>
+            <p class="footer-note">이 파일은 자동 생성 결과입니다. 투자 판단 전 원문 뉴스와 실시간 호가를 다시 확인하세요.</p>
+          </article>
+        </section>
+      </aside>
+    </div>
   </main>
 
   <script>

@@ -117,10 +117,16 @@ def test_report_css_is_mobile_first_card_dashboard():
     assert ".stock-card" in css
     assert ".factor-card" in css
     assert ".news-timeline" in css
-    assert "border-radius: 22px" in css
+    assert "--radius-lg: 24px" in css
     assert 'html[data-theme="dark"]' in css
+    assert "--surface-elevated" in css
     assert "--hero-panel" in css
     assert ".theme-toggle" in css
+    assert ".dashboard-shell" in css
+    assert ".side-column" in css
+    assert "@container" in css
+    assert "@media (prefers-reduced-motion: reduce)" in css
+    assert "img, svg, canvas, video" in css
     assert "color-scheme: dark" in css
     assert "min-width: 760px" not in css
     assert "overflow-x: auto" not in css
@@ -136,8 +142,14 @@ def test_rendered_html_uses_cards_instead_of_price_table():
     assert "check-item" in rendered
     assert "<table" not in rendered
     assert "report-card" in rendered
-    assert "오늘의 종목 카드" in rendered
+    assert "오늘의 종목 카드" in rendered or "오늘의 종목 브리핑" in rendered
     assert "매크로 팩터" in rendered
+    assert 'dashboard-shell' in rendered
+    assert 'side-column' in rendered
+    assert '<aside class="side-column"' in rendered
+    assert '<details class="detail-pack cycle-detail"' in rendered
+    assert 'company-detail' in rendered
+    assert '상세 분석 카드 펼치기' in rendered
     assert 'data-theme-toggle' in rendered
     assert 'daily-briefing-theme' in rendered
     assert '다크모드' in rendered
