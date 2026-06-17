@@ -513,13 +513,42 @@ def css_from_existing() -> str:
       --accent: #2563eb;
       --accent-soft: #e8f1ff;
       --shadow: 0 14px 34px rgba(22, 34, 51, 0.08);
+      --hero-panel: rgba(255,255,255,.92);
+      --body-end: #f9fafb;
+      --card-shadow: 0 8px 22px rgba(15,23,42,.045);
+      --summary-text: #334155;
+      --chart-bg: #ffffff;
+      --bar-track: #e5edf7;
       --radius: 22px;
+      color-scheme: light;
+    }
+
+    html[data-theme="dark"] {
+      --bg: #07111f;
+      --bg2: #0f172a;
+      --panel: #111c2f;
+      --panel-soft: #16243a;
+      --line: rgba(148, 163, 184, 0.18);
+      --text: #e6eefb;
+      --muted: #9fb0c8;
+      --up: #ff6b6b;
+      --down: #60a5fa;
+      --accent: #7dd3fc;
+      --accent-soft: rgba(125, 211, 252, 0.14);
+      --shadow: 0 18px 40px rgba(0, 0, 0, 0.34);
+      --hero-panel: rgba(17, 28, 47, .92);
+      --body-end: #09111f;
+      --card-shadow: 0 12px 28px rgba(0,0,0,.22);
+      --summary-text: #cbd5e1;
+      --chart-bg: #f8fafc;
+      --bar-track: #26364f;
+      color-scheme: dark;
     }
     * { box-sizing: border-box; }
     html, body { width: 100%; max-width: 100%; overflow-x: hidden; }
     body {
       margin: 0;
-      background: radial-gradient(circle at 10% 0%, rgba(37,99,235,.10), transparent 32%), linear-gradient(180deg, var(--bg) 0%, var(--bg2) 45%, #f9fafb 100%);
+      background: radial-gradient(circle at 10% 0%, rgba(37,99,235,.10), transparent 32%), linear-gradient(180deg, var(--bg) 0%, var(--bg2) 45%, var(--body-end) 100%);
       color: var(--text);
       font-family: "Malgun Gothic", "Apple SD Gothic Neo", "Noto Sans KR", Arial, sans-serif;
       line-height: 1.58;
@@ -533,24 +562,43 @@ def css_from_existing() -> str:
     a:hover { text-decoration: underline; }
     main { width: min(1180px, calc(100% - 28px)); margin: 0 auto; padding: 18px 0 44px; }
     .section, .card, .stock-card, .factor-card, .company-card, .news-card, .hero-card, .chart-card, .cycle-card, .check-card { min-width: 0; }
-    .hero-card, .section { background: rgba(255,255,255,.92); border: 1px solid var(--line); border-radius: 22px; box-shadow: var(--shadow); }
-    .hero-card { padding: 22px; margin: 14px 0 18px; overflow: hidden; }
+    .topbar { display: flex; justify-content: flex-end; margin: 14px 0 0; }
+    .theme-toggle {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      min-height: 40px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      padding: 9px 13px;
+      background: var(--hero-panel);
+      color: var(--text);
+      box-shadow: var(--card-shadow);
+      font: inherit;
+      font-size: 13px;
+      font-weight: 900;
+      cursor: pointer;
+    }
+    .theme-toggle:focus-visible { outline: 3px solid var(--accent-soft); outline-offset: 2px; }
+    .theme-icon { font-size: 15px; line-height: 1; }
+    .hero-card, .section { background: var(--hero-panel); border: 1px solid var(--line); border-radius: 22px; box-shadow: var(--shadow); }
+    .hero-card { padding: 22px; margin: 12px 0 18px; overflow: hidden; }
     .eyebrow, .section-kicker, .card-label { color: var(--accent); font-size: 12px; font-weight: 800; letter-spacing: .02em; }
     h1 { margin: 6px 0 8px; font-size: clamp(28px, 7vw, 48px); line-height: 1.08; letter-spacing: -.04em; }
     h2 { margin: 0; font-size: clamp(21px, 5vw, 28px); line-height: 1.22; letter-spacing: -.03em; }
     h3 { margin: 0; font-size: 18px; line-height: 1.32; letter-spacing: -.02em; }
     p { margin: 0; }
     .meta, .muted { color: var(--muted); font-size: 13px; }
-    .hero-summary { margin-top: 10px; color: #334155; font-size: 15px; }
+    .hero-summary { margin-top: 10px; color: var(--summary-text); font-size: 15px; }
     .badge-row, .tag-row, .metric-row { display: flex; flex-wrap: wrap; gap: 8px; min-width: 0; }
-    .badge, .tag { display: inline-flex; align-items: center; gap: 5px; max-width: 100%; border-radius: 999px; padding: 7px 10px; background: var(--accent-soft); color: #1d4ed8; font-size: 12px; font-weight: 800; }
-    .badge.neutral { background: #f1f5f9; color: #475569; }
-    .badge.up, .tag.up { background: #fff1f0; color: var(--up); }
-    .badge.down, .tag.down { background: #eff6ff; color: var(--down); }
+    .badge, .tag { display: inline-flex; align-items: center; gap: 5px; max-width: 100%; border-radius: 999px; padding: 7px 10px; background: var(--accent-soft); color: var(--accent); font-size: 12px; font-weight: 800; }
+    .badge.neutral { background: var(--panel-soft); color: var(--muted); }
+    .badge.up, .tag.up { background: rgba(255, 107, 107, .13); color: var(--up); }
+    .badge.down, .tag.down { background: rgba(96, 165, 250, .14); color: var(--down); }
     .section { padding: 20px; margin: 16px 0; }
     .section-head { display: flex; flex-direction: column; gap: 6px; margin-bottom: 14px; }
     .stock-grid, .company-grid, .factor-grid, .chart-grid { display: grid; grid-template-columns: 1fr; gap: 12px; }
-    .stock-card, .company-card, .factor-card, .chart-card, .cycle-card, .news-card, .check-card { background: var(--panel); border: 1px solid var(--line); border-radius: 20px; padding: 16px; box-shadow: 0 8px 22px rgba(15,23,42,.045); }
+    .stock-card, .company-card, .factor-card, .chart-card, .cycle-card, .news-card, .check-card { background: var(--panel); border: 1px solid var(--line); border-radius: 20px; padding: 16px; box-shadow: var(--card-shadow); }
     .stock-top { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; margin-bottom: 12px; }
     .stock-name { font-size: 19px; font-weight: 900; letter-spacing: -.03em; }
     .ticker { color: var(--muted); font-size: 12px; font-weight: 800; margin-top: 2px; }
@@ -559,15 +607,15 @@ def css_from_existing() -> str:
     .change-line { font-size: 13px; font-weight: 900; white-space: nowrap; }
     .up { color: var(--up); }
     .down { color: var(--down); }
-    .stock-summary, .company-copy, .factor-copy, .cycle-copy { color: #334155; font-size: 14px; margin-top: 12px; }
+    .stock-summary, .company-copy, .factor-copy, .cycle-copy { color: var(--summary-text); font-size: 14px; margin-top: 12px; }
     .mini-bars { display: grid; gap: 10px; }
     .mini-bar-row { display: grid; grid-template-columns: minmax(0,1fr) auto; gap: 10px; align-items: center; font-size: 13px; }
-    .bar-track { grid-column: 1 / -1; height: 9px; border-radius: 999px; background: #e5edf7; overflow: hidden; }
+    .bar-track { grid-column: 1 / -1; height: 9px; border-radius: 999px; background: var(--bar-track); overflow: hidden; }
     .bar-fill { height: 100%; border-radius: 999px; }
     .bar-fill.up-bg { background: var(--up); }
     .bar-fill.down-bg { background: var(--down); }
     figure { margin: 0; }
-    .chart-card img { width: 100%; border-radius: 16px; background: white; }
+    .chart-card img { width: 100%; border-radius: 16px; background: var(--chart-bg); }
     figcaption { margin-top: 10px; color: var(--muted); font-size: 12px; }
     .cycle-grid { display: grid; grid-template-columns: 1fr; gap: 10px; margin-top: 14px; }
     .cycle-point { background: var(--panel-soft); border: 1px solid var(--line); border-radius: 16px; padding: 12px; }
@@ -595,7 +643,7 @@ def css_from_existing() -> str:
     .news-card::before { content: ""; position: absolute; left: 7px; top: 19px; width: 7px; height: 7px; border-radius: 999px; background: var(--accent); }
     .news-meta { color: var(--muted); font-size: 12px; margin-bottom: 4px; }
     .news-title { font-size: 14px; font-weight: 800; line-height: 1.45; }
-    .check-card { background: linear-gradient(180deg,#fff 0%,#f8fbff 100%); }
+    .check-card { background: linear-gradient(180deg,var(--panel) 0%,var(--panel-soft) 100%); }
     .check-list { display: grid; gap: 10px; margin: 12px 0 0; padding: 0; list-style: none; }
     .check-item { display: grid; grid-template-columns: 24px minmax(0,1fr); gap: 10px; align-items: start; background: var(--panel-soft); border: 1px solid var(--line); border-radius: 15px; padding: 12px; font-size: 14px; }
     .check-box { width: 18px; height: 18px; border: 2px solid var(--accent); border-radius: 6px; margin-top: 2px; }
@@ -835,6 +883,12 @@ def render_html(rows: list[PriceRow], news: dict, macro: dict, valuation: dict, 
 </head>
 <body>
   <main>
+    <div class="topbar">
+      <button class="theme-toggle" type="button" aria-label="다크모드 전환" aria-pressed="false" data-theme-toggle>
+        <span class="theme-icon" aria-hidden="true">🌙</span>
+        <span class="theme-label">다크모드</span>
+      </button>
+    </div>
     <header class="hero-card">
       <div class="eyebrow">DAILY SEMICONDUCTOR BRIEFING</div>
       <h1>일일 포트폴리오 브리핑</h1>
@@ -950,6 +1004,28 @@ def render_html(rows: list[PriceRow], news: dict, macro: dict, valuation: dict, 
       </article>
     </section>
   </main>
+
+  <script>
+    (() => {{
+      const root = document.documentElement;
+      const button = document.querySelector('[data-theme-toggle]');
+      const storageKey = 'daily-briefing-theme';
+      const preferred = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+      const saved = localStorage.getItem(storageKey);
+      const setTheme = (theme) => {{
+        root.dataset.theme = theme;
+        localStorage.setItem(storageKey, theme);
+        const isDark = theme === 'dark';
+        if (button) {{
+          button.setAttribute('aria-pressed', String(isDark));
+          button.querySelector('.theme-icon').textContent = isDark ? '☀️' : '🌙';
+          button.querySelector('.theme-label').textContent = isDark ? '라이트모드' : '다크모드';
+        }}
+      }};
+      setTheme(saved || preferred);
+      button?.addEventListener('click', () => setTheme(root.dataset.theme === 'dark' ? 'light' : 'dark'));
+    }})();
+  </script>
 </body>
 </html>
 """

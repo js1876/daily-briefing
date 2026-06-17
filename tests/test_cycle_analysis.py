@@ -118,6 +118,10 @@ def test_report_css_is_mobile_first_card_dashboard():
     assert ".factor-card" in css
     assert ".news-timeline" in css
     assert "border-radius: 22px" in css
+    assert 'html[data-theme="dark"]' in css
+    assert "--hero-panel" in css
+    assert ".theme-toggle" in css
+    assert "color-scheme: dark" in css
     assert "min-width: 760px" not in css
     assert "overflow-x: auto" not in css
 
@@ -134,3 +138,7 @@ def test_rendered_html_uses_cards_instead_of_price_table():
     assert "report-card" in rendered
     assert "오늘의 종목 카드" in rendered
     assert "매크로 팩터" in rendered
+    assert 'data-theme-toggle' in rendered
+    assert 'daily-briefing-theme' in rendered
+    assert '다크모드' in rendered
+    assert '라이트모드' in rendered
