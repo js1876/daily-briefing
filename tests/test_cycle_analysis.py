@@ -128,6 +128,9 @@ def test_report_css_is_mobile_first_card_dashboard():
     assert "@media (prefers-reduced-motion: reduce)" in css
     assert "img, svg, canvas, video" in css
     assert "color-scheme: dark" in css
+    assert "position: sticky" not in css
+    assert "max-height: calc(100vh" not in css
+    assert "overflow: auto" not in css
     assert "min-width: 760px" not in css
     assert "overflow-x: auto" not in css
 
@@ -154,3 +157,7 @@ def test_rendered_html_uses_cards_instead_of_price_table():
     assert 'daily-briefing-theme' in rendered
     assert '다크모드' in rendered
     assert '라이트모드' in rendered
+    assert '가격 확인:' in rendered
+    assert '표시 가격: 조회 시점 최신가' in rendered
+    assert '가격 기준:' not in rendered
+    assert '가격 기준' not in rendered

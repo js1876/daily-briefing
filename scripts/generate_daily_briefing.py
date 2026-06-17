@@ -356,7 +356,7 @@ def save_change_chart(rows: list[PriceRow], out: Path) -> None:
         ax.spines[spine].set_visible(False)
     ax.spines["bottom"].set_color(GRID)
     basis = rows[0].basis_date.strftime("%Y-%m-%d")
-    ax.text(0.99, -0.13, f"기준: {basis} 종가 / 전 거래일 종가 대비", transform=ax.transAxes, ha="right", va="top", fontsize=10, color=MUTED)
+    ax.text(0.99, -0.13, f"기준: {basis} 최신 확인가 / 전 기준가 대비", transform=ax.transAxes, ha="right", va="top", fontsize=10, color=MUTED)
     fig.tight_layout(rect=[0.02, 0.04, 1, 0.98])
     fig.savefig(out, bbox_inches="tight", facecolor="white")
     plt.close(fig)
@@ -377,7 +377,7 @@ def save_price_trends(rows: list[PriceRow], out: Path) -> None:
         ax.text(
             0.02,
             0.88,
-            f"최근 종가 {format_krw_short(row.close)}  |  {signed_pct(row.change_pct)}",
+            f"최근 확인가 {format_krw_short(row.close)}  |  {signed_pct(row.change_pct)}",
             transform=ax.transAxes,
             fontsize=10.5,
             color=TEXT,
@@ -393,7 +393,7 @@ def save_price_trends(rows: list[PriceRow], out: Path) -> None:
         ax.spines["bottom"].set_color(GRID)
 
     start = rows[0].basis_date.strftime("%Y-%m-%d")
-    fig.suptitle("종목별 최근 4거래일 종가 흐름", fontsize=19, fontweight="bold", color=TEXT, y=0.99)
+    fig.suptitle("종목별 최근 4거래일 가격 흐름", fontsize=19, fontweight="bold", color=TEXT, y=0.99)
     fig.text(0.99, 0.01, f"기준일: {start}", ha="right", fontsize=10, color=MUTED)
     fig.tight_layout(rect=[0, 0.03, 1, 0.95])
     fig.savefig(out, bbox_inches="tight", facecolor="white")
@@ -716,7 +716,7 @@ def css_from_existing() -> str:
     }
     @media (min-width: 1100px) {
       .dashboard-shell { grid-template-columns: minmax(0, 2fr) minmax(320px, .82fr); }
-      .side-column { position: sticky; top: 18px; max-height: calc(100vh - 28px); overflow: auto; padding-right: 2px; }
+      .side-column { align-self: start; padding-right: 2px; }
       .hero-card { min-height: 360px; display: flex; align-items: end; }
       .side-column .section { padding: 20px; border-radius: 26px; }
       .side-column h2 { font-size: 22px; }
@@ -962,6 +962,7 @@ def render_html(rows: list[PriceRow], news: dict, macro: dict, valuation: dict, 
     cycle_analysis = cycle_analysis or DEFAULT_CYCLE_ANALYSIS
     css = css_from_existing()
     basis_date = rows[0].basis_date.strftime("%Y-%m-%d")
+    checked_at = today.strftime("%Y-%m-%d %H:%M")
     today_s = today.strftime("%Y-%m-%d")
     up_count = sum(1 for row in rows if row.change_pct >= 0)
     down_count = len(rows) - up_count
@@ -1003,7 +1004,7 @@ def render_html(rows: list[PriceRow], news: dict, macro: dict, valuation: dict, 
           <div class="hero-content">
             <div class="eyebrow">DAILY SEMICONDUCTOR BRIEFING</div>
             <h1>일일 포트폴리오 브리핑</h1>
-            <p class="meta">작성일: {today_s} KST · 가격 기준: {basis_date} 종가</p>
+            <p class="meta">작성일: {today_s} KST · 가격 확인: {checked_at} KST · 표시 가격: 조회 시점 최신가</p>
             <div class="badge-row" aria-label="오늘 요약 지표">
               <span class="badge up">상승 {up_count}</span>
               <span class="badge down">하락 {down_count}</span>
@@ -1038,8 +1039,8 @@ def render_html(rows: list[PriceRow], news: dict, macro: dict, valuation: dict, 
               <figcaption>전 거래일 대비 변동률 차트입니다.</figcaption>
             </figure>
             <figure class="chart-card">
-              <img src="{chart_files['trend']}" alt="종목별 최근 4거래일 종가 흐름 차트">
-              <figcaption>종목별 최근 4거래일 종가 흐름입니다.</figcaption>
+              <img src="{chart_files['trend']}" alt="종목별 최근 4거래일 가격 흐름 차트">
+              <figcaption>종목별 최근 4거래일 가격 흐름입니다.</figcaption>
             </figure>
           </div>
         </section>

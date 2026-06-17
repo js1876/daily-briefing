@@ -221,7 +221,7 @@
     }
     @media (min-width: 1100px) {
       .dashboard-shell { grid-template-columns: minmax(0, 2fr) minmax(320px, .82fr); }
-      .side-column { position: sticky; top: 18px; max-height: calc(100vh - 28px); overflow: auto; padding-right: 2px; }
+      .side-column { align-self: start; padding-right: 2px; }
       .hero-card { min-height: 360px; display: flex; align-items: end; }
       .side-column .section { padding: 20px; border-radius: 26px; }
       .side-column h2 { font-size: 22px; }
@@ -256,11 +256,11 @@
           <div class="hero-content">
             <div class="eyebrow">DAILY SEMICONDUCTOR BRIEFING</div>
             <h1>일일 포트폴리오 브리핑</h1>
-            <p class="meta">작성일: 2026-06-17 KST · 가격 기준: 2026-06-17 종가</p>
+            <p class="meta">작성일: 2026-06-17 KST · 가격 확인: 2026-06-17 12:26 KST · 표시 가격: 조회 시점 최신가</p>
             <div class="badge-row" aria-label="오늘 요약 지표">
               <span class="badge up">상승 2</span>
               <span class="badge down">하락 2</span>
-              <span class="badge down">최대 변동 삼성전자 -1.75%</span>
+              <span class="badge down">최대 변동 삼성전자 -1.90%</span>
               <span class="badge neutral">반도체 사이클 점검</span>
             </div>
             <p class="hero-summary"><strong>HBM 강세 속 숨고르기</strong></p>
@@ -279,8 +279,8 @@
         </article>
         <article class="metric-card">
           <div class="card-label">최대 변동</div>
-          <div class="metric-value down">-1.75%</div>
-          <p class="muted">삼성전자 · 상승 SK하이닉스 +1.30% / 하락 삼성전자 -1.75%</p>
+          <div class="metric-value down">-1.90%</div>
+          <p class="muted">삼성전자 · 상승 SK하이닉스 +0.92% / 하락 삼성전자 -1.90%</p>
         </article>
       </div>
           </div>
@@ -300,8 +300,8 @@
               <div class="ticker">396500</div>
             </div>
             <div class="price-box">
-              <div class="price">52,100원</div>
-              <div class="change-line down">-350원 · -0.67%</div>
+              <div class="price">51,875원</div>
+              <div class="change-line down">-575원 · -1.10%</div>
             </div>
           </div>
           <div class="tag-row"><span class="tag down">반도체 ETF</span><span class="tag down">대형주</span><span class="tag down">분산</span><span class="tag down">하락</span></div>
@@ -315,8 +315,8 @@
               <div class="ticker">498400</div>
             </div>
             <div class="price-box">
-              <div class="price">26,925원</div>
-              <div class="change-line up">+95원 · +0.35%</div>
+              <div class="price">26,850원</div>
+              <div class="change-line up">+20원 · +0.07%</div>
             </div>
           </div>
           <div class="tag-row"><span class="tag up">커버드콜</span><span class="tag up">분배</span><span class="tag up">방어</span><span class="tag up">상승</span></div>
@@ -330,8 +330,8 @@
               <div class="ticker">005930</div>
             </div>
             <div class="price-box">
-              <div class="price">337,000원</div>
-              <div class="change-line down">-6,000원 · -1.75%</div>
+              <div class="price">336,500원</div>
+              <div class="change-line down">-6,500원 · -1.90%</div>
             </div>
           </div>
           <div class="tag-row"><span class="tag down">HBM 추격</span><span class="tag down">NAND</span><span class="tag down">파운드리</span><span class="tag down">하락</span></div>
@@ -345,8 +345,8 @@
               <div class="ticker">000660</div>
             </div>
             <div class="price-box">
-              <div class="price">2,413,000원</div>
-              <div class="change-line up">+31,000원 · +1.30%</div>
+              <div class="price">2,404,000원</div>
+              <div class="change-line up">+22,000원 · +0.92%</div>
             </div>
           </div>
           <div class="tag-row"><span class="tag up">HBM 순도</span><span class="tag up">AI 서버</span><span class="tag up">DRAM</span><span class="tag up">상승</span></div>
@@ -367,8 +367,8 @@
               <figcaption>전 거래일 대비 변동률 차트입니다.</figcaption>
             </figure>
             <figure class="chart-card">
-              <img src="assets/charts/daily_briefing_price_trends_2026-06-17.png" alt="종목별 최근 4거래일 종가 흐름 차트">
-              <figcaption>종목별 최근 4거래일 종가 흐름입니다.</figcaption>
+              <img src="assets/charts/daily_briefing_price_trends_2026-06-17.png" alt="종목별 최근 4거래일 가격 흐름 차트">
+              <figcaption>종목별 최근 4거래일 가격 흐름입니다.</figcaption>
             </figure>
           </div>
         </section>
@@ -439,7 +439,7 @@
           <details class="detail-pack company-detail">
             <summary>오늘의 해석 자세히 보기</summary>
             <div class="split-list">
-              <div><strong>오늘의 해석</strong>오늘 변동률은 -1.75%입니다. 시총 약 2210조원, Forward PE 5.87 기준으로 추세 지속성을 점검합니다.</div>
+              <div><strong>오늘의 해석</strong>오늘 변동률은 -1.90%입니다. 시총 약 2210조원, Forward PE 5.86 기준으로 추세 지속성을 점검합니다.</div>
             </div>
           </details>
         </article>
@@ -457,7 +457,7 @@
           <details class="detail-pack company-detail">
             <summary>오늘의 해석 자세히 보기</summary>
             <div class="split-list">
-              <div><strong>오늘의 해석</strong>오늘 변동률은 +1.30%입니다. 시총 약 1712조원, Forward PE 5.88 기준으로 추세 지속성을 점검합니다.</div>
+              <div><strong>오늘의 해석</strong>오늘 변동률은 +0.92%입니다. 시총 약 1712조원, Forward PE 5.88 기준으로 추세 지속성을 점검합니다.</div>
             </div>
           </details>
         </article>
@@ -474,25 +474,25 @@
           <div class="mini-bars">
         <div class="mini-bar-row">
           <strong>SK하이닉스</strong>
-          <span class="up">▲ +1.30%</span>
-          <div class="bar-track"><div class="bar-fill up-bg" style="width: 74%"></div></div>
+          <span class="up">▲ +0.92%</span>
+          <div class="bar-track"><div class="bar-fill up-bg" style="width: 49%"></div></div>
         </div>
 
         <div class="mini-bar-row">
           <strong>KODEX 커버드콜</strong>
-          <span class="up">▲ +0.35%</span>
-          <div class="bar-track"><div class="bar-fill up-bg" style="width: 20%"></div></div>
+          <span class="up">▲ +0.07%</span>
+          <div class="bar-track"><div class="bar-fill up-bg" style="width: 4%"></div></div>
         </div>
 
         <div class="mini-bar-row">
           <strong>TIGER 반도체TOP10</strong>
-          <span class="down">▼ -0.67%</span>
-          <div class="bar-track"><div class="bar-fill down-bg" style="width: 38%"></div></div>
+          <span class="down">▼ -1.10%</span>
+          <div class="bar-track"><div class="bar-fill down-bg" style="width: 58%"></div></div>
         </div>
 
         <div class="mini-bar-row">
           <strong>삼성전자</strong>
-          <span class="down">▼ -1.75%</span>
+          <span class="down">▼ -1.90%</span>
           <div class="bar-track"><div class="bar-fill down-bg" style="width: 100%"></div></div>
         </div>
           </div>
@@ -506,8 +506,8 @@
           <div class="factor-grid">
         <article class="factor-card">
           <div class="card-label">환율</div>
-          <div class="factor-value">1513.48원</div>
-          <div class="change-line up">+0.01%</div>
+          <div class="factor-value">1513.28원</div>
+          <div class="change-line down">-0.00%</div>
           <p class="factor-copy">외국인 수급과 반도체 대형주 투자심리에 직접 영향을 줍니다.</p>
         </article>
 
@@ -520,15 +520,15 @@
 
         <article class="factor-card">
           <div class="card-label">유가</div>
-          <div class="factor-value">75.35달러</div>
-          <div class="change-line down">-6.69%</div>
+          <div class="factor-value">75.18달러</div>
+          <div class="change-line down">-6.90%</div>
           <p class="factor-copy">비용 부담과 인플레이션 기대를 통해 금리 경로에 영향을 줍니다.</p>
         </article>
 
         <article class="factor-card">
           <div class="card-label">KOSPI</div>
-          <div class="factor-value">8732.48</div>
-          <div class="change-line up">+0.07%</div>
+          <div class="factor-value">8726.08</div>
+          <div class="change-line down">-0.01%</div>
           <p class="factor-copy">국내 위험자산 선호와 대형주 수급 배경을 보여줍니다.</p>
         </article>
           </div>
@@ -541,6 +541,11 @@
             <p class="meta">KST 기준 2026-06-17 발행분입니다.</p>
           </div>
           <div class="news-timeline">
+        <article class="news-card">
+          <div class="news-meta">11:55 · 서울경제 · 삼성전자</div>
+          <a class="news-title" href="https://news.google.com/rss/articles/CBMiUkFVX3lxTE9LRHdJMmE2MGVaTmRUdDloVjVmWHp2YmdmTnZEcENnVVdoYVVPc1kwZjdVMWlqM0VpclNRNDFRdmNvZ01sN043RVZnbHpZbWZlT1HSAVNBVV95cUxOMU1OVHg2a0V4VjVKM2VBTGxyc1RFVVcwUDBCaVR6eGxyQ3gzZVRRd2xadTVqTlR6ZEphM21odmtVUzdwV1hUWEF1WXVvaG5Qa3BaTQ?oc=5">삼성전자 노조, 위원장 재신임 투표...최승호 “DS 부문 교섭 우선” 분리 선언 - 서울경제</a>
+        </article>
+
         <article class="news-card">
           <div class="news-meta">11:04 · KB Think · SK하이닉스</div>
           <a class="news-title" href="https://news.google.com/rss/articles/CBMickFVX3lxTE54aEF2V1lVRk1kMkpkWkhWdGtNdWdkQXhfalNEeWltcmQ3eTdjQkFRNl9mcm1XZDdhZGJKdXg2bUd4eDc5X0o4aDhmWVNPb29BVjdNWGNBZGNrdm5SamtuNl85REdJTzRRSUFCOFhhZUpqUQ?oc=5">SK하이닉스, 신입 채용서 학력 제한 전면 폐지…세자릿 수 채용 - KB Think</a>
@@ -564,11 +569,6 @@
         <article class="news-card">
           <div class="news-meta">09:26 · 연합뉴스 · SK하이닉스</div>
           <a class="news-title" href="https://news.google.com/rss/articles/CBMiYEFVX3lxTE1jbTRMSTluZ2FoWXBMZFhkM2h0dW12TFVocU1KZ0tIeXZ2Q1RJVnF1aTJ3WF9xN1dtTnVCZzZDVExQNEZ2MWtaSHJsUDQ5MmhYT0h4ZUI5X3lGVVRfYW8tYtIBYEFVX3lxTE1jbTRMSTluZ2FoWXBMZFhkM2h0dW12TFVocU1KZ0tIeXZ2Q1RJVnF1aTJ3WF9xN1dtTnVCZzZDVExQNEZ2MWtaSHJsUDQ5MmhYT0h4ZUI5X3lGVVRfYW8tYg?oc=5">[특징주] 삼전, 장초반 2%대 하락…SK하이닉스는 상승전환 - 연합뉴스</a>
-        </article>
-
-        <article class="news-card">
-          <div class="news-meta">09:20 · 연합인포맥스 · 삼성전자</div>
-          <a class="news-title" href="https://news.google.com/rss/articles/CBMicEFVX3lxTFBYWVpwOC1mdndUVHJ0MU1kRHJoS3FSTVFRVDVSOVhLZ0xHd20xV1BCTXpuTmVEN0xjYm0xUGlvNlU2YUZRdE8tTWhGZkkxaDR0Tlg4N3c0Sl9Ed2lCQWozeHVZc1FPbmlNdXB1LVJXOFo?oc=5">삼성전자, 세계 최초로 최소 크기 트랜지스터 구현했다 - 연합인포맥스</a>
         </article>
 
         <article class="news-card">
