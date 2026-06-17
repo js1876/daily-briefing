@@ -12,11 +12,18 @@ from email.utils import parsedate_to_datetime
 from pathlib import Path
 from zoneinfo import ZoneInfo
 
-import matplotlib.pyplot as plt
-import numpy as np
+import math
+
+try:
+    import matplotlib.pyplot as plt
+    import numpy as np
+    from matplotlib import font_manager
+except ModuleNotFoundError:  # Native HTML/SVG report generation does not require matplotlib.
+    plt = None
+    np = None
+    font_manager = None
+
 import yfinance as yf
-from matplotlib import font_manager
-from matplotlib.patches import FancyBboxPatch
 from pykrx import stock
 
 
@@ -91,7 +98,9 @@ class PriceRow:
 
 
 def setup_font() -> None:
-    """Configure a Korean-capable font when available, with a portable fallback."""
+    """Configure a Korean-capable font when matplotlib is available."""
+    if plt is None or font_manager is None:
+        return
     for font_path in FONT_CANDIDATES:
         if font_path and Path(font_path).exists():
             font_manager.fontManager.addfont(font_path)
@@ -644,7 +653,7 @@ def css_from_existing() -> str:
     .stock-card:hover, .company-card:hover, .factor-card:hover, .news-card:hover { transform: translateY(-2px); border-color: color-mix(in srgb, var(--accent) 24%, var(--border)); }
     .stock-card { container-type: inline-size; display: grid; gap: 13px; }
     .stock-top { display: flex; align-items: flex-start; justify-content: space-between; gap: 14px; }
-    .stock-name { font-size: clamp(18px, 4vw, 22px); font-weight: 950; letter-spacing: -.04em; }
+    .stock-name { font-size: clamp(18px, 4vw, 22px); font-weight: 950; letter-spacing: -.04em; word-break: keep-all; overflow-wrap: normal; }
     .ticker { color: var(--text-muted); font-size: 12px; font-weight: 850; margin-top: 2px; }
     .price-box { text-align: right; flex: 0 0 auto; }
     .price { font-size: clamp(20px, 5vw, 28px); font-weight: 950; letter-spacing: -.045em; white-space: nowrap; line-height: 1.05; }
@@ -663,6 +672,60 @@ def css_from_existing() -> str:
     figure { margin: 0; }
     .chart-card { overflow: hidden; }
     .chart-card img { width: 100%; border-radius: 20px; background: var(--chart-bg); }
+    .native-chart-card { display: grid; gap: 14px; }
+    .chart-title-row { display:flex; justify-content:space-between; align-items:flex-start; gap:12px; margin-bottom:2px; flex-wrap:wrap; }
+    .chart-title-row h3 { margin:0; font-size: clamp(17px, 2vw, 22px); letter-spacing:-.03em; }
+    .chart-title-row span { flex:0 0 auto; font-size:12px; color:var(--text-muted); border:1px solid var(--border); border-radius:999px; padding:5px 9px; background:var(--surface-muted); }
+    .native-change-chart { display:grid; gap:12px; padding: 4px 0 2px; }
+    .change-row { display:grid; grid-template-columns:minmax(92px, 180px) minmax(120px, 1fr) 74px; gap:12px; align-items:center; }
+    .change-label { font-size:13px; font-weight:800; color:var(--text); }
+    .change-track { height:16px; border-radius:999px; background:var(--bar-track); overflow:hidden; box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--border) 72%, transparent); }
+    .change-track span { display:block; height:100%; border-radius:999px; background:var(--up); box-shadow:0 5px 16px color-mix(in srgb, var(--up) 22%, transparent); }
+    .change-row.down .change-track span { background:var(--down); box-shadow:0 5px 16px color-mix(in srgb, var(--down) 22%, transparent); }
+    .change-row strong { text-align:right; font-size:13px; color:var(--up); }
+    .change-row.down strong { color:var(--down); }
+    .native-trend-grid { display:grid; grid-template-columns:repeat(2, minmax(0, 1fr)); gap:12px; }
+    .trend-card { border:1px solid var(--border); border-radius:20px; padding:14px; background:linear-gradient(180deg, var(--surface-muted), color-mix(in srgb, var(--surface-elevated) 84%, transparent)); }
+    .trend-head, .trend-value, .trend-dates { display:flex; justify-content:space-between; align-items:center; gap:8px; }
+    .trend-head strong { font-size:14px; }
+    .trend-head span, .trend-dates { color:var(--text-muted); font-size:11px; }
+    .trend-value { margin-top:7px; }
+    .trend-value b { font-size:18px; letter-spacing:-.03em; }
+    .trend-value em { font-style:normal; font-weight:900; color:var(--up); }
+    .trend-card.down .trend-value em { color:var(--down); }
+    .trend-svg { width:100%; height:auto; margin:10px 0 2px; }
+    .trend-svg polygon { fill: color-mix(in srgb, var(--up) 15%, transparent); }
+    .trend-card.down .trend-svg polygon { fill: color-mix(in srgb, var(--down) 15%, transparent); }
+    .trend-svg polyline { fill:none; stroke:var(--up); stroke-width:4; stroke-linecap:round; stroke-linejoin:round; }
+    .trend-card.down .trend-svg polyline { stroke:var(--down); }
+    .trend-svg circle { fill:var(--surface-elevated); stroke:var(--up); stroke-width:3; }
+    .trend-card.down .trend-svg circle { stroke:var(--down); }
+    .cycle-native-card { background:linear-gradient(180deg, var(--surface-elevated), color-mix(in srgb, var(--surface-muted) 72%, var(--surface-elevated))); }
+    .cycle-svg { width:100%; min-height:270px; }
+    .cycle-bg { fill:var(--surface-muted); stroke:var(--border); }
+    .zone-hot { fill:color-mix(in srgb, var(--up) 10%, transparent); }
+    .zone-mid { fill:rgba(245,158,11,.10); }
+    .zone-cool { fill:color-mix(in srgb, var(--down) 10%, transparent); }
+    .cycle-zero { stroke:var(--border); stroke-width:2; }
+    .cycle-wave { fill:none; stroke:var(--text); stroke-width:5; stroke-linecap:round; }
+    .cycle-node circle { fill:var(--accent); stroke:var(--surface-elevated); stroke-width:4; }
+    .cycle-node.hot circle, .current-dot { fill:var(--up); }
+    .cycle-node.cool circle { fill:var(--down); }
+    .cycle-node.warn circle { fill:#f59e0b; }
+    .cycle-node.purple circle { fill:#8b5cf6; }
+    .cycle-node.ok circle { fill:#10b981; }
+    .cycle-node text { fill:var(--text); font-size:13px; font-weight:800; }
+    .cycle-node .node-sub { fill:var(--text-muted); font-size:11px; font-weight:600; }
+    .current-line { stroke:var(--up); stroke-width:3; stroke-dasharray:8 8; }
+    .current-dot { stroke:var(--surface-elevated); stroke-width:5; }
+    .current-arrow { fill:none; stroke:var(--up); stroke-width:3; stroke-linecap:round; }
+    .current-callout { font: 14px/1.35 system-ui, sans-serif; border:1px solid color-mix(in srgb, var(--up) 48%, var(--border)); border-radius:16px; padding:11px 13px; color:var(--up); background:var(--surface-elevated); box-shadow:var(--shadow-soft); }
+    .current-callout strong { display:block; margin-bottom:3px; }
+    .evidence-box { display:grid; gap:8px; font: 13px/1.3 system-ui, sans-serif; color:var(--text); }
+    .evidence-box strong { font-size:18px; margin-bottom:3px; }
+    .evidence-box span { display:inline-flex; align-items:center; justify-content:center; border-radius:999px; padding:6px 10px; background:var(--text); color:var(--surface-elevated); font-weight:800; }
+    .cycle-label-hot { fill:var(--up); font-size:22px; font-weight:900; }
+    .cycle-label-cool { fill:var(--down); font-size:22px; font-weight:900; }
     figcaption { margin-top: 10px; color: var(--text-muted); font-size: 13px; }
 
     .cycle-card { display: grid; gap: clamp(14px, 2vw, 22px); }
@@ -708,6 +771,10 @@ def css_from_existing() -> str:
     @container (min-width: 360px) {
       .stock-card { grid-template-rows: auto 1fr auto; }
     }
+    @container (max-width: 280px) {
+      .stock-top { flex-direction: column; }
+      .price-box { text-align: left; }
+    }
     @media (min-width: 720px) {
       .metric-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
       .company-grid, .chart-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
@@ -729,6 +796,8 @@ def css_from_existing() -> str:
       .price-box { text-align: left; }
       .side-column { gap: 16px; }
       .hero-card, .section { border-radius: 26px; }
+      .change-row { grid-template-columns:minmax(74px, 1fr) minmax(84px, 1fr) 58px; gap:8px; }
+      .change-label, .change-row strong { font-size:12px; }
     }
     @media (prefers-reduced-motion: reduce) {
       *, *::before, *::after { animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; scroll-behavior: auto !important; transition-duration: 0.01ms !important; }
@@ -958,6 +1027,128 @@ def summary_metrics_html(up_count: int, down_count: int, max_row: PriceRow, max_
       </div>"""
 
 
+
+def _svg_polyline(points: list[tuple[float, float]]) -> str:
+    return " ".join(f"{x:.1f},{y:.1f}" for x, y in points)
+
+
+def inline_change_chart_html(rows: list[PriceRow]) -> str:
+    sorted_rows = sorted(rows, key=lambda row: row.change_pct)
+    max_abs = max(max(abs(row.change_pct) for row in sorted_rows), 1.0)
+    items = []
+    for row in sorted_rows:
+        label = html.escape(row.name.replace("KODEX 200타겟위클리커버드콜", "KODEX 커버드콜"))
+        direction = "up" if row.change_pct >= 0 else "down"
+        width = min(abs(row.change_pct) / max_abs * 100, 100)
+        items.append(f"""
+          <div class="change-row {direction}">
+            <div class="change-label">{label}</div>
+            <div class="change-track" aria-hidden="true"><span style="width:{width:.1f}%"></span></div>
+            <strong>{signed_pct(row.change_pct)}</strong>
+          </div>""")
+    basis = html.escape(rows[0].basis_date.strftime("%Y-%m-%d"))
+    return f"""
+      <figure class="chart-card native-chart-card">
+        <div class="chart-title-row"><h3>전 거래일 대비 변동률</h3><span>기준 {basis}</span></div>
+        <div class="native-change-chart" role="img" aria-label="전 거래일 대비 변동률 막대 차트">
+          {''.join(items)}
+        </div>
+        <figcaption>이미지 없이 HTML/CSS 막대로 직접 렌더링한 변동률 차트입니다.</figcaption>
+      </figure>"""
+
+
+def inline_price_trends_html(rows: list[PriceRow]) -> str:
+    order = ["삼성전자", "KODEX 200타겟위클리커버드콜", "SK하이닉스", "TIGER 반도체TOP10"]
+    ordered = sorted(rows, key=lambda row: order.index(row.name) if row.name in order else 99)
+    cards = []
+    for row in ordered:
+        values = row.closes[-4:] or [row.close]
+        dates = row.dates[-len(values):]
+        min_v, max_v = min(values), max(values)
+        spread = max(max_v - min_v, 1)
+        w, h = 320, 128
+        left, right, top, bottom = 18, 14, 14, 26
+        step = (w - left - right) / max(len(values) - 1, 1)
+        points = []
+        for idx, value in enumerate(values):
+            x = left + idx * step
+            y = top + (max_v - value) / spread * (h - top - bottom)
+            points.append((x, y))
+        area = [(points[0][0], h-bottom), *points, (points[-1][0], h-bottom)]
+        direction = "up" if row.change_pct >= 0 else "down"
+        label = html.escape(row.name.replace("KODEX 200타겟위클리커버드콜", "KODEX 커버드콜"))
+        tick_labels = "".join(f'<span>{html.escape(str(d))}</span>' for d in dates)
+        circles = "".join(f'<circle cx="{x:.1f}" cy="{y:.1f}" r="4.4" />' for x, y in points)
+        cards.append(f"""
+          <article class="trend-card {direction}">
+            <div class="trend-head"><strong>{label}</strong><span>{row.ticker}</span></div>
+            <div class="trend-value"><b>{format_krw_short(row.close)}</b><em>{signed_pct(row.change_pct)}</em></div>
+            <svg class="trend-svg" viewBox="0 0 {w} {h}" role="img" aria-label="{label} 최근 가격 흐름">
+              <polygon points="{_svg_polyline(area)}" />
+              <polyline points="{_svg_polyline(points)}" />
+              {circles}
+            </svg>
+            <div class="trend-dates">{tick_labels}</div>
+          </article>""")
+    return f"""
+      <figure class="chart-card native-chart-card">
+        <div class="chart-title-row"><h3>종목별 최근 4거래일 가격 흐름</h3><span>SVG 직접 렌더링</span></div>
+        <div class="native-trend-grid">{''.join(cards)}</div>
+        <figcaption>PNG 대신 각 카드 안에서 SVG 선 그래프를 직접 그립니다.</figcaption>
+      </figure>"""
+
+
+def inline_cycle_svg_html(cycle_analysis: dict) -> str:
+    w, h = 920, 430
+    pts = []
+    for i in range(181):
+        t = i / 180 * 2 * math.pi
+        x = 56 + i / 180 * 610
+        y = 205 - math.sin(t) * 122
+        pts.append((x, y))
+    current_t = 0.43 * math.pi
+    current_x = 56 + current_t / (2*math.pi) * 610
+    current_y = 205 - math.sin(current_t) * 122
+    phases = [
+        (0.10, "회복", "재고 감소", "ok"),
+        (0.28, "가격 상승", "ASP 개선", "warn"),
+        (0.50, "실적 호황", "이익 폭증", "hot"),
+        (0.76, "CAPEX", "공급 준비", "purple"),
+        (1.00, "피크 경계", "선반영 점검", "hot"),
+        (1.32, "가격 하락", "과잉 공급", "cool"),
+        (1.50, "불황 저점", "감산", "cool"),
+        (1.78, "회복 준비", "재고 소진", "ok"),
+    ]
+    phase_nodes = []
+    for mult, title, sub, tone in phases:
+        t = mult * math.pi
+        x = 56 + t / (2*math.pi) * 610
+        y = 205 - math.sin(t) * 122
+        dy = -30 if y < 200 else 42
+        phase_nodes.append(f'<g class="cycle-node {tone}"><circle cx="{x:.1f}" cy="{y:.1f}" r="7"/><text x="{x:.1f}" y="{y+dy:.1f}" text-anchor="middle"><tspan class="node-title">{html.escape(title)}</tspan><tspan x="{x:.1f}" dy="16" class="node-sub">{html.escape(sub)}</tspan></text></g>')
+    evidence_html = "".join(f'<span>{e}</span>' for e in ["가격", "실적", "밸류", "수급", "CAPEX"])
+    return f"""
+      <figure class="chart-card native-chart-card cycle-native-card">
+        <div class="chart-title-row"><h3>반도체 메모리 사이클 위치 추정</h3><span>SVG native</span></div>
+        <svg class="cycle-svg" viewBox="0 0 {w} {h}" role="img" aria-label="반도체 메모리 사이클 위치 추정 다이어그램">
+          <rect x="24" y="42" width="690" height="326" rx="28" class="cycle-bg" />
+          <rect x="24" y="42" width="690" height="122" rx="28" class="zone-hot" />
+          <rect x="24" y="164" width="690" height="102" class="zone-mid" />
+          <rect x="24" y="266" width="690" height="102" rx="28" class="zone-cool" />
+          <line x1="42" y1="205" x2="696" y2="205" class="cycle-zero" />
+          <polyline class="cycle-wave" points="{_svg_polyline(pts)}" />
+          {''.join(phase_nodes)}
+          <line x1="{current_x:.1f}" y1="344" x2="{current_x:.1f}" y2="{current_y:.1f}" class="current-line" />
+          <circle class="current-dot" cx="{current_x:.1f}" cy="{current_y:.1f}" r="13" />
+          <path class="current-arrow" d="M {current_x+18:.1f} {current_y-18:.1f} C {current_x+72:.1f} {current_y-94:.1f}, {current_x+130:.1f} 78, {current_x+186:.1f} 72" />
+          <foreignObject x="{current_x+190:.1f}" y="38" width="245" height="96"><div xmlns="http://www.w3.org/1999/xhtml" class="current-callout"><strong>현재 위치</strong><span>호황 중반~후반 진입<br/>약 3.5~4.5단계</span></div></foreignObject>
+          <foreignObject x="720" y="58" width="176" height="226"><div xmlns="http://www.w3.org/1999/xhtml" class="evidence-box"><strong>판단 근거</strong>{evidence_html}</div></foreignObject>
+          <text x="370" y="30" text-anchor="middle" class="cycle-label-hot">호황</text>
+          <text x="370" y="404" text-anchor="middle" class="cycle-label-cool">불황</text>
+        </svg>
+        <figcaption>{cycle_analysis['chart_caption']}</figcaption>
+      </figure>"""
+
 def render_html(rows: list[PriceRow], news: dict, macro: dict, valuation: dict, today: datetime, chart_files: dict, cycle_analysis: dict | None = None) -> str:
     cycle_analysis = cycle_analysis or DEFAULT_CYCLE_ANALYSIS
     css = css_from_existing()
@@ -979,6 +1170,9 @@ def render_html(rows: list[PriceRow], news: dict, macro: dict, valuation: dict, 
     timeline = news_timeline_html(rows, news)
     checks = checklist_html(cycle_analysis.get("action_items", DEFAULT_CYCLE_ANALYSIS["action_items"]))
     metrics = summary_metrics_html(up_count, down_count, max_row, max_up, max_down)
+    change_chart = inline_change_chart_html(rows)
+    trend_chart = inline_price_trends_html(rows)
+    cycle_chart = inline_cycle_svg_html(cycle_analysis)
 
     return f"""<!doctype html>
 <html lang="ko">
@@ -1031,17 +1225,11 @@ def render_html(rows: list[PriceRow], news: dict, macro: dict, valuation: dict, 
           <div class="section-head">
             <div class="section-kicker">Visual</div>
             <h2 id="visual-title">시각화 대시보드</h2>
-            <p class="meta section-subtitle">기존 차트를 유지하면서 넓은 화면에서는 메인 분석 카드처럼, 모바일에서는 잘리지 않는 이미지 카드처럼 보이도록 배치했습니다.</p>
+            <p class="meta section-subtitle">PNG 이미지를 불러오지 않고, HTML/CSS/SVG가 현재 UI 테마에 맞춰 직접 그립니다.</p>
           </div>
           <div class="chart-grid">
-            <figure class="chart-card">
-              <img src="{chart_files['change']}" alt="전 거래일 대비 변동률 차트">
-              <figcaption>전 거래일 대비 변동률 차트입니다.</figcaption>
-            </figure>
-            <figure class="chart-card">
-              <img src="{chart_files['trend']}" alt="종목별 최근 4거래일 가격 흐름 차트">
-              <figcaption>종목별 최근 4거래일 가격 흐름입니다.</figcaption>
-            </figure>
+            {change_chart}
+            {trend_chart}
           </div>
         </section>
 
@@ -1052,10 +1240,7 @@ def render_html(rows: list[PriceRow], news: dict, macro: dict, valuation: dict, 
             <p class="meta section-subtitle">모바일에서는 요약을 먼저 보고, 상세 근거는 접어서 확인하는 구조입니다.</p>
           </div>
           <article class="cycle-card">
-            <figure class="chart-card">
-              <img src="{chart_files['cycle']}" alt="반도체 메모리 사이클 위치 추정">
-              <figcaption>{cycle_analysis['chart_caption']}</figcaption>
-            </figure>
+            {cycle_chart}
             <div class="cycle-grid">
               <div class="cycle-point"><strong>현재 구간</strong><span>{cycle_analysis['headline']}</span></div>
               <div class="cycle-point"><strong>판단</strong><span>{cycle_analysis['cycle_summary']}</span></div>
@@ -1184,14 +1369,7 @@ def main() -> None:
     valuation = fetch_valuation()
     cycle_analysis = load_cycle_analysis(today)
 
-    chart_files = {
-        "change": f"assets/charts/daily_briefing_change_chart_{date_slug}.png",
-        "trend": f"assets/charts/daily_briefing_price_trends_{date_slug}.png",
-        "cycle": f"assets/charts/daily_briefing_semiconductor_cycle_{date_slug}.png",
-    }
-    save_change_chart(rows, PUBLIC_DIR / chart_files["change"])
-    save_price_trends(rows, PUBLIC_DIR / chart_files["trend"])
-    save_cycle_chart(PUBLIC_DIR / chart_files["cycle"])
+    chart_files = {}
 
     rendered = render_html(rows, news, macro, valuation, today, chart_files, cycle_analysis)
     latest = PUBLIC_DIR / "latest.html"

@@ -149,7 +149,7 @@
     .stock-card:hover, .company-card:hover, .factor-card:hover, .news-card:hover { transform: translateY(-2px); border-color: color-mix(in srgb, var(--accent) 24%, var(--border)); }
     .stock-card { container-type: inline-size; display: grid; gap: 13px; }
     .stock-top { display: flex; align-items: flex-start; justify-content: space-between; gap: 14px; }
-    .stock-name { font-size: clamp(18px, 4vw, 22px); font-weight: 950; letter-spacing: -.04em; }
+    .stock-name { font-size: clamp(18px, 4vw, 22px); font-weight: 950; letter-spacing: -.04em; word-break: keep-all; overflow-wrap: normal; }
     .ticker { color: var(--text-muted); font-size: 12px; font-weight: 850; margin-top: 2px; }
     .price-box { text-align: right; flex: 0 0 auto; }
     .price { font-size: clamp(20px, 5vw, 28px); font-weight: 950; letter-spacing: -.045em; white-space: nowrap; line-height: 1.05; }
@@ -168,6 +168,60 @@
     figure { margin: 0; }
     .chart-card { overflow: hidden; }
     .chart-card img { width: 100%; border-radius: 20px; background: var(--chart-bg); }
+    .native-chart-card { display: grid; gap: 14px; }
+    .chart-title-row { display:flex; justify-content:space-between; align-items:flex-start; gap:12px; margin-bottom:2px; flex-wrap:wrap; }
+    .chart-title-row h3 { margin:0; font-size: clamp(17px, 2vw, 22px); letter-spacing:-.03em; }
+    .chart-title-row span { flex:0 0 auto; font-size:12px; color:var(--text-muted); border:1px solid var(--border); border-radius:999px; padding:5px 9px; background:var(--surface-muted); }
+    .native-change-chart { display:grid; gap:12px; padding: 4px 0 2px; }
+    .change-row { display:grid; grid-template-columns:minmax(92px, 180px) minmax(120px, 1fr) 74px; gap:12px; align-items:center; }
+    .change-label { font-size:13px; font-weight:800; color:var(--text); }
+    .change-track { height:16px; border-radius:999px; background:var(--bar-track); overflow:hidden; box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--border) 72%, transparent); }
+    .change-track span { display:block; height:100%; border-radius:999px; background:var(--up); box-shadow:0 5px 16px color-mix(in srgb, var(--up) 22%, transparent); }
+    .change-row.down .change-track span { background:var(--down); box-shadow:0 5px 16px color-mix(in srgb, var(--down) 22%, transparent); }
+    .change-row strong { text-align:right; font-size:13px; color:var(--up); }
+    .change-row.down strong { color:var(--down); }
+    .native-trend-grid { display:grid; grid-template-columns:repeat(2, minmax(0, 1fr)); gap:12px; }
+    .trend-card { border:1px solid var(--border); border-radius:20px; padding:14px; background:linear-gradient(180deg, var(--surface-muted), color-mix(in srgb, var(--surface-elevated) 84%, transparent)); }
+    .trend-head, .trend-value, .trend-dates { display:flex; justify-content:space-between; align-items:center; gap:8px; }
+    .trend-head strong { font-size:14px; }
+    .trend-head span, .trend-dates { color:var(--text-muted); font-size:11px; }
+    .trend-value { margin-top:7px; }
+    .trend-value b { font-size:18px; letter-spacing:-.03em; }
+    .trend-value em { font-style:normal; font-weight:900; color:var(--up); }
+    .trend-card.down .trend-value em { color:var(--down); }
+    .trend-svg { width:100%; height:auto; margin:10px 0 2px; }
+    .trend-svg polygon { fill: color-mix(in srgb, var(--up) 15%, transparent); }
+    .trend-card.down .trend-svg polygon { fill: color-mix(in srgb, var(--down) 15%, transparent); }
+    .trend-svg polyline { fill:none; stroke:var(--up); stroke-width:4; stroke-linecap:round; stroke-linejoin:round; }
+    .trend-card.down .trend-svg polyline { stroke:var(--down); }
+    .trend-svg circle { fill:var(--surface-elevated); stroke:var(--up); stroke-width:3; }
+    .trend-card.down .trend-svg circle { stroke:var(--down); }
+    .cycle-native-card { background:linear-gradient(180deg, var(--surface-elevated), color-mix(in srgb, var(--surface-muted) 72%, var(--surface-elevated))); }
+    .cycle-svg { width:100%; min-height:270px; }
+    .cycle-bg { fill:var(--surface-muted); stroke:var(--border); }
+    .zone-hot { fill:color-mix(in srgb, var(--up) 10%, transparent); }
+    .zone-mid { fill:rgba(245,158,11,.10); }
+    .zone-cool { fill:color-mix(in srgb, var(--down) 10%, transparent); }
+    .cycle-zero { stroke:var(--border); stroke-width:2; }
+    .cycle-wave { fill:none; stroke:var(--text); stroke-width:5; stroke-linecap:round; }
+    .cycle-node circle { fill:var(--accent); stroke:var(--surface-elevated); stroke-width:4; }
+    .cycle-node.hot circle, .current-dot { fill:var(--up); }
+    .cycle-node.cool circle { fill:var(--down); }
+    .cycle-node.warn circle { fill:#f59e0b; }
+    .cycle-node.purple circle { fill:#8b5cf6; }
+    .cycle-node.ok circle { fill:#10b981; }
+    .cycle-node text { fill:var(--text); font-size:13px; font-weight:800; }
+    .cycle-node .node-sub { fill:var(--text-muted); font-size:11px; font-weight:600; }
+    .current-line { stroke:var(--up); stroke-width:3; stroke-dasharray:8 8; }
+    .current-dot { stroke:var(--surface-elevated); stroke-width:5; }
+    .current-arrow { fill:none; stroke:var(--up); stroke-width:3; stroke-linecap:round; }
+    .current-callout { font: 14px/1.35 system-ui, sans-serif; border:1px solid color-mix(in srgb, var(--up) 48%, var(--border)); border-radius:16px; padding:11px 13px; color:var(--up); background:var(--surface-elevated); box-shadow:var(--shadow-soft); }
+    .current-callout strong { display:block; margin-bottom:3px; }
+    .evidence-box { display:grid; gap:8px; font: 13px/1.3 system-ui, sans-serif; color:var(--text); }
+    .evidence-box strong { font-size:18px; margin-bottom:3px; }
+    .evidence-box span { display:inline-flex; align-items:center; justify-content:center; border-radius:999px; padding:6px 10px; background:var(--text); color:var(--surface-elevated); font-weight:800; }
+    .cycle-label-hot { fill:var(--up); font-size:22px; font-weight:900; }
+    .cycle-label-cool { fill:var(--down); font-size:22px; font-weight:900; }
     figcaption { margin-top: 10px; color: var(--text-muted); font-size: 13px; }
 
     .cycle-card { display: grid; gap: clamp(14px, 2vw, 22px); }
@@ -213,6 +267,10 @@
     @container (min-width: 360px) {
       .stock-card { grid-template-rows: auto 1fr auto; }
     }
+    @container (max-width: 280px) {
+      .stock-top { flex-direction: column; }
+      .price-box { text-align: left; }
+    }
     @media (min-width: 720px) {
       .metric-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
       .company-grid, .chart-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
@@ -234,6 +292,8 @@
       .price-box { text-align: left; }
       .side-column { gap: 16px; }
       .hero-card, .section { border-radius: 26px; }
+      .change-row { grid-template-columns:minmax(74px, 1fr) minmax(84px, 1fr) 58px; gap:8px; }
+      .change-label, .change-row strong { font-size:12px; }
     }
     @media (prefers-reduced-motion: reduce) {
       *, *::before, *::after { animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; scroll-behavior: auto !important; transition-duration: 0.01ms !important; }
@@ -256,11 +316,11 @@
           <div class="hero-content">
             <div class="eyebrow">DAILY SEMICONDUCTOR BRIEFING</div>
             <h1>일일 포트폴리오 브리핑</h1>
-            <p class="meta">작성일: 2026-06-17 KST · 가격 확인: 2026-06-17 12:26 KST · 표시 가격: 조회 시점 최신가</p>
+            <p class="meta">작성일: 2026-06-17 KST · 가격 확인: 2026-06-17 13:01 KST · 표시 가격: 조회 시점 최신가</p>
             <div class="badge-row" aria-label="오늘 요약 지표">
               <span class="badge up">상승 2</span>
               <span class="badge down">하락 2</span>
-              <span class="badge down">최대 변동 삼성전자 -1.90%</span>
+              <span class="badge down">최대 변동 삼성전자 -1.60%</span>
               <span class="badge neutral">반도체 사이클 점검</span>
             </div>
             <p class="hero-summary"><strong>HBM 강세 속 숨고르기</strong></p>
@@ -279,8 +339,8 @@
         </article>
         <article class="metric-card">
           <div class="card-label">최대 변동</div>
-          <div class="metric-value down">-1.90%</div>
-          <p class="muted">삼성전자 · 상승 SK하이닉스 +0.92% / 하락 삼성전자 -1.90%</p>
+          <div class="metric-value down">-1.60%</div>
+          <p class="muted">삼성전자 · 상승 SK하이닉스 +1.30% / 하락 삼성전자 -1.60%</p>
         </article>
       </div>
           </div>
@@ -300,8 +360,8 @@
               <div class="ticker">396500</div>
             </div>
             <div class="price-box">
-              <div class="price">51,875원</div>
-              <div class="change-line down">-575원 · -1.10%</div>
+              <div class="price">52,025원</div>
+              <div class="change-line down">-425원 · -0.81%</div>
             </div>
           </div>
           <div class="tag-row"><span class="tag down">반도체 ETF</span><span class="tag down">대형주</span><span class="tag down">분산</span><span class="tag down">하락</span></div>
@@ -315,8 +375,8 @@
               <div class="ticker">498400</div>
             </div>
             <div class="price-box">
-              <div class="price">26,850원</div>
-              <div class="change-line up">+20원 · +0.07%</div>
+              <div class="price">26,945원</div>
+              <div class="change-line up">+115원 · +0.43%</div>
             </div>
           </div>
           <div class="tag-row"><span class="tag up">커버드콜</span><span class="tag up">분배</span><span class="tag up">방어</span><span class="tag up">상승</span></div>
@@ -330,8 +390,8 @@
               <div class="ticker">005930</div>
             </div>
             <div class="price-box">
-              <div class="price">336,500원</div>
-              <div class="change-line down">-6,500원 · -1.90%</div>
+              <div class="price">337,500원</div>
+              <div class="change-line down">-5,500원 · -1.60%</div>
             </div>
           </div>
           <div class="tag-row"><span class="tag down">HBM 추격</span><span class="tag down">NAND</span><span class="tag down">파운드리</span><span class="tag down">하락</span></div>
@@ -345,8 +405,8 @@
               <div class="ticker">000660</div>
             </div>
             <div class="price-box">
-              <div class="price">2,404,000원</div>
-              <div class="change-line up">+22,000원 · +0.92%</div>
+              <div class="price">2,413,000원</div>
+              <div class="change-line up">+31,000원 · +1.30%</div>
             </div>
           </div>
           <div class="tag-row"><span class="tag up">HBM 순도</span><span class="tag up">AI 서버</span><span class="tag up">DRAM</span><span class="tag up">상승</span></div>
@@ -359,17 +419,83 @@
           <div class="section-head">
             <div class="section-kicker">Visual</div>
             <h2 id="visual-title">시각화 대시보드</h2>
-            <p class="meta section-subtitle">기존 차트를 유지하면서 넓은 화면에서는 메인 분석 카드처럼, 모바일에서는 잘리지 않는 이미지 카드처럼 보이도록 배치했습니다.</p>
+            <p class="meta section-subtitle">PNG 이미지를 불러오지 않고, HTML/CSS/SVG가 현재 UI 테마에 맞춰 직접 그립니다.</p>
           </div>
           <div class="chart-grid">
-            <figure class="chart-card">
-              <img src="assets/charts/daily_briefing_change_chart_2026-06-17.png" alt="전 거래일 대비 변동률 차트">
-              <figcaption>전 거래일 대비 변동률 차트입니다.</figcaption>
-            </figure>
-            <figure class="chart-card">
-              <img src="assets/charts/daily_briefing_price_trends_2026-06-17.png" alt="종목별 최근 4거래일 가격 흐름 차트">
-              <figcaption>종목별 최근 4거래일 가격 흐름입니다.</figcaption>
-            </figure>
+            
+      <figure class="chart-card native-chart-card">
+        <div class="chart-title-row"><h3>전 거래일 대비 변동률</h3><span>기준 2026-06-17</span></div>
+        <div class="native-change-chart" role="img" aria-label="전 거래일 대비 변동률 막대 차트">
+          
+          <div class="change-row down">
+            <div class="change-label">삼성전자</div>
+            <div class="change-track" aria-hidden="true"><span style="width:100.0%"></span></div>
+            <strong>-1.60%</strong>
+          </div>
+          <div class="change-row down">
+            <div class="change-label">TIGER 반도체TOP10</div>
+            <div class="change-track" aria-hidden="true"><span style="width:50.5%"></span></div>
+            <strong>-0.81%</strong>
+          </div>
+          <div class="change-row up">
+            <div class="change-label">KODEX 커버드콜</div>
+            <div class="change-track" aria-hidden="true"><span style="width:26.7%"></span></div>
+            <strong>+0.43%</strong>
+          </div>
+          <div class="change-row up">
+            <div class="change-label">SK하이닉스</div>
+            <div class="change-track" aria-hidden="true"><span style="width:81.2%"></span></div>
+            <strong>+1.30%</strong>
+          </div>
+        </div>
+        <figcaption>이미지 없이 HTML/CSS 막대로 직접 렌더링한 변동률 차트입니다.</figcaption>
+      </figure>
+            
+      <figure class="chart-card native-chart-card">
+        <div class="chart-title-row"><h3>종목별 최근 4거래일 가격 흐름</h3><span>SVG 직접 렌더링</span></div>
+        <div class="native-trend-grid">
+          <article class="trend-card down">
+            <div class="trend-head"><strong>삼성전자</strong><span>005930</span></div>
+            <div class="trend-value"><b>337,500원</b><em>-1.60%</em></div>
+            <svg class="trend-svg" viewBox="0 0 320 128" role="img" aria-label="삼성전자 최근 가격 흐름">
+              <polygon points="18.0,102.0 18.0,102.0 114.0,39.8 210.0,14.0 306.0,37.6 306.0,102.0" />
+              <polyline points="18.0,102.0 114.0,39.8 210.0,14.0 306.0,37.6" />
+              <circle cx="18.0" cy="102.0" r="4.4" /><circle cx="114.0" cy="39.8" r="4.4" /><circle cx="210.0" cy="14.0" r="4.4" /><circle cx="306.0" cy="37.6" r="4.4" />
+            </svg>
+            <div class="trend-dates"><span>6/12</span><span>6/15</span><span>6/16</span><span>6/17</span></div>
+          </article>
+          <article class="trend-card up">
+            <div class="trend-head"><strong>KODEX 커버드콜</strong><span>498400</span></div>
+            <div class="trend-value"><b>26,945원</b><em>+0.43%</em></div>
+            <svg class="trend-svg" viewBox="0 0 320 128" role="img" aria-label="KODEX 커버드콜 최근 가격 흐름">
+              <polygon points="18.0,102.0 18.0,102.0 114.0,43.0 210.0,19.3 306.0,14.0 306.0,102.0" />
+              <polyline points="18.0,102.0 114.0,43.0 210.0,19.3 306.0,14.0" />
+              <circle cx="18.0" cy="102.0" r="4.4" /><circle cx="114.0" cy="43.0" r="4.4" /><circle cx="210.0" cy="19.3" r="4.4" /><circle cx="306.0" cy="14.0" r="4.4" />
+            </svg>
+            <div class="trend-dates"><span>6/12</span><span>6/15</span><span>6/16</span><span>6/17</span></div>
+          </article>
+          <article class="trend-card up">
+            <div class="trend-head"><strong>SK하이닉스</strong><span>000660</span></div>
+            <div class="trend-value"><b>2.41백만원</b><em>+1.30%</em></div>
+            <svg class="trend-svg" viewBox="0 0 320 128" role="img" aria-label="SK하이닉스 최근 가격 흐름">
+              <polygon points="18.0,102.0 18.0,102.0 114.0,55.8 210.0,24.4 306.0,14.0 306.0,102.0" />
+              <polyline points="18.0,102.0 114.0,55.8 210.0,24.4 306.0,14.0" />
+              <circle cx="18.0" cy="102.0" r="4.4" /><circle cx="114.0" cy="55.8" r="4.4" /><circle cx="210.0" cy="24.4" r="4.4" /><circle cx="306.0" cy="14.0" r="4.4" />
+            </svg>
+            <div class="trend-dates"><span>6/12</span><span>6/15</span><span>6/16</span><span>6/17</span></div>
+          </article>
+          <article class="trend-card down">
+            <div class="trend-head"><strong>TIGER 반도체TOP10</strong><span>396500</span></div>
+            <div class="trend-value"><b>52,025원</b><em>-0.81%</em></div>
+            <svg class="trend-svg" viewBox="0 0 320 128" role="img" aria-label="TIGER 반도체TOP10 최근 가격 흐름">
+              <polygon points="18.0,102.0 18.0,53.7 114.0,14.0 210.0,80.9 306.0,102.0 306.0,102.0" />
+              <polyline points="18.0,53.7 114.0,14.0 210.0,80.9 306.0,102.0" />
+              <circle cx="18.0" cy="53.7" r="4.4" /><circle cx="114.0" cy="14.0" r="4.4" /><circle cx="210.0" cy="80.9" r="4.4" /><circle cx="306.0" cy="102.0" r="4.4" />
+            </svg>
+            <div class="trend-dates"><span>6/12</span><span>6/15</span><span>6/16</span><span>6/17</span></div>
+          </article></div>
+        <figcaption>PNG 대신 각 카드 안에서 SVG 선 그래프를 직접 그립니다.</figcaption>
+      </figure>
           </div>
         </section>
 
@@ -380,10 +506,27 @@
             <p class="meta section-subtitle">모바일에서는 요약을 먼저 보고, 상세 근거는 접어서 확인하는 구조입니다.</p>
           </div>
           <article class="cycle-card">
-            <figure class="chart-card">
-              <img src="assets/charts/daily_briefing_semiconductor_cycle_2026-06-17.png" alt="반도체 메모리 사이클 위치 추정">
-              <figcaption>현재 위치는 감산 이후 회복 초입이 아니라 AI 서버용 HBM 병목이 범용 DRAM 공급까지 압박하는 가격 상승·실적 상향 구간입니다. 다만 삼성전자 조정과 미국 반도체주 약세가 동시에 나타나 추격 매수보다 수급 지속성과 가격 지표 확인이 필요한 단계로 표시했습니다.</figcaption>
-            </figure>
+            
+      <figure class="chart-card native-chart-card cycle-native-card">
+        <div class="chart-title-row"><h3>반도체 메모리 사이클 위치 추정</h3><span>SVG native</span></div>
+        <svg class="cycle-svg" viewBox="0 0 920 430" role="img" aria-label="반도체 메모리 사이클 위치 추정 다이어그램">
+          <rect x="24" y="42" width="690" height="326" rx="28" class="cycle-bg" />
+          <rect x="24" y="42" width="690" height="122" rx="28" class="zone-hot" />
+          <rect x="24" y="164" width="690" height="102" class="zone-mid" />
+          <rect x="24" y="266" width="690" height="102" rx="28" class="zone-cool" />
+          <line x1="42" y1="205" x2="696" y2="205" class="cycle-zero" />
+          <polyline class="cycle-wave" points="56.0,205.0 59.4,200.7 62.8,196.5 66.2,192.2 69.6,188.0 72.9,183.8 76.3,179.6 79.7,175.5 83.1,171.4 86.5,167.3 89.9,163.3 93.3,159.3 96.7,155.4 100.1,151.5 103.4,147.7 106.8,144.0 110.2,140.3 113.6,136.8 117.0,133.3 120.4,129.9 123.8,126.6 127.2,123.4 130.6,120.3 133.9,117.2 137.3,114.3 140.7,111.5 144.1,108.9 147.5,106.3 150.9,103.9 154.3,101.5 157.7,99.3 161.1,97.3 164.4,95.3 167.8,93.5 171.2,91.9 174.6,90.4 178.0,89.0 181.4,87.7 184.8,86.6 188.2,85.7 191.6,84.9 194.9,84.2 198.3,83.7 201.7,83.3 205.1,83.1 208.5,83.0 211.9,83.1 215.3,83.3 218.7,83.7 222.1,84.2 225.4,84.9 228.8,85.7 232.2,86.6 235.6,87.7 239.0,89.0 242.4,90.4 245.8,91.9 249.2,93.5 252.6,95.3 255.9,97.3 259.3,99.3 262.7,101.5 266.1,103.9 269.5,106.3 272.9,108.9 276.3,111.5 279.7,114.3 283.1,117.2 286.4,120.3 289.8,123.4 293.2,126.6 296.6,129.9 300.0,133.3 303.4,136.8 306.8,140.3 310.2,144.0 313.6,147.7 316.9,151.5 320.3,155.4 323.7,159.3 327.1,163.3 330.5,167.3 333.9,171.4 337.3,175.5 340.7,179.6 344.1,183.8 347.4,188.0 350.8,192.2 354.2,196.5 357.6,200.7 361.0,205.0 364.4,209.3 367.8,213.5 371.2,217.8 374.6,222.0 377.9,226.2 381.3,230.4 384.7,234.5 388.1,238.6 391.5,242.7 394.9,246.7 398.3,250.7 401.7,254.6 405.1,258.5 408.4,262.3 411.8,266.0 415.2,269.7 418.6,273.2 422.0,276.7 425.4,280.1 428.8,283.4 432.2,286.6 435.6,289.7 438.9,292.8 442.3,295.7 445.7,298.5 449.1,301.1 452.5,303.7 455.9,306.1 459.3,308.5 462.7,310.7 466.1,312.7 469.4,314.7 472.8,316.5 476.2,318.1 479.6,319.6 483.0,321.0 486.4,322.3 489.8,323.4 493.2,324.3 496.6,325.1 499.9,325.8 503.3,326.3 506.7,326.7 510.1,326.9 513.5,327.0 516.9,326.9 520.3,326.7 523.7,326.3 527.1,325.8 530.4,325.1 533.8,324.3 537.2,323.4 540.6,322.3 544.0,321.0 547.4,319.6 550.8,318.1 554.2,316.5 557.6,314.7 560.9,312.7 564.3,310.7 567.7,308.5 571.1,306.1 574.5,303.7 577.9,301.1 581.3,298.5 584.7,295.7 588.1,292.8 591.4,289.7 594.8,286.6 598.2,283.4 601.6,280.1 605.0,276.7 608.4,273.2 611.8,269.7 615.2,266.0 618.6,262.3 621.9,258.5 625.3,254.6 628.7,250.7 632.1,246.7 635.5,242.7 638.9,238.6 642.3,234.5 645.7,230.4 649.1,226.2 652.4,222.0 655.8,217.8 659.2,213.5 662.6,209.3 666.0,205.0" />
+          <g class="cycle-node ok"><circle cx="86.5" cy="167.3" r="7"/><text x="86.5" y="137.3" text-anchor="middle"><tspan class="node-title">회복</tspan><tspan x="86.5" dy="16" class="node-sub">재고 감소</tspan></text></g><g class="cycle-node warn"><circle cx="141.4" cy="111.0" r="7"/><text x="141.4" y="81.0" text-anchor="middle"><tspan class="node-title">가격 상승</tspan><tspan x="141.4" dy="16" class="node-sub">ASP 개선</tspan></text></g><g class="cycle-node hot"><circle cx="208.5" cy="83.0" r="7"/><text x="208.5" y="53.0" text-anchor="middle"><tspan class="node-title">실적 호황</tspan><tspan x="208.5" dy="16" class="node-sub">이익 폭증</tspan></text></g><g class="cycle-node purple"><circle cx="287.8" cy="121.5" r="7"/><text x="287.8" y="91.5" text-anchor="middle"><tspan class="node-title">CAPEX</tspan><tspan x="287.8" dy="16" class="node-sub">공급 준비</tspan></text></g><g class="cycle-node hot"><circle cx="361.0" cy="205.0" r="7"/><text x="361.0" y="247.0" text-anchor="middle"><tspan class="node-title">피크 경계</tspan><tspan x="361.0" dy="16" class="node-sub">선반영 점검</tspan></text></g><g class="cycle-node cool"><circle cx="458.6" cy="308.0" r="7"/><text x="458.6" y="350.0" text-anchor="middle"><tspan class="node-title">가격 하락</tspan><tspan x="458.6" dy="16" class="node-sub">과잉 공급</tspan></text></g><g class="cycle-node cool"><circle cx="513.5" cy="327.0" r="7"/><text x="513.5" y="369.0" text-anchor="middle"><tspan class="node-title">불황 저점</tspan><tspan x="513.5" dy="16" class="node-sub">감산</tspan></text></g><g class="cycle-node ok"><circle cx="598.9" cy="282.8" r="7"/><text x="598.9" y="324.8" text-anchor="middle"><tspan class="node-title">회복 준비</tspan><tspan x="598.9" dy="16" class="node-sub">재고 소진</tspan></text></g>
+          <line x1="187.2" y1="344" x2="187.2" y2="85.9" class="current-line" />
+          <circle class="current-dot" cx="187.2" cy="85.9" r="13" />
+          <path class="current-arrow" d="M 205.2 67.9 C 259.1 -8.1, 317.1 78, 373.1 72" />
+          <foreignObject x="377.1" y="38" width="245" height="96"><div xmlns="http://www.w3.org/1999/xhtml" class="current-callout"><strong>현재 위치</strong><span>호황 중반~후반 진입<br/>약 3.5~4.5단계</span></div></foreignObject>
+          <foreignObject x="720" y="58" width="176" height="226"><div xmlns="http://www.w3.org/1999/xhtml" class="evidence-box"><strong>판단 근거</strong><span>가격</span><span>실적</span><span>밸류</span><span>수급</span><span>CAPEX</span></div></foreignObject>
+          <text x="370" y="30" text-anchor="middle" class="cycle-label-hot">호황</text>
+          <text x="370" y="404" text-anchor="middle" class="cycle-label-cool">불황</text>
+        </svg>
+        <figcaption>현재 위치는 감산 이후 회복 초입이 아니라 AI 서버용 HBM 병목이 범용 DRAM 공급까지 압박하는 가격 상승·실적 상향 구간입니다. 다만 삼성전자 조정과 미국 반도체주 약세가 동시에 나타나 추격 매수보다 수급 지속성과 가격 지표 확인이 필요한 단계로 표시했습니다.</figcaption>
+      </figure>
             <div class="cycle-grid">
               <div class="cycle-point"><strong>현재 구간</strong><span>HBM 강세 속 숨고르기</span></div>
               <div class="cycle-point"><strong>판단</strong><span>메모리 사이클은 HBM 공급 부족과 DDR5·서버 DRAM 타이트닝이 실적 상향을 견인하는 호황 중반 이후이며, 오늘은 가격 상승 추세보다 주가 과열과 종목 간 차별화 관리가 더 중요합니다.</span></div>
@@ -439,7 +582,7 @@
           <details class="detail-pack company-detail">
             <summary>오늘의 해석 자세히 보기</summary>
             <div class="split-list">
-              <div><strong>오늘의 해석</strong>오늘 변동률은 -1.90%입니다. 시총 약 2210조원, Forward PE 5.86 기준으로 추세 지속성을 점검합니다.</div>
+              <div><strong>오늘의 해석</strong>오늘 변동률은 -1.60%입니다. 시총 약 2203조원, Forward PE 5.84 기준으로 추세 지속성을 점검합니다.</div>
             </div>
           </details>
         </article>
@@ -457,7 +600,7 @@
           <details class="detail-pack company-detail">
             <summary>오늘의 해석 자세히 보기</summary>
             <div class="split-list">
-              <div><strong>오늘의 해석</strong>오늘 변동률은 +0.92%입니다. 시총 약 1712조원, Forward PE 5.88 기준으로 추세 지속성을 점검합니다.</div>
+              <div><strong>오늘의 해석</strong>오늘 변동률은 +1.30%입니다. 시총 약 1709조원, Forward PE 5.86 기준으로 추세 지속성을 점검합니다.</div>
             </div>
           </details>
         </article>
@@ -474,25 +617,25 @@
           <div class="mini-bars">
         <div class="mini-bar-row">
           <strong>SK하이닉스</strong>
-          <span class="up">▲ +0.92%</span>
-          <div class="bar-track"><div class="bar-fill up-bg" style="width: 49%"></div></div>
+          <span class="up">▲ +1.30%</span>
+          <div class="bar-track"><div class="bar-fill up-bg" style="width: 81%"></div></div>
         </div>
 
         <div class="mini-bar-row">
           <strong>KODEX 커버드콜</strong>
-          <span class="up">▲ +0.07%</span>
-          <div class="bar-track"><div class="bar-fill up-bg" style="width: 4%"></div></div>
+          <span class="up">▲ +0.43%</span>
+          <div class="bar-track"><div class="bar-fill up-bg" style="width: 27%"></div></div>
         </div>
 
         <div class="mini-bar-row">
           <strong>TIGER 반도체TOP10</strong>
-          <span class="down">▼ -1.10%</span>
-          <div class="bar-track"><div class="bar-fill down-bg" style="width: 58%"></div></div>
+          <span class="down">▼ -0.81%</span>
+          <div class="bar-track"><div class="bar-fill down-bg" style="width: 51%"></div></div>
         </div>
 
         <div class="mini-bar-row">
           <strong>삼성전자</strong>
-          <span class="down">▼ -1.90%</span>
+          <span class="down">▼ -1.60%</span>
           <div class="bar-track"><div class="bar-fill down-bg" style="width: 100%"></div></div>
         </div>
           </div>
@@ -506,8 +649,8 @@
           <div class="factor-grid">
         <article class="factor-card">
           <div class="card-label">환율</div>
-          <div class="factor-value">1513.28원</div>
-          <div class="change-line down">-0.00%</div>
+          <div class="factor-value">1515.11원</div>
+          <div class="change-line up">+0.12%</div>
           <p class="factor-copy">외국인 수급과 반도체 대형주 투자심리에 직접 영향을 줍니다.</p>
         </article>
 
@@ -520,15 +663,15 @@
 
         <article class="factor-card">
           <div class="card-label">유가</div>
-          <div class="factor-value">75.18달러</div>
-          <div class="change-line down">-6.90%</div>
+          <div class="factor-value">76.05달러</div>
+          <div class="change-line down">-5.82%</div>
           <p class="factor-copy">비용 부담과 인플레이션 기대를 통해 금리 경로에 영향을 줍니다.</p>
         </article>
 
         <article class="factor-card">
           <div class="card-label">KOSPI</div>
-          <div class="factor-value">8726.08</div>
-          <div class="change-line down">-0.01%</div>
+          <div class="factor-value">8706.29</div>
+          <div class="change-line down">-0.23%</div>
           <p class="factor-copy">국내 위험자산 선호와 대형주 수급 배경을 보여줍니다.</p>
         </article>
           </div>
