@@ -6,331 +6,246 @@
   <title>일일 포트폴리오 브리핑 - 2026-06-17</title>
   <style>
     :root {
-      --bg: #f6f7f9;
+      --bg: #eef3f8;
+      --bg2: #f7f9fc;
       --panel: #ffffff;
-      --line: #e5e7eb;
-      --text: #171717;
-      --muted: #667085;
-      --up: #d62728;
-      --down: #1f77b4;
-      --accent: #0f766e;
-      --soft: #f8fafc;
-      --shadow: 0 10px 28px rgba(15, 23, 42, 0.08);
+      --panel-soft: #f8fafc;
+      --line: rgba(26, 46, 80, 0.10);
+      --text: #142033;
+      --muted: #66758a;
+      --up: #d92d20;
+      --down: #2563eb;
+      --accent: #2563eb;
+      --accent-soft: #e8f1ff;
+      --shadow: 0 14px 34px rgba(22, 34, 51, 0.08);
+      --radius: 22px;
     }
-
     * { box-sizing: border-box; }
-
-    html, body { max-width: 100%; overflow-x: hidden; }
-
+    html, body { width: 100%; max-width: 100%; overflow-x: hidden; }
     body {
       margin: 0;
-      background: var(--bg);
+      background: radial-gradient(circle at 10% 0%, rgba(37,99,235,.10), transparent 32%), linear-gradient(180deg, var(--bg) 0%, var(--bg2) 45%, #f9fafb 100%);
       color: var(--text);
       font-family: "Malgun Gothic", "Apple SD Gothic Neo", "Noto Sans KR", Arial, sans-serif;
-      line-height: 1.55;
+      line-height: 1.58;
       word-break: keep-all;
       overflow-wrap: anywhere;
+      -webkit-font-smoothing: antialiased;
     }
-
-    main {
-      width: min(1180px, calc(100% - 32px));
-      margin: 0 auto;
-      padding: 28px 0 48px;
-    }
-
-    header { display: grid; gap: 10px; margin-bottom: 18px; }
-
-    h1 { margin: 0; font-size: clamp(26px, 4vw, 42px); line-height: 1.18; }
-    h2 { margin: 0 0 16px; font-size: 22px; line-height: 1.28; }
-    h3 { margin: 18px 0 10px; font-size: 18px; line-height: 1.35; }
-    p { margin: 0 0 12px; }
-    a { color: #155eef; text-decoration: none; }
+    img, svg, canvas { display: block; max-width: 100%; height: auto; }
+    p, li, span, div, a, h1, h2, h3, h4 { overflow-wrap: anywhere; word-break: keep-all; }
+    a { color: var(--accent); text-decoration: none; }
     a:hover { text-decoration: underline; }
-
-    .meta { color: var(--muted); font-size: 14px; }
-
-    .summary {
-      display: grid;
-      grid-template-columns: 1.6fr 1fr 1fr;
-      gap: 12px;
-      margin: 18px 0 22px;
-    }
-
-    .tile, section, .stock-news {
-      background: var(--panel);
-      border: 1px solid var(--line);
-      border-radius: 12px;
-      box-shadow: var(--shadow);
-    }
-
-    .tile { padding: 18px; min-height: 96px; }
-    .tile-label { color: var(--muted); font-size: 13px; margin-bottom: 6px; }
-    .tile-value { font-size: clamp(20px, 4.8vw, 24px); font-weight: 800; line-height: 1.25; }
-
-    section { padding: 22px; margin: 16px 0; overflow: hidden; }
-
-    .table-wrap { width: 100%; overflow-x: visible; }
-
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      table-layout: fixed;
-      font-size: 15px;
-    }
-
-    th, td {
-      padding: 12px 10px;
-      border-bottom: 1px solid var(--line);
-      text-align: right;
-      vertical-align: top;
-      white-space: normal;
-      overflow-wrap: anywhere;
-    }
-
-    th:first-child, td:first-child { text-align: left; }
-    th { color: var(--muted); font-size: 13px; font-weight: 700; background: #fafafa; }
-
-    .price-table th:nth-child(1), .price-table td:nth-child(1) { width: 32%; }
-    .price-table th:nth-child(2), .price-table td:nth-child(2) { width: 12%; }
-    .price-table th:nth-child(3), .price-table td:nth-child(3),
-    .price-table th:nth-child(4), .price-table td:nth-child(4) { width: 18%; }
-    .price-table th:nth-child(5), .price-table td:nth-child(5),
-    .price-table th:nth-child(6), .price-table td:nth-child(6) { width: 10%; }
-
-    .cycle-report table { margin: 12px 0 18px; }
-    .cycle-report th, .cycle-report td { line-height: 1.5; }
-    .cycle-report ul, .cycle-report ol { padding-left: 22px; }
-    .cycle-report li { margin: 6px 0; }
-
-    .up { color: var(--up); font-weight: 800; }
-    .down { color: var(--down); font-weight: 800; }
-
-    .charts { display: grid; grid-template-columns: 1fr; gap: 18px; }
-    figure { margin: 0; background: #fff; border: 1px solid var(--line); border-radius: 10px; overflow: hidden; }
-    figure img { display: block; width: 100%; height: auto; }
-    figcaption { padding: 12px 14px; border-top: 1px solid var(--line); color: var(--muted); font-size: 13px; }
-
-    .text-bars { display: grid; gap: 10px; margin-top: 10px; }
-    .bar-row { display: grid; grid-template-columns: 210px 72px 1fr; gap: 12px; align-items: center; font-size: 14px; }
-    .bar-track { height: 12px; background: #eef2f7; border-radius: 999px; overflow: hidden; }
+    main { width: min(1180px, calc(100% - 28px)); margin: 0 auto; padding: 18px 0 44px; }
+    .section, .card, .stock-card, .factor-card, .company-card, .news-card, .hero-card, .chart-card, .cycle-card, .check-card { min-width: 0; }
+    .hero-card, .section { background: rgba(255,255,255,.92); border: 1px solid var(--line); border-radius: 22px; box-shadow: var(--shadow); }
+    .hero-card { padding: 22px; margin: 14px 0 18px; overflow: hidden; }
+    .eyebrow, .section-kicker, .card-label { color: var(--accent); font-size: 12px; font-weight: 800; letter-spacing: .02em; }
+    h1 { margin: 6px 0 8px; font-size: clamp(28px, 7vw, 48px); line-height: 1.08; letter-spacing: -.04em; }
+    h2 { margin: 0; font-size: clamp(21px, 5vw, 28px); line-height: 1.22; letter-spacing: -.03em; }
+    h3 { margin: 0; font-size: 18px; line-height: 1.32; letter-spacing: -.02em; }
+    p { margin: 0; }
+    .meta, .muted { color: var(--muted); font-size: 13px; }
+    .hero-summary { margin-top: 10px; color: #334155; font-size: 15px; }
+    .badge-row, .tag-row, .metric-row { display: flex; flex-wrap: wrap; gap: 8px; min-width: 0; }
+    .badge, .tag { display: inline-flex; align-items: center; gap: 5px; max-width: 100%; border-radius: 999px; padding: 7px 10px; background: var(--accent-soft); color: #1d4ed8; font-size: 12px; font-weight: 800; }
+    .badge.neutral { background: #f1f5f9; color: #475569; }
+    .badge.up, .tag.up { background: #fff1f0; color: var(--up); }
+    .badge.down, .tag.down { background: #eff6ff; color: var(--down); }
+    .section { padding: 20px; margin: 16px 0; }
+    .section-head { display: flex; flex-direction: column; gap: 6px; margin-bottom: 14px; }
+    .stock-grid, .company-grid, .factor-grid, .chart-grid { display: grid; grid-template-columns: 1fr; gap: 12px; }
+    .stock-card, .company-card, .factor-card, .chart-card, .cycle-card, .news-card, .check-card { background: var(--panel); border: 1px solid var(--line); border-radius: 20px; padding: 16px; box-shadow: 0 8px 22px rgba(15,23,42,.045); }
+    .stock-top { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; margin-bottom: 12px; }
+    .stock-name { font-size: 19px; font-weight: 900; letter-spacing: -.03em; }
+    .ticker { color: var(--muted); font-size: 12px; font-weight: 800; margin-top: 2px; }
+    .price-box { text-align: right; flex: 0 0 auto; }
+    .price { font-size: 20px; font-weight: 900; letter-spacing: -.03em; white-space: nowrap; }
+    .change-line { font-size: 13px; font-weight: 900; white-space: nowrap; }
+    .up { color: var(--up); }
+    .down { color: var(--down); }
+    .stock-summary, .company-copy, .factor-copy, .cycle-copy { color: #334155; font-size: 14px; margin-top: 12px; }
+    .mini-bars { display: grid; gap: 10px; }
+    .mini-bar-row { display: grid; grid-template-columns: minmax(0,1fr) auto; gap: 10px; align-items: center; font-size: 13px; }
+    .bar-track { grid-column: 1 / -1; height: 9px; border-radius: 999px; background: #e5edf7; overflow: hidden; }
     .bar-fill { height: 100%; border-radius: 999px; }
     .bar-fill.up-bg { background: var(--up); }
     .bar-fill.down-bg { background: var(--down); }
-
-    .news-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; }
-    .stock-news { padding: 18px; box-shadow: none; }
-    .stock-news ol { margin: 8px 0 0 20px; padding: 0; }
-    .stock-news li { margin: 0 0 12px; padding-left: 4px; }
-    .source { display: block; color: var(--muted); font-size: 13px; margin-bottom: 3px; }
-    .empty { color: var(--muted); background: #f9fafb; border: 1px dashed #d0d5dd; border-radius: 8px; padding: 14px; }
-    .actions { display: grid; gap: 10px; margin: 0; padding-left: 20px; }
-    .note { color: var(--muted); font-size: 14px; margin-top: 12px; }
-
-    @media (max-width: 840px) {
-      .summary, .news-grid { grid-template-columns: 1fr; }
-      .bar-row { grid-template-columns: 1fr; gap: 6px; }
+    figure { margin: 0; }
+    .chart-card img { width: 100%; border-radius: 16px; background: white; }
+    figcaption { margin-top: 10px; color: var(--muted); font-size: 12px; }
+    .cycle-grid { display: grid; grid-template-columns: 1fr; gap: 10px; margin-top: 14px; }
+    .cycle-point { background: var(--panel-soft); border: 1px solid var(--line); border-radius: 16px; padding: 12px; }
+    .cycle-point strong { display: block; margin-bottom: 4px; }
+    .cycle-report { margin-top: 14px; display: grid; gap: 12px; }
+    .report-card { background: var(--panel-soft); border: 1px solid var(--line); border-radius: 16px; padding: 12px; display: grid; gap: 8px; }
+    .report-field { display: grid; gap: 3px; font-size: 14px; }
+    .report-field strong { color: var(--muted); font-size: 12px; }
+    .cycle-report table { display: block; width: 100%; border: 0; }
+    .cycle-report thead { display: none; }
+    .cycle-report tbody, .cycle-report tr, .cycle-report th, .cycle-report td { display: block; width: 100%; }
+    .cycle-report tr { background: var(--panel-soft); border: 1px solid var(--line); border-radius: 16px; padding: 12px; margin-bottom: 10px; }
+    .cycle-report th, .cycle-report td { border: 0; padding: 3px 0; text-align: left; font-size: 14px; }
+    .cycle-report ul, .cycle-report ol { padding-left: 20px; margin: 8px 0 0; }
+    .cycle-report li { margin: 6px 0; }
+    .cycle-report p { margin-bottom: 8px; }
+    .company-card .position { margin: 8px 0 10px; }
+    .split-list { display: grid; gap: 8px; margin-top: 10px; }
+    .split-list div { background: var(--panel-soft); border-radius: 14px; padding: 10px; font-size: 13px; }
+    .split-list strong { display: block; margin-bottom: 3px; }
+    .factor-card { display: grid; gap: 8px; }
+    .factor-value { font-size: 22px; font-weight: 900; letter-spacing: -.03em; }
+    .news-timeline { display: grid; gap: 10px; }
+    .news-card { position: relative; padding-left: 18px; }
+    .news-card::before { content: ""; position: absolute; left: 7px; top: 19px; width: 7px; height: 7px; border-radius: 999px; background: var(--accent); }
+    .news-meta { color: var(--muted); font-size: 12px; margin-bottom: 4px; }
+    .news-title { font-size: 14px; font-weight: 800; line-height: 1.45; }
+    .check-card { background: linear-gradient(180deg,#fff 0%,#f8fbff 100%); }
+    .check-list { display: grid; gap: 10px; margin: 12px 0 0; padding: 0; list-style: none; }
+    .check-item { display: grid; grid-template-columns: 24px minmax(0,1fr); gap: 10px; align-items: start; background: var(--panel-soft); border: 1px solid var(--line); border-radius: 15px; padding: 12px; font-size: 14px; }
+    .check-box { width: 18px; height: 18px; border: 2px solid var(--accent); border-radius: 6px; margin-top: 2px; }
+    .footer-note { color: var(--muted); font-size: 12px; margin-top: 14px; }
+    @media (min-width: 700px) {
+      main { padding-top: 28px; }
+      .hero-card, .section { padding: 26px; }
+      .stock-grid, .factor-grid { grid-template-columns: repeat(2, minmax(0,1fr)); }
+      .chart-grid, .company-grid { grid-template-columns: repeat(2, minmax(0,1fr)); }
+      .cycle-grid { grid-template-columns: repeat(2, minmax(0,1fr)); }
     }
-
-    @media (max-width: 640px) {
-      main { width: min(100% - 24px, 100%); padding: 18px 0 36px; }
-      section { padding: 18px 14px; border-radius: 12px; }
-      h2 { font-size: 21px; }
-      .tile { padding: 16px; }
-
-      .price-table, .price-table thead, .price-table tbody, .price-table tr {
-        display: block;
-        width: 100%;
-      }
-
-      .price-table thead { display: none; }
-
-      .price-table tr {
-        padding: 16px 0;
-        border-bottom: 1px solid var(--line);
-      }
-
-      .price-table td,
-      .price-table td:nth-child(n) {
-        display: grid;
-        grid-template-columns: 92px minmax(0, 1fr);
-        gap: 12px;
-        align-items: baseline;
-        width: 100% !important;
-        border: 0;
-        padding: 7px 0;
-        text-align: right;
-        min-width: 0;
-        font-size: 15px;
-        white-space: normal;
-        word-break: keep-all;
-        overflow-wrap: normal;
-      }
-
-      .price-table td::before {
-        content: attr(data-label);
-        color: var(--muted);
-        font-size: 13px;
-        font-weight: 700;
-        text-align: left;
-        white-space: nowrap;
-      }
-
-      .price-table td:first-child {
-        display: block;
-        text-align: left;
-        font-size: 22px;
-        font-weight: 800;
-        line-height: 1.35;
-        padding-bottom: 12px;
-        word-break: keep-all;
-        overflow-wrap: normal;
-      }
-
-      .price-table td:first-child::before {
-        display: block;
-        margin-bottom: 4px;
-      }
-
-      .cycle-report table, .cycle-report thead, .cycle-report tbody, .cycle-report tr, .cycle-report th, .cycle-report td {
-        display: block;
-        width: 100%;
-      }
-
-      .cycle-report thead { display: none; }
-      .cycle-report tr {
-        margin: 0 0 12px;
-        padding: 12px;
-        border: 1px solid var(--line);
-        border-radius: 10px;
-        background: var(--soft);
-      }
-      .cycle-report th, .cycle-report td {
-        border: 0;
-        padding: 4px 0;
-        text-align: left;
-        font-size: 14px;
-        white-space: normal;
-        overflow-wrap: anywhere;
-      }
-
-      .charts figure { overflow: visible; }
-      figcaption { font-size: 12px; }
+    @media (min-width: 1040px) {
+      .stock-grid { grid-template-columns: repeat(4, minmax(0,1fr)); }
+      .factor-grid { grid-template-columns: repeat(4, minmax(0,1fr)); }
     }
   
   </style>
 </head>
 <body>
   <main>
-    <header>
+    <header class="hero-card">
+      <div class="eyebrow">DAILY SEMICONDUCTOR BRIEFING</div>
       <h1>일일 포트폴리오 브리핑</h1>
-      <p class="meta">작성일: 2026-06-17 KST | 가격 기준: 2026-06-17 종가</p>
+      <p class="meta">작성일: 2026-06-17 KST · 가격 기준: 2026-06-17 종가</p>
+      <div class="badge-row" aria-label="오늘 요약 지표">
+        <span class="badge up">상승 2</span>
+        <span class="badge down">하락 2</span>
+        <span class="badge down">최대 변동 삼성전자 -1.90%</span>
+      </div>
+      <p class="hero-summary"><strong>HBM 강세 속 숨고르기</strong></p>
+      <p class="hero-summary">삼성전자는 전일 급등 부담으로 조정받는 반면 SK하이닉스는 HBM 프리미엄을 유지했고, 환율·금리·유가가 완화되며 메모리 호황 논리는 아직 훼손되지 않은 하루입니다.</p>
     </header>
 
-    <div class="summary">
-      <div class="tile">
-        <div class="tile-label">오늘의 핵심 한 줄</div>
-        <div class="tile-value">HBM 강세 속 숨고르기</div>
-        <p class="meta">삼성전자는 전일 급등 부담으로 조정받는 반면 SK하이닉스는 HBM 프리미엄을 유지했고, 환율·금리·유가가 완화되며 메모리 호황 논리는 아직 훼손되지 않은 하루입니다.</p>
+    <section class="section" aria-labelledby="stocks-title">
+      <div class="section-head">
+        <div class="section-kicker">PORTFOLIO</div>
+        <h2 id="stocks-title">오늘의 종목 카드</h2>
+        <p class="meta">표 대신 카드로 가격, 등락, 핵심 태그와 짧은 해석을 한 번에 확인합니다.</p>
       </div>
-      <div class="tile">
-        <div class="tile-label">상승 / 하락</div>
-        <div class="tile-value"><span class="up">2</span> / <span class="down">2</span></div>
-        <p class="meta">상승 2종목, 하락 2종목</p>
-      </div>
-      <div class="tile">
-        <div class="tile-label">최대 변동</div>
-        <div class="tile-value"><span class="down">삼성전자 -1.90%</span></div>
-        <p class="meta">최대 상승: SK하이닉스 +1.34% | 최대 하락: 삼성전자 -1.90%</p>
-      </div>
-    </div>
+      <div class="stock-grid">
+        <article class="stock-card">
+          <div class="stock-top">
+            <div>
+              <h3 class="stock-name">TIGER 반도체TOP10</h3>
+              <div class="ticker">396500</div>
+            </div>
+            <div class="price-box">
+              <div class="price">52,030원</div>
+              <div class="change-line down">-420원 · -0.80%</div>
+            </div>
+          </div>
+          <div class="tag-row"><span class="tag down">반도체 ETF</span><span class="tag down">대형주</span><span class="tag down">분산</span><span class="tag down">하락</span></div>
+          <p class="stock-summary">오늘은 하락 마감했습니다. 반도체 대형주 흐름을 묶어서 보는 섹터 온도계 역할입니다.</p>
+        </article>
 
-    <section>
-      <h2>가격 요약</h2>
-      <p class="meta">당일 장중 데이터가 제한되는 경우 마지막 확인 가능 거래일 종가를 기준으로 정리합니다.</p>
-      <div class="table-wrap">
-        <table class="price-table">
-          <thead>
-            <tr>
-              <th>종목</th><th>티커</th><th>기준 가격</th><th>전 거래일 종가</th><th>등락</th><th>변동률</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td data-label="종목">TIGER 반도체TOP10</td>
-              <td data-label="티커">396500</td>
-              <td data-label="기준 가격">51,965원</td>
-              <td data-label="전 거래일">52,450원</td>
-              <td data-label="등락" class="down">-485원</td>
-              <td data-label="변동률" class="down">-0.92%</td>
-            </tr>
+        <article class="stock-card">
+          <div class="stock-top">
+            <div>
+              <h3 class="stock-name">KODEX 200타겟위클리커버드콜</h3>
+              <div class="ticker">498400</div>
+            </div>
+            <div class="price-box">
+              <div class="price">26,960원</div>
+              <div class="change-line up">+130원 · +0.48%</div>
+            </div>
+          </div>
+          <div class="tag-row"><span class="tag up">커버드콜</span><span class="tag up">분배</span><span class="tag up">방어</span><span class="tag up">상승</span></div>
+          <p class="stock-summary">오늘은 상승 마감했습니다. 분배와 변동성 완충 목적의 보유 성격이 강한 상품입니다.</p>
+        </article>
 
-            <tr>
-              <td data-label="종목">KODEX 200타겟위클리커버드콜</td>
-              <td data-label="티커">498400</td>
-              <td data-label="기준 가격">26,965원</td>
-              <td data-label="전 거래일">26,830원</td>
-              <td data-label="등락" class="up">+135원</td>
-              <td data-label="변동률" class="up">+0.50%</td>
-            </tr>
+        <article class="stock-card">
+          <div class="stock-top">
+            <div>
+              <h3 class="stock-name">삼성전자</h3>
+              <div class="ticker">005930</div>
+            </div>
+            <div class="price-box">
+              <div class="price">336,500원</div>
+              <div class="change-line down">-6,500원 · -1.90%</div>
+            </div>
+          </div>
+          <div class="tag-row"><span class="tag down">HBM 추격</span><span class="tag down">NAND</span><span class="tag down">파운드리</span><span class="tag down">하락</span></div>
+          <p class="stock-summary">오늘은 하락 마감했습니다. HBM·NAND·파운드리 회복 기대와 수급 변화를 함께 확인할 종목입니다.</p>
+        </article>
 
-            <tr>
-              <td data-label="종목">삼성전자</td>
-              <td data-label="티커">005930</td>
-              <td data-label="기준 가격">336,500원</td>
-              <td data-label="전 거래일">343,000원</td>
-              <td data-label="등락" class="down">-6,500원</td>
-              <td data-label="변동률" class="down">-1.90%</td>
-            </tr>
-
-            <tr>
-              <td data-label="종목">SK하이닉스</td>
-              <td data-label="티커">000660</td>
-              <td data-label="기준 가격">2,414,000원</td>
-              <td data-label="전 거래일">2,382,000원</td>
-              <td data-label="등락" class="up">+32,000원</td>
-              <td data-label="변동률" class="up">+1.34%</td>
-            </tr>
-          </tbody>
-        </table>
+        <article class="stock-card">
+          <div class="stock-top">
+            <div>
+              <h3 class="stock-name">SK하이닉스</h3>
+              <div class="ticker">000660</div>
+            </div>
+            <div class="price-box">
+              <div class="price">2,412,000원</div>
+              <div class="change-line up">+30,000원 · +1.26%</div>
+            </div>
+          </div>
+          <div class="tag-row"><span class="tag up">HBM 순도</span><span class="tag up">AI 서버</span><span class="tag up">DRAM</span><span class="tag up">상승</span></div>
+          <p class="stock-summary">오늘은 상승 마감했습니다. HBM 노출도가 높아 AI 메모리 사이클을 가장 직접적으로 반영합니다.</p>
+        </article>
       </div>
     </section>
 
-    <section>
-      <h2>시각화</h2>
-      <div class="charts">
-        <figure>
+    <section class="section" aria-labelledby="visual-title">
+      <div class="section-head">
+        <div class="section-kicker">VISUAL</div>
+        <h2 id="visual-title">시각화</h2>
+        <p class="meta">기존 차트는 유지하되 모바일 카드 안에서 잘리지 않도록 배치했습니다.</p>
+      </div>
+      <div class="chart-grid">
+        <figure class="chart-card">
           <img src="assets/charts/daily_briefing_change_chart_2026-06-17.png" alt="전 거래일 대비 변동률 차트">
-          <figcaption>전 거래일 대비 변동률 차트입니다. 수치 라벨을 오른쪽 고정 영역으로 분리해 종목명과 겹치지 않게 했습니다.</figcaption>
+          <figcaption>전 거래일 대비 변동률 차트입니다.</figcaption>
         </figure>
-        <figure>
+        <figure class="chart-card">
           <img src="assets/charts/daily_briefing_price_trends_2026-06-17.png" alt="종목별 최근 4거래일 종가 흐름 차트">
-          <figcaption>종목별 최근 4거래일 종가 흐름입니다. 단일 변동률보다 가격 흐름을 파악하기 쉽도록 4개 패널로 나눴습니다.</figcaption>
+          <figcaption>종목별 최근 4거래일 종가 흐름입니다.</figcaption>
         </figure>
       </div>
     </section>
 
-    <section>
-      <h2>텍스트형 변동률 그래픽</h2>
-      <div class="text-bars">
-        <div class="bar-row">
+    <section class="section" aria-labelledby="bars-title">
+      <div class="section-head">
+        <div class="section-kicker">MOMENTUM</div>
+        <h2 id="bars-title">변동률 스냅샷</h2>
+      </div>
+      <div class="mini-bars">
+        <div class="mini-bar-row">
           <strong>SK하이닉스</strong>
-          <span class="up">▲ +1.34%</span>
-          <div class="bar-track"><div class="bar-fill up-bg" style="width: 71%"></div></div>
+          <span class="up">▲ +1.26%</span>
+          <div class="bar-track"><div class="bar-fill up-bg" style="width: 66%"></div></div>
         </div>
 
-        <div class="bar-row">
+        <div class="mini-bar-row">
           <strong>KODEX 커버드콜</strong>
-          <span class="up">▲ +0.50%</span>
-          <div class="bar-track"><div class="bar-fill up-bg" style="width: 27%"></div></div>
+          <span class="up">▲ +0.48%</span>
+          <div class="bar-track"><div class="bar-fill up-bg" style="width: 26%"></div></div>
         </div>
 
-        <div class="bar-row">
+        <div class="mini-bar-row">
           <strong>TIGER 반도체TOP10</strong>
-          <span class="down">▼ -0.92%</span>
-          <div class="bar-track"><div class="bar-fill down-bg" style="width: 49%"></div></div>
+          <span class="down">▼ -0.80%</span>
+          <div class="bar-track"><div class="bar-fill down-bg" style="width: 42%"></div></div>
         </div>
 
-        <div class="bar-row">
+        <div class="mini-bar-row">
           <strong>삼성전자</strong>
           <span class="down">▼ -1.90%</span>
           <div class="bar-track"><div class="bar-fill down-bg" style="width: 100%"></div></div>
@@ -338,56 +253,36 @@
       </div>
     </section>
 
-    <section>
-      <h2>반도체 사이클 위치</h2>
-      <figure>
-        <img src="assets/charts/daily_briefing_semiconductor_cycle_2026-06-17.png" alt="반도체 메모리 사이클 위치 추정">
-        <figcaption>현재 위치는 감산 이후 회복 초입이 아니라 AI 서버용 HBM 병목이 범용 DRAM 공급까지 압박하는 가격 상승·실적 상향 구간입니다. 다만 삼성전자 조정과 미국 반도체주 약세가 동시에 나타나 추격 매수보다 수급 지속성과 가격 지표 확인이 필요한 단계로 표시했습니다.</figcaption>
-      </figure>
-    </section>
-
-    <section>
-      <h2>반도체 섹터 투자 분석 리포트</h2>
-      <p class="meta">분석 대상: 삼성전자, SK하이닉스, TIGER 반도체TOP10, KODEX 200타겟위클리커버드콜 | 데이터 기준: 2026-06-17 종가 및 2026-06-17 확인 자료</p>
-
-      <div class="cycle-report">
-      <h3>1. 요약</h3>
+    <section class="section" aria-labelledby="cycle-title">
+      <div class="section-head">
+        <div class="section-kicker">CYCLE CHECK</div>
+        <h2 id="cycle-title">사이클 진단</h2>
+        <p class="meta">현재 구간, 판단, 근거, 주의점을 카드로 분리했습니다.</p>
+      </div>
+      <article class="cycle-card">
+        <figure>
+          <img src="assets/charts/daily_briefing_semiconductor_cycle_2026-06-17.png" alt="반도체 메모리 사이클 위치 추정">
+          <figcaption>현재 위치는 감산 이후 회복 초입이 아니라 AI 서버용 HBM 병목이 범용 DRAM 공급까지 압박하는 가격 상승·실적 상향 구간입니다. 다만 삼성전자 조정과 미국 반도체주 약세가 동시에 나타나 추격 매수보다 수급 지속성과 가격 지표 확인이 필요한 단계로 표시했습니다.</figcaption>
+        </figure>
+        <div class="cycle-grid">
+          <div class="cycle-point"><strong>현재 구간</strong><span>HBM 강세 속 숨고르기</span></div>
+          <div class="cycle-point"><strong>판단</strong><span>메모리 사이클은 HBM 공급 부족과 DDR5·서버 DRAM 타이트닝이 실적 상향을 견인하는 호황 중반 이후이며, 오늘은 가격 상승 추세보다 주가 과열과 종목 간 차별화 관리가 더 중요합니다.</span></div>
+          <div class="cycle-point"><strong>근거</strong><span>가격 흐름, HBM 수요, 수급, 환율·금리·유가를 함께 확인합니다.</span></div>
+          <div class="cycle-point"><strong>주의점</strong><span>급등 후 추격보다 장중 수급과 매크로 변화를 먼저 봅니다.</span></div>
+        </div>
+        <div class="cycle-report">
+          <h3>1. 요약</h3>
 <p><strong>오늘의 핵심은 HBM 구조적 쇼티지는 유효하지만 주가는 과열 해소와 종목별 차별화에 들어섰다는 점입니다.</strong> 6월 17일 09:31 KST 확인 기준 삼성전자는 333,500원(-2.77%), SK하이닉스는 2,383,000원(+0.04%), KOSPI는 8,646.45(+1.18%)로 집계됐습니다. 전일 미국 반도체 ETF SOXX는 -5.92%, 엔비디아 -2.37%, 마이크론 -6.18%로 약했지만, 국내에서는 SK하이닉스가 상대적으로 버티며 HBM 선도주 프리미엄을 유지했습니다.</p>
 <p>매크로는 원/달러 1,511.7원(-0.11%), 미국 10년물 4.43%(-1.31%), 30년물 4.93%(-0.94%), WTI 75.82달러(-6.11%)로 확인됐습니다. 환율·금리·유가가 동시에 완화된 점은 밸류에이션과 외국인 수급에는 우호적이지만, 미국 반도체주 급락과 국내 대형주 단기 급등 피로는 당일 변동성을 키울 수 있습니다.</p>
 <h3>2. 반도체 사이클 진단</h3>
 <p>현재 메모리 사이클은 <strong>공급 부족 → 가격 상승 → 실적 상향 → 주가 상승</strong>의 호황 중반 이후로 판단합니다. HBM은 AI 서버 수요와 빅테크 투자가 웨이퍼 배분을 계속 흡수하고, DDR5·서버 DRAM은 HBM 전환에 따른 범용 공급 여력 축소의 수혜를 받고 있습니다. NAND는 DRAM보다 순도는 낮지만 공급 조절과 가격 회복 기대가 이어져 소재·장비주 순환매의 보조 동력으로 작동합니다.</p>
-<table>
-<thead><tr><th>사이클 변수</th><th>오늘의 관찰</th><th>해석</th></tr></thead>
-<tbody>
-<tr><td>HBM</td><td>Counterpoint의 DRAM·HBM 점유율 업데이트, 골드만의 AI 메모리 squeeze 장기화 보도, SK하이닉스 미국 상장 가능성 뉴스가 함께 부각</td><td>SK하이닉스 프리미엄은 유지되지만 이미 높은 기대가 주가에 반영돼 주문 지속성과 고객 다변화가 핵심</td></tr>
-<tr><td>DRAM</td><td>HBM 전환으로 범용·서버 DRAM 공급이 타이트하다는 뉴스 플로우 지속</td><td>가격 상승은 삼성전자와 SK하이닉스 모두에 긍정적이나, 주가 반응은 HBM 순도에 따라 차별화</td></tr>
-<tr><td>NAND</td><td>가격 반등 기대와 고단 NAND 로드맵 뉴스가 있으나 HBM 대비 실적 민감도는 낮음</td><td>소부장·장비주 순환매는 가능하되, 재고 소진과 실제 계약가격 반등 확인이 필요</td></tr>
-<tr><td>CAPEX</td><td>AI 메모리 수요 확대와 중장기 웨이퍼 증설 뉴스가 병존</td><td>현재는 공급 부족이 이익을 밀어 올리지만, CAPEX가 실제 공급 증가로 연결되는 시점은 다음 피크아웃 리스크</td></tr>
-</tbody>
-</table>
+<article class="report-card"><div class="report-field"><strong>사이클 변수</strong><span>HBM</span></div><div class="report-field"><strong>오늘의 관찰</strong><span>Counterpoint의 DRAM·HBM 점유율 업데이트, 골드만의 AI 메모리 squeeze 장기화 보도, SK하이닉스 미국 상장 가능성 뉴스가 함께 부각</span></div><div class="report-field"><strong>해석</strong><span>SK하이닉스 프리미엄은 유지되지만 이미 높은 기대가 주가에 반영돼 주문 지속성과 고객 다변화가 핵심</span></div></article><article class="report-card"><div class="report-field"><strong>사이클 변수</strong><span>DRAM</span></div><div class="report-field"><strong>오늘의 관찰</strong><span>HBM 전환으로 범용·서버 DRAM 공급이 타이트하다는 뉴스 플로우 지속</span></div><div class="report-field"><strong>해석</strong><span>가격 상승은 삼성전자와 SK하이닉스 모두에 긍정적이나, 주가 반응은 HBM 순도에 따라 차별화</span></div></article><article class="report-card"><div class="report-field"><strong>사이클 변수</strong><span>NAND</span></div><div class="report-field"><strong>오늘의 관찰</strong><span>가격 반등 기대와 고단 NAND 로드맵 뉴스가 있으나 HBM 대비 실적 민감도는 낮음</span></div><div class="report-field"><strong>해석</strong><span>소부장·장비주 순환매는 가능하되, 재고 소진과 실제 계약가격 반등 확인이 필요</span></div></article><article class="report-card"><div class="report-field"><strong>사이클 변수</strong><span>CAPEX</span></div><div class="report-field"><strong>오늘의 관찰</strong><span>AI 메모리 수요 확대와 중장기 웨이퍼 증설 뉴스가 병존</span></div><div class="report-field"><strong>해석</strong><span>현재는 공급 부족이 이익을 밀어 올리지만, CAPEX가 실제 공급 증가로 연결되는 시점은 다음 피크아웃 리스크</span></div></article>
 <p>PER은 호황기 이익 추정치가 빠르게 상향되면서 낮아 보이는 착시가 생길 수 있습니다. 따라서 단순 저PER보다 PBR, HBM ASP 유지력, DRAM 계약가격 상승률, 신규 CAPEX의 양산 전환 시점을 함께 확인해야 합니다.</p>
 <h3>3. 기업별 상대 비교 분석</h3>
-<table>
-<thead><tr><th>구분</th><th>삼성전자</th><th>SK하이닉스</th></tr></thead>
-<tbody>
-<tr><td>당일 주가</td><td>333,500원(-2.77%)으로 전일 급등 후 차익실현 우세</td><td>2,383,000원(+0.04%)으로 미국 반도체주 약세에도 상대 강도 유지</td></tr>
-<tr><td>이익 순도</td><td>메모리 회복, HBM 추격, NAND, 파운드리, 모바일이 섞인 복합 회복형</td><td>HBM·서버 DRAM 민감도가 높아 AI 메모리 사이클 순도 우위</td></tr>
-<tr><td>모멘텀</td><td>HBM 고객 인증과 파운드리 수주 회복이 재평가의 핵심 촉매</td><td>HBM 공급능력, 고부가 DRAM 점유율, 해외 상장 가능성 뉴스가 프리미엄 요인</td></tr>
-<tr><td>리스크</td><td>후발 HBM 기대가 확인되지 않으면 범용 DRAM 가격 상승만으로는 주가 탄력이 제한</td><td>이미 프리미엄이 높아 미국 반도체주 조정, 고객 집중도, HBM 가격 피크 논란에 민감</td></tr>
-</tbody>
-</table>
+<article class="report-card"><div class="report-field"><strong>구분</strong><span>당일 주가</span></div><div class="report-field"><strong>삼성전자</strong><span>333,500원(-2.77%)으로 전일 급등 후 차익실현 우세</span></div><div class="report-field"><strong>SK하이닉스</strong><span>2,383,000원(+0.04%)으로 미국 반도체주 약세에도 상대 강도 유지</span></div></article><article class="report-card"><div class="report-field"><strong>구분</strong><span>이익 순도</span></div><div class="report-field"><strong>삼성전자</strong><span>메모리 회복, HBM 추격, NAND, 파운드리, 모바일이 섞인 복합 회복형</span></div><div class="report-field"><strong>SK하이닉스</strong><span>HBM·서버 DRAM 민감도가 높아 AI 메모리 사이클 순도 우위</span></div></article><article class="report-card"><div class="report-field"><strong>구분</strong><span>모멘텀</span></div><div class="report-field"><strong>삼성전자</strong><span>HBM 고객 인증과 파운드리 수주 회복이 재평가의 핵심 촉매</span></div><div class="report-field"><strong>SK하이닉스</strong><span>HBM 공급능력, 고부가 DRAM 점유율, 해외 상장 가능성 뉴스가 프리미엄 요인</span></div></article><article class="report-card"><div class="report-field"><strong>구분</strong><span>리스크</span></div><div class="report-field"><strong>삼성전자</strong><span>후발 HBM 기대가 확인되지 않으면 범용 DRAM 가격 상승만으로는 주가 탄력이 제한</span></div><div class="report-field"><strong>SK하이닉스</strong><span>이미 프리미엄이 높아 미국 반도체주 조정, 고객 집중도, HBM 가격 피크 논란에 민감</span></div></article>
 <p>오늘처럼 삼성전자가 조정받고 SK하이닉스가 버티는 날은 시장이 아직 <strong>HBM 순도</strong>를 가장 높은 프리미엄으로 평가하고 있다는 신호입니다. 다만 삼성전자는 HBM 인증·파운드리 수주·NAND 회복이 동시에 확인될 경우 후발 재평가 탄력이 생길 수 있어, 단기 약세만으로 사이클 훼손으로 해석하기는 이릅니다.</p>
 <h3>4. 매크로 및 리스크 팩터 분석</h3>
-<table>
-<thead><tr><th>변수</th><th>현재 수치/뉴스</th><th>반도체 영향</th></tr></thead>
-<tbody>
-<tr><td>수급</td><td>전일 KOSPI가 외국인·기관 매수 속 8,700선 부근에서 등락했다는 보도</td><td>지수 상승의 질은 반도체 대형주 순매수 지속 여부로 확인 필요</td></tr>
-<tr><td>환율</td><td>원/달러 1,511.7원으로 소폭 하락</td><td>원화 약세 부담이 다소 완화돼 외국인 매수에는 중립 이상</td></tr>
-<tr><td>금리</td><td>미국 10년물 4.43%, 30년물 4.93%로 하락</td><td>성장주 밸류에이션 부담은 완화됐지만 절대 레벨은 여전히 높은 편</td></tr>
-<tr><td>유가</td><td>WTI 75.82달러, Brent 79.50달러로 급락</td><td>인플레이션·마진 부담 완화에는 긍정적이나 지정학 뉴스에는 계속 민감</td></tr>
-<tr><td>정책/규제</td><td>미·중 AI칩 규제, 중국 소재·가스 공급망 리스크, 한국 AI 협력 뉴스가 혼재</td><td>HBM 수요 장기화에는 긍정적이나 중국향 매출·장비주 심리에는 변동성 요인</td></tr>
-</tbody>
-</table>
+<article class="report-card"><div class="report-field"><strong>변수</strong><span>수급</span></div><div class="report-field"><strong>현재 수치/뉴스</strong><span>전일 KOSPI가 외국인·기관 매수 속 8,700선 부근에서 등락했다는 보도</span></div><div class="report-field"><strong>반도체 영향</strong><span>지수 상승의 질은 반도체 대형주 순매수 지속 여부로 확인 필요</span></div></article><article class="report-card"><div class="report-field"><strong>변수</strong><span>환율</span></div><div class="report-field"><strong>현재 수치/뉴스</strong><span>원/달러 1,511.7원으로 소폭 하락</span></div><div class="report-field"><strong>반도체 영향</strong><span>원화 약세 부담이 다소 완화돼 외국인 매수에는 중립 이상</span></div></article><article class="report-card"><div class="report-field"><strong>변수</strong><span>금리</span></div><div class="report-field"><strong>현재 수치/뉴스</strong><span>미국 10년물 4.43%, 30년물 4.93%로 하락</span></div><div class="report-field"><strong>반도체 영향</strong><span>성장주 밸류에이션 부담은 완화됐지만 절대 레벨은 여전히 높은 편</span></div></article><article class="report-card"><div class="report-field"><strong>변수</strong><span>유가</span></div><div class="report-field"><strong>현재 수치/뉴스</strong><span>WTI 75.82달러, Brent 79.50달러로 급락</span></div><div class="report-field"><strong>반도체 영향</strong><span>인플레이션·마진 부담 완화에는 긍정적이나 지정학 뉴스에는 계속 민감</span></div></article><article class="report-card"><div class="report-field"><strong>변수</strong><span>정책/규제</span></div><div class="report-field"><strong>현재 수치/뉴스</strong><span>미·중 AI칩 규제, 중국 소재·가스 공급망 리스크, 한국 AI 협력 뉴스가 혼재</span></div><div class="report-field"><strong>반도체 영향</strong><span>HBM 수요 장기화에는 긍정적이나 중국향 매출·장비주 심리에는 변동성 요인</span></div></article>
 <p>미국 반도체주가 크게 밀린 직후 국내 HBM 대장주가 버티는 조합은 강한 구조적 수요를 보여주지만, 동시에 FOMO성 수급이 약해질 때 변동성이 커질 수 있음을 뜻합니다. 오늘은 환율·금리·유가 완화가 하방을 받치는지, 아니면 미국 기술주 조정이 국내 차익실현으로 전이되는지가 핵심입니다.</p>
 <h3>5. 실전 투자 체크리스트</h3>
 <ul>
@@ -397,75 +292,134 @@
 <li><strong>매크로 방어선:</strong> 원/달러 1,510원대와 미국 10년물 4.4%대가 안정되면 밸류에이션 부담은 완화되지만, 재상승 시 반도체 ETF 비중 확대는 늦춥니다.</li>
 <li><strong>정책 리스크:</strong> 미·중 AI칩 규제와 중국 공급망 통제 뉴스는 HBM 수요에는 양면적이므로, 소재·장비주는 개별 노출도를 분리해 봅니다.</li>
 </ul>
-      </div>
+        </div>
+      </article>
     </section>
-    <section>
-      <h2>종목별 뉴스</h2>
-      <p class="meta">KST 기준 2026-06-17 발행분만 포함했습니다. Google News RSS 검색은 when:1d 파라미터를 사용했습니다.</p>
-      <div class="news-grid">
-        <article class="stock-news">
-          <h3>TIGER 반도체TOP10</h3>
-          <p class="empty">오늘자 뉴스 0건</p>
-        </article>
 
-        <article class="stock-news">
-          <h3>KODEX 200타겟위클리커버드콜</h3>
-          <ol>
-            <li>
-              <span class="source">09:04 | 매일경제 마켓</span>
-              <a href="https://news.google.com/rss/articles/CBMimwFBVV95cUxPTTNhTUJ1OXhsSkNtNWZTWU83SlVBTGZpd2FmNWk1ZjFIUW9hN1VSLWlmc2dhOTJVOUY3TWlxX2pMSkxSY1ZOS0JidmszdnM3U2VJMVhmekZBSzdxdm5EVUp5WGRiMWVMdndTU1hubjItaHp2akJ4MFVDLThUbVREX3FzTVVlQmtDWDRsdnlYdC1YeElwLXFOSGdlWQ?oc=5">KODEX 200타겟위클리커버드콜(498400) - 매일경제 마켓</a>
-            </li>
-          </ol>
-        </article>
-
-        <article class="stock-news">
+    <section class="section" aria-labelledby="company-title">
+      <div class="section-head">
+        <div class="section-kicker">COMPANY</div>
+        <h2 id="company-title">기업별 분석</h2>
+      </div>
+      <div class="company-grid">
+        <article class="company-card">
           <h3>삼성전자</h3>
-          <ol>
-            <li>
-              <span class="source">09:26 | 연합뉴스</span>
-              <a href="https://news.google.com/rss/articles/CBMiYEFVX3lxTE1jbTRMSTluZ2FoWXBMZFhkM2h0dW12TFVocU1KZ0tIeXZ2Q1RJVnF1aTJ3WF9xN1dtTnVCZzZDVExQNEZ2MWtaSHJsUDQ5MmhYT0h4ZUI5X3lGVVRfYW8tYtIBYEFVX3lxTE1jbTRMSTluZ2FoWXBMZFhkM2h0dW12TFVocU1KZ0tIeXZ2Q1RJVnF1aTJ3WF9xN1dtTnVCZzZDVExQNEZ2MWtaSHJsUDQ5MmhYT0h4ZUI5X3lGVVRfYW8tYg?oc=5">[특징주] 삼전, 장초반 2%대 하락…SK하이닉스는 상승전환 - 연합뉴스</a>
-            </li>
-            <li>
-              <span class="source">10:10 | KB Think</span>
-              <a href="https://news.google.com/rss/articles/CBMickFVX3lxTE51SFltMk10UlBHeHIycVNNMHhIT3F6YTZvbWV0UFNQSjBHUDktcU50cWV4VXplZWw5SDdNOGtKbXB6UlFqVGE1azFsWEcxU2dFQXYzTEdXQlBRN210RFVEQVJOSUdpV2ZBTGRHTzVUVVB6dw?oc=5">삼성전자 &#x27;호남 반도체 투자&#x27; 논란의 쟁점은 - KB Think</a>
-            </li>
-            <li>
-              <span class="source">08:56 | 이데일리</span>
-              <a href="https://news.google.com/rss/articles/CBMigAFBVV95cUxNbC1JNXcxbzFjN2k1SFVwazdqN1M5VDJJT2kzaFoxOVpGQVlmRl9rNDNqSmZ5N0RsVF9EZXp6MkItQmJrZFhucGxfdVNEMjJGdUVfZ0VrWHRHTGxZMll6a1ZlR1VxV0R1UW1WeTBiOVphVmRtRVh2R3g3czB1YmNrQw?oc=5">&quot;53만전자 간다&quot; 삼성전자, 분기 영업익 100조 눈앞 - 이데일리</a>
-            </li>
-          </ol>
+          <div class="badge neutral position">HBM 추격형 · 복합 회복형</div>
+          <div class="split-list">
+            <div><strong>강점</strong>메모리, NAND, 파운드리까지 회복 레버리지가 넓습니다.</div>
+            <div><strong>리스크</strong>HBM 경쟁력 확인과 파운드리 부담이 같이 남아 있습니다.</div>
+            <div><strong>오늘의 해석</strong>오늘 변동률은 -1.90%입니다. 시총 약 2211조원, Forward PE 5.86 기준으로 추세 지속성을 점검합니다.</div>
+          </div>
         </article>
 
-        <article class="stock-news">
+        <article class="company-card">
           <h3>SK하이닉스</h3>
-          <ol>
-            <li>
-              <span class="source">09:26 | 연합뉴스</span>
-              <a href="https://news.google.com/rss/articles/CBMiYEFVX3lxTE1jbTRMSTluZ2FoWXBMZFhkM2h0dW12TFVocU1KZ0tIeXZ2Q1RJVnF1aTJ3WF9xN1dtTnVCZzZDVExQNEZ2MWtaSHJsUDQ5MmhYT0h4ZUI5X3lGVVRfYW8tYtIBYEFVX3lxTE1jbTRMSTluZ2FoWXBMZFhkM2h0dW12TFVocU1KZ0tIeXZ2Q1RJVnF1aTJ3WF9xN1dtTnVCZzZDVExQNEZ2MWtaSHJsUDQ5MmhYT0h4ZUI5X3lGVVRfYW8tYg?oc=5">[특징주] 삼전, 장초반 2%대 하락…SK하이닉스는 상승전환 - 연합뉴스</a>
-            </li>
-            <li>
-              <span class="source">11:04 | KB Think</span>
-              <a href="https://news.google.com/rss/articles/CBMickFVX3lxTE54aEF2V1lVRk1kMkpkWkhWdGtNdWdkQXhfalNEeWltcmQ3eTdjQkFRNl9mcm1XZDdhZGJKdXg2bUd4eDc5X0o4aDhmWVNPb29BVjdNWGNBZGNrdm5SamtuNl85REdJTzRRSUFCOFhhZUpqUQ?oc=5">SK하이닉스, 신입 채용서 학력 제한 전면 폐지…세자릿 수 채용 - KB Think</a>
-            </li>
-            <li>
-              <span class="source">10:44 | 뉴스1</span>
-              <a href="https://news.google.com/rss/articles/CBMiX0FVX3lxTE92cE9mN0VYWC1wOERYZHBTdlBVT0JvSHk3S3lVTVkxTFg4OUVjbnVwRlhFb2YzSlJMNjh2RngtVE5PUnBfM1hWUGcwTmhzTEM4dEsxOXFIN3BTOE9ibGM4?oc=5">&#x27;주주환원 확대 기대&#x27; SK하이닉스, 10거래일 만에 다시 신고가[핫종목] - 뉴스1</a>
-            </li>
-          </ol>
+          <div class="badge neutral position">HBM 순도 우위</div>
+          <div class="split-list">
+            <div><strong>강점</strong>AI 서버와 HBM 사이클을 가장 직접적으로 반영합니다.</div>
+            <div><strong>리스크</strong>급등 후 밸류에이션 부담과 CAPEX 확대 속도를 확인해야 합니다.</div>
+            <div><strong>오늘의 해석</strong>오늘 변동률은 +1.26%입니다. 시총 약 1713조원, Forward PE 5.88 기준으로 추세 지속성을 점검합니다.</div>
+          </div>
         </article>
       </div>
     </section>
 
-    <section>
-      <h2>오늘의 액션</h2>
-      <ol class="actions">
-        <li>삼성전자가 -2%대 조정을 받는 반면 SK하이닉스는 보합권을 지키고 있어, 오늘 신규 매수는 HBM 순도 높은 종목의 상대 강도와 삼성전자 저가 매수 유입을 분리해 판단합니다.</li>
-        <li>미국 SOXX와 마이크론이 급락한 뒤 국내 반도체가 버티는지 확인하는 날이므로, 장 초반 반등보다 오후 외국인·기관 순매수 지속 여부를 핵심 기준으로 둡니다.</li>
-        <li>원/달러가 1,511원대로 소폭 내려 외국인 수급 부담은 완화됐지만, 1,500원대 초반 안착 전까지는 반도체 ETF를 한 번에 늘리기보다 분할 접근합니다.</li>
-        <li>미국 10년물이 4.43%로 내려 밸류에이션 부담은 줄었으나 절대 금리는 여전히 높으므로, 고PBR HBM 프리미엄 종목은 실적 상향 뉴스가 동반될 때만 추격합니다.</li>
-        <li>WTI가 75달러대로 급락해 인플레 부담은 낮아졌지만 지정학·공급망 뉴스에는 민감하므로, 중국 소재·가스 통제와 미·중 AI칩 규제 관련 헤드라인을 장비·소재주 리스크로 별도 점검합니다.</li>
-      </ol>
-      <p class="note">이 파일은 자동 생성 결과입니다. 투자 판단 전 원문 뉴스와 실시간 호가를 다시 확인하세요.</p>
+    <section class="section" aria-labelledby="macro-title">
+      <div class="section-head">
+        <div class="section-kicker">MACRO</div>
+        <h2 id="macro-title">매크로 팩터</h2>
+      </div>
+      <div class="factor-grid">
+        <article class="factor-card">
+          <div class="card-label">환율</div>
+          <div class="factor-value">1513.80원</div>
+          <div class="change-line up">+0.03%</div>
+          <p class="factor-copy">외국인 수급과 반도체 대형주 투자심리에 직접 영향을 줍니다.</p>
+        </article>
+
+        <article class="factor-card">
+          <div class="card-label">미국 10년물</div>
+          <div class="factor-value">4.43%</div>
+          <div class="change-line down">-1.31%</div>
+          <p class="factor-copy">성장주·AI 반도체 밸류에이션 할인율을 좌우합니다.</p>
+        </article>
+
+        <article class="factor-card">
+          <div class="card-label">유가</div>
+          <div class="factor-value">75.30달러</div>
+          <div class="change-line down">-6.75%</div>
+          <p class="factor-copy">비용 부담과 인플레이션 기대를 통해 금리 경로에 영향을 줍니다.</p>
+        </article>
+
+        <article class="factor-card">
+          <div class="card-label">KOSPI</div>
+          <div class="factor-value">8738.95</div>
+          <div class="change-line up">+0.14%</div>
+          <p class="factor-copy">국내 위험자산 선호와 대형주 수급 배경을 보여줍니다.</p>
+        </article>
+      </div>
+    </section>
+
+    <section class="section" aria-labelledby="news-title">
+      <div class="section-head">
+        <div class="section-kicker">NEWS</div>
+        <h2 id="news-title">뉴스 타임라인</h2>
+        <p class="meta">KST 기준 2026-06-17 발행분만 포함했습니다.</p>
+      </div>
+      <div class="news-timeline">
+        <article class="news-card">
+          <div class="news-meta">11:04 · KB Think · SK하이닉스</div>
+          <a class="news-title" href="https://news.google.com/rss/articles/CBMickFVX3lxTE54aEF2V1lVRk1kMkpkWkhWdGtNdWdkQXhfalNEeWltcmQ3eTdjQkFRNl9mcm1XZDdhZGJKdXg2bUd4eDc5X0o4aDhmWVNPb29BVjdNWGNBZGNrdm5SamtuNl85REdJTzRRSUFCOFhhZUpqUQ?oc=5">SK하이닉스, 신입 채용서 학력 제한 전면 폐지…세자릿 수 채용 - KB Think</a>
+        </article>
+
+        <article class="news-card">
+          <div class="news-meta">10:44 · 뉴스1 · SK하이닉스</div>
+          <a class="news-title" href="https://news.google.com/rss/articles/CBMiX0FVX3lxTE92cE9mN0VYWC1wOERYZHBTdlBVT0JvSHk3S3lVTVkxTFg4OUVjbnVwRlhFb2YzSlJMNjh2RngtVE5PUnBfM1hWUGcwTmhzTEM4dEsxOXFIN3BTOE9ibGM4?oc=5">&#x27;주주환원 확대 기대&#x27; SK하이닉스, 10거래일 만에 다시 신고가[핫종목] - 뉴스1</a>
+        </article>
+
+        <article class="news-card">
+          <div class="news-meta">10:10 · KB Think · 삼성전자</div>
+          <a class="news-title" href="https://news.google.com/rss/articles/CBMickFVX3lxTE51SFltMk10UlBHeHIycVNNMHhIT3F6YTZvbWV0UFNQSjBHUDktcU50cWV4VXplZWw5SDdNOGtKbXB6UlFqVGE1azFsWEcxU2dFQXYzTEdXQlBRN210RFVEQVJOSUdpV2ZBTGRHTzVUVVB6dw?oc=5">삼성전자 &#x27;호남 반도체 투자&#x27; 논란의 쟁점은 - KB Think</a>
+        </article>
+
+        <article class="news-card">
+          <div class="news-meta">09:26 · 연합뉴스 · 삼성전자</div>
+          <a class="news-title" href="https://news.google.com/rss/articles/CBMiYEFVX3lxTE1jbTRMSTluZ2FoWXBMZFhkM2h0dW12TFVocU1KZ0tIeXZ2Q1RJVnF1aTJ3WF9xN1dtTnVCZzZDVExQNEZ2MWtaSHJsUDQ5MmhYT0h4ZUI5X3lGVVRfYW8tYtIBYEFVX3lxTE1jbTRMSTluZ2FoWXBMZFhkM2h0dW12TFVocU1KZ0tIeXZ2Q1RJVnF1aTJ3WF9xN1dtTnVCZzZDVExQNEZ2MWtaSHJsUDQ5MmhYT0h4ZUI5X3lGVVRfYW8tYg?oc=5">[특징주] 삼전, 장초반 2%대 하락…SK하이닉스는 상승전환 - 연합뉴스</a>
+        </article>
+
+        <article class="news-card">
+          <div class="news-meta">09:26 · 연합뉴스 · SK하이닉스</div>
+          <a class="news-title" href="https://news.google.com/rss/articles/CBMiYEFVX3lxTE1jbTRMSTluZ2FoWXBMZFhkM2h0dW12TFVocU1KZ0tIeXZ2Q1RJVnF1aTJ3WF9xN1dtTnVCZzZDVExQNEZ2MWtaSHJsUDQ5MmhYT0h4ZUI5X3lGVVRfYW8tYtIBYEFVX3lxTE1jbTRMSTluZ2FoWXBMZFhkM2h0dW12TFVocU1KZ0tIeXZ2Q1RJVnF1aTJ3WF9xN1dtTnVCZzZDVExQNEZ2MWtaSHJsUDQ5MmhYT0h4ZUI5X3lGVVRfYW8tYg?oc=5">[특징주] 삼전, 장초반 2%대 하락…SK하이닉스는 상승전환 - 연합뉴스</a>
+        </article>
+
+        <article class="news-card">
+          <div class="news-meta">09:04 · 매일경제 마켓 · KODEX 200타겟위클리커버드콜</div>
+          <a class="news-title" href="https://news.google.com/rss/articles/CBMimwFBVV95cUxPTTNhTUJ1OXhsSkNtNWZTWU83SlVBTGZpd2FmNWk1ZjFIUW9hN1VSLWlmc2dhOTJVOUY3TWlxX2pMSkxSY1ZOS0JidmszdnM3U2VJMVhmekZBSzdxdm5EVUp5WGRiMWVMdndTU1hubjItaHp2akJ4MFVDLThUbVREX3FzTVVlQmtDWDRsdnlYdC1YeElwLXFOSGdlWQ?oc=5">KODEX 200타겟위클리커버드콜(498400) - 매일경제 마켓</a>
+        </article>
+
+        <article class="news-card">
+          <div class="news-meta">08:56 · 이데일리 · 삼성전자</div>
+          <a class="news-title" href="https://news.google.com/rss/articles/CBMigAFBVV95cUxNbC1JNXcxbzFjN2k1SFVwazdqN1M5VDJJT2kzaFoxOVpGQVlmRl9rNDNqSmZ5N0RsVF9EZXp6MkItQmJrZFhucGxfdVNEMjJGdUVfZ0VrWHRHTGxZMll6a1ZlR1VxV0R1UW1WeTBiOVphVmRtRVh2R3g3czB1YmNrQw?oc=5">&quot;53만전자 간다&quot; 삼성전자, 분기 영업익 100조 눈앞 - 이데일리</a>
+        </article>
+      </div>
+    </section>
+
+    <section class="section" aria-labelledby="actions-title">
+      <article class="check-card">
+        <div class="section-head">
+          <div class="section-kicker">ACTION</div>
+          <h2 id="actions-title">오늘의 액션</h2>
+          <p class="meta">장 시작 전 체크리스트처럼 확인하세요.</p>
+        </div>
+        <ul class="check-list">
+          <li class="check-item"><span class="check-box" aria-hidden="true"></span><span>삼성전자가 -2%대 조정을 받는 반면 SK하이닉스는 보합권을 지키고 있어, 오늘 신규 매수는 HBM 순도 높은 종목의 상대 강도와 삼성전자 저가 매수 유입을 분리해 판단합니다.</span></li>
+<li class="check-item"><span class="check-box" aria-hidden="true"></span><span>미국 SOXX와 마이크론이 급락한 뒤 국내 반도체가 버티는지 확인하는 날이므로, 장 초반 반등보다 오후 외국인·기관 순매수 지속 여부를 핵심 기준으로 둡니다.</span></li>
+<li class="check-item"><span class="check-box" aria-hidden="true"></span><span>원/달러가 1,511원대로 소폭 내려 외국인 수급 부담은 완화됐지만, 1,500원대 초반 안착 전까지는 반도체 ETF를 한 번에 늘리기보다 분할 접근합니다.</span></li>
+<li class="check-item"><span class="check-box" aria-hidden="true"></span><span>미국 10년물이 4.43%로 내려 밸류에이션 부담은 줄었으나 절대 금리는 여전히 높으므로, 고PBR HBM 프리미엄 종목은 실적 상향 뉴스가 동반될 때만 추격합니다.</span></li>
+<li class="check-item"><span class="check-box" aria-hidden="true"></span><span>WTI가 75달러대로 급락해 인플레 부담은 낮아졌지만 지정학·공급망 뉴스에는 민감하므로, 중국 소재·가스 통제와 미·중 AI칩 규제 관련 헤드라인을 장비·소재주 리스크로 별도 점검합니다.</span></li>
+        </ul>
+        <p class="footer-note">이 파일은 자동 생성 결과입니다. 투자 판단 전 원문 뉴스와 실시간 호가를 다시 확인하세요.</p>
+      </article>
     </section>
   </main>
 </body>

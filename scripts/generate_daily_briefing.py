@@ -501,215 +501,115 @@ def save_cycle_chart(out: Path) -> None:
 def css_from_existing() -> str:
     return """
     :root {
-      --bg: #f6f7f9;
+      --bg: #eef3f8;
+      --bg2: #f7f9fc;
       --panel: #ffffff;
-      --line: #e5e7eb;
-      --text: #171717;
-      --muted: #667085;
-      --up: #d62728;
-      --down: #1f77b4;
-      --accent: #0f766e;
-      --soft: #f8fafc;
-      --shadow: 0 10px 28px rgba(15, 23, 42, 0.08);
+      --panel-soft: #f8fafc;
+      --line: rgba(26, 46, 80, 0.10);
+      --text: #142033;
+      --muted: #66758a;
+      --up: #d92d20;
+      --down: #2563eb;
+      --accent: #2563eb;
+      --accent-soft: #e8f1ff;
+      --shadow: 0 14px 34px rgba(22, 34, 51, 0.08);
+      --radius: 22px;
     }
-
     * { box-sizing: border-box; }
-
-    html, body { max-width: 100%; overflow-x: hidden; }
-
+    html, body { width: 100%; max-width: 100%; overflow-x: hidden; }
     body {
       margin: 0;
-      background: var(--bg);
+      background: radial-gradient(circle at 10% 0%, rgba(37,99,235,.10), transparent 32%), linear-gradient(180deg, var(--bg) 0%, var(--bg2) 45%, #f9fafb 100%);
       color: var(--text);
       font-family: "Malgun Gothic", "Apple SD Gothic Neo", "Noto Sans KR", Arial, sans-serif;
-      line-height: 1.55;
+      line-height: 1.58;
       word-break: keep-all;
       overflow-wrap: anywhere;
+      -webkit-font-smoothing: antialiased;
     }
-
-    main {
-      width: min(1180px, calc(100% - 32px));
-      margin: 0 auto;
-      padding: 28px 0 48px;
-    }
-
-    header { display: grid; gap: 10px; margin-bottom: 18px; }
-
-    h1 { margin: 0; font-size: clamp(26px, 4vw, 42px); line-height: 1.18; }
-    h2 { margin: 0 0 16px; font-size: 22px; line-height: 1.28; }
-    h3 { margin: 18px 0 10px; font-size: 18px; line-height: 1.35; }
-    p { margin: 0 0 12px; }
-    a { color: #155eef; text-decoration: none; }
+    img, svg, canvas { display: block; max-width: 100%; height: auto; }
+    p, li, span, div, a, h1, h2, h3, h4 { overflow-wrap: anywhere; word-break: keep-all; }
+    a { color: var(--accent); text-decoration: none; }
     a:hover { text-decoration: underline; }
-
-    .meta { color: var(--muted); font-size: 14px; }
-
-    .summary {
-      display: grid;
-      grid-template-columns: 1.6fr 1fr 1fr;
-      gap: 12px;
-      margin: 18px 0 22px;
-    }
-
-    .tile, section, .stock-news {
-      background: var(--panel);
-      border: 1px solid var(--line);
-      border-radius: 12px;
-      box-shadow: var(--shadow);
-    }
-
-    .tile { padding: 18px; min-height: 96px; }
-    .tile-label { color: var(--muted); font-size: 13px; margin-bottom: 6px; }
-    .tile-value { font-size: clamp(20px, 4.8vw, 24px); font-weight: 800; line-height: 1.25; }
-
-    section { padding: 22px; margin: 16px 0; overflow: hidden; }
-
-    .table-wrap { width: 100%; overflow-x: visible; }
-
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      table-layout: fixed;
-      font-size: 15px;
-    }
-
-    th, td {
-      padding: 12px 10px;
-      border-bottom: 1px solid var(--line);
-      text-align: right;
-      vertical-align: top;
-      white-space: normal;
-      overflow-wrap: anywhere;
-    }
-
-    th:first-child, td:first-child { text-align: left; }
-    th { color: var(--muted); font-size: 13px; font-weight: 700; background: #fafafa; }
-
-    .price-table th:nth-child(1), .price-table td:nth-child(1) { width: 32%; }
-    .price-table th:nth-child(2), .price-table td:nth-child(2) { width: 12%; }
-    .price-table th:nth-child(3), .price-table td:nth-child(3),
-    .price-table th:nth-child(4), .price-table td:nth-child(4) { width: 18%; }
-    .price-table th:nth-child(5), .price-table td:nth-child(5),
-    .price-table th:nth-child(6), .price-table td:nth-child(6) { width: 10%; }
-
-    .cycle-report table { margin: 12px 0 18px; }
-    .cycle-report th, .cycle-report td { line-height: 1.5; }
-    .cycle-report ul, .cycle-report ol { padding-left: 22px; }
-    .cycle-report li { margin: 6px 0; }
-
-    .up { color: var(--up); font-weight: 800; }
-    .down { color: var(--down); font-weight: 800; }
-
-    .charts { display: grid; grid-template-columns: 1fr; gap: 18px; }
-    figure { margin: 0; background: #fff; border: 1px solid var(--line); border-radius: 10px; overflow: hidden; }
-    figure img { display: block; width: 100%; height: auto; }
-    figcaption { padding: 12px 14px; border-top: 1px solid var(--line); color: var(--muted); font-size: 13px; }
-
-    .text-bars { display: grid; gap: 10px; margin-top: 10px; }
-    .bar-row { display: grid; grid-template-columns: 210px 72px 1fr; gap: 12px; align-items: center; font-size: 14px; }
-    .bar-track { height: 12px; background: #eef2f7; border-radius: 999px; overflow: hidden; }
+    main { width: min(1180px, calc(100% - 28px)); margin: 0 auto; padding: 18px 0 44px; }
+    .section, .card, .stock-card, .factor-card, .company-card, .news-card, .hero-card, .chart-card, .cycle-card, .check-card { min-width: 0; }
+    .hero-card, .section { background: rgba(255,255,255,.92); border: 1px solid var(--line); border-radius: 22px; box-shadow: var(--shadow); }
+    .hero-card { padding: 22px; margin: 14px 0 18px; overflow: hidden; }
+    .eyebrow, .section-kicker, .card-label { color: var(--accent); font-size: 12px; font-weight: 800; letter-spacing: .02em; }
+    h1 { margin: 6px 0 8px; font-size: clamp(28px, 7vw, 48px); line-height: 1.08; letter-spacing: -.04em; }
+    h2 { margin: 0; font-size: clamp(21px, 5vw, 28px); line-height: 1.22; letter-spacing: -.03em; }
+    h3 { margin: 0; font-size: 18px; line-height: 1.32; letter-spacing: -.02em; }
+    p { margin: 0; }
+    .meta, .muted { color: var(--muted); font-size: 13px; }
+    .hero-summary { margin-top: 10px; color: #334155; font-size: 15px; }
+    .badge-row, .tag-row, .metric-row { display: flex; flex-wrap: wrap; gap: 8px; min-width: 0; }
+    .badge, .tag { display: inline-flex; align-items: center; gap: 5px; max-width: 100%; border-radius: 999px; padding: 7px 10px; background: var(--accent-soft); color: #1d4ed8; font-size: 12px; font-weight: 800; }
+    .badge.neutral { background: #f1f5f9; color: #475569; }
+    .badge.up, .tag.up { background: #fff1f0; color: var(--up); }
+    .badge.down, .tag.down { background: #eff6ff; color: var(--down); }
+    .section { padding: 20px; margin: 16px 0; }
+    .section-head { display: flex; flex-direction: column; gap: 6px; margin-bottom: 14px; }
+    .stock-grid, .company-grid, .factor-grid, .chart-grid { display: grid; grid-template-columns: 1fr; gap: 12px; }
+    .stock-card, .company-card, .factor-card, .chart-card, .cycle-card, .news-card, .check-card { background: var(--panel); border: 1px solid var(--line); border-radius: 20px; padding: 16px; box-shadow: 0 8px 22px rgba(15,23,42,.045); }
+    .stock-top { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; margin-bottom: 12px; }
+    .stock-name { font-size: 19px; font-weight: 900; letter-spacing: -.03em; }
+    .ticker { color: var(--muted); font-size: 12px; font-weight: 800; margin-top: 2px; }
+    .price-box { text-align: right; flex: 0 0 auto; }
+    .price { font-size: 20px; font-weight: 900; letter-spacing: -.03em; white-space: nowrap; }
+    .change-line { font-size: 13px; font-weight: 900; white-space: nowrap; }
+    .up { color: var(--up); }
+    .down { color: var(--down); }
+    .stock-summary, .company-copy, .factor-copy, .cycle-copy { color: #334155; font-size: 14px; margin-top: 12px; }
+    .mini-bars { display: grid; gap: 10px; }
+    .mini-bar-row { display: grid; grid-template-columns: minmax(0,1fr) auto; gap: 10px; align-items: center; font-size: 13px; }
+    .bar-track { grid-column: 1 / -1; height: 9px; border-radius: 999px; background: #e5edf7; overflow: hidden; }
     .bar-fill { height: 100%; border-radius: 999px; }
     .bar-fill.up-bg { background: var(--up); }
     .bar-fill.down-bg { background: var(--down); }
-
-    .news-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; }
-    .stock-news { padding: 18px; box-shadow: none; }
-    .stock-news ol { margin: 8px 0 0 20px; padding: 0; }
-    .stock-news li { margin: 0 0 12px; padding-left: 4px; }
-    .source { display: block; color: var(--muted); font-size: 13px; margin-bottom: 3px; }
-    .empty { color: var(--muted); background: #f9fafb; border: 1px dashed #d0d5dd; border-radius: 8px; padding: 14px; }
-    .actions { display: grid; gap: 10px; margin: 0; padding-left: 20px; }
-    .note { color: var(--muted); font-size: 14px; margin-top: 12px; }
-
-    @media (max-width: 840px) {
-      .summary, .news-grid { grid-template-columns: 1fr; }
-      .bar-row { grid-template-columns: 1fr; gap: 6px; }
+    figure { margin: 0; }
+    .chart-card img { width: 100%; border-radius: 16px; background: white; }
+    figcaption { margin-top: 10px; color: var(--muted); font-size: 12px; }
+    .cycle-grid { display: grid; grid-template-columns: 1fr; gap: 10px; margin-top: 14px; }
+    .cycle-point { background: var(--panel-soft); border: 1px solid var(--line); border-radius: 16px; padding: 12px; }
+    .cycle-point strong { display: block; margin-bottom: 4px; }
+    .cycle-report { margin-top: 14px; display: grid; gap: 12px; }
+    .report-card { background: var(--panel-soft); border: 1px solid var(--line); border-radius: 16px; padding: 12px; display: grid; gap: 8px; }
+    .report-field { display: grid; gap: 3px; font-size: 14px; }
+    .report-field strong { color: var(--muted); font-size: 12px; }
+    .cycle-report table { display: block; width: 100%; border: 0; }
+    .cycle-report thead { display: none; }
+    .cycle-report tbody, .cycle-report tr, .cycle-report th, .cycle-report td { display: block; width: 100%; }
+    .cycle-report tr { background: var(--panel-soft); border: 1px solid var(--line); border-radius: 16px; padding: 12px; margin-bottom: 10px; }
+    .cycle-report th, .cycle-report td { border: 0; padding: 3px 0; text-align: left; font-size: 14px; }
+    .cycle-report ul, .cycle-report ol { padding-left: 20px; margin: 8px 0 0; }
+    .cycle-report li { margin: 6px 0; }
+    .cycle-report p { margin-bottom: 8px; }
+    .company-card .position { margin: 8px 0 10px; }
+    .split-list { display: grid; gap: 8px; margin-top: 10px; }
+    .split-list div { background: var(--panel-soft); border-radius: 14px; padding: 10px; font-size: 13px; }
+    .split-list strong { display: block; margin-bottom: 3px; }
+    .factor-card { display: grid; gap: 8px; }
+    .factor-value { font-size: 22px; font-weight: 900; letter-spacing: -.03em; }
+    .news-timeline { display: grid; gap: 10px; }
+    .news-card { position: relative; padding-left: 18px; }
+    .news-card::before { content: ""; position: absolute; left: 7px; top: 19px; width: 7px; height: 7px; border-radius: 999px; background: var(--accent); }
+    .news-meta { color: var(--muted); font-size: 12px; margin-bottom: 4px; }
+    .news-title { font-size: 14px; font-weight: 800; line-height: 1.45; }
+    .check-card { background: linear-gradient(180deg,#fff 0%,#f8fbff 100%); }
+    .check-list { display: grid; gap: 10px; margin: 12px 0 0; padding: 0; list-style: none; }
+    .check-item { display: grid; grid-template-columns: 24px minmax(0,1fr); gap: 10px; align-items: start; background: var(--panel-soft); border: 1px solid var(--line); border-radius: 15px; padding: 12px; font-size: 14px; }
+    .check-box { width: 18px; height: 18px; border: 2px solid var(--accent); border-radius: 6px; margin-top: 2px; }
+    .footer-note { color: var(--muted); font-size: 12px; margin-top: 14px; }
+    @media (min-width: 700px) {
+      main { padding-top: 28px; }
+      .hero-card, .section { padding: 26px; }
+      .stock-grid, .factor-grid { grid-template-columns: repeat(2, minmax(0,1fr)); }
+      .chart-grid, .company-grid { grid-template-columns: repeat(2, minmax(0,1fr)); }
+      .cycle-grid { grid-template-columns: repeat(2, minmax(0,1fr)); }
     }
-
-    @media (max-width: 640px) {
-      main { width: min(100% - 24px, 100%); padding: 18px 0 36px; }
-      section { padding: 18px 14px; border-radius: 12px; }
-      h2 { font-size: 21px; }
-      .tile { padding: 16px; }
-
-      .price-table, .price-table thead, .price-table tbody, .price-table tr {
-        display: block;
-        width: 100%;
-      }
-
-      .price-table thead { display: none; }
-
-      .price-table tr {
-        padding: 16px 0;
-        border-bottom: 1px solid var(--line);
-      }
-
-      .price-table td,
-      .price-table td:nth-child(n) {
-        display: grid;
-        grid-template-columns: 92px minmax(0, 1fr);
-        gap: 12px;
-        align-items: baseline;
-        width: 100% !important;
-        border: 0;
-        padding: 7px 0;
-        text-align: right;
-        min-width: 0;
-        font-size: 15px;
-        white-space: normal;
-        word-break: keep-all;
-        overflow-wrap: normal;
-      }
-
-      .price-table td::before {
-        content: attr(data-label);
-        color: var(--muted);
-        font-size: 13px;
-        font-weight: 700;
-        text-align: left;
-        white-space: nowrap;
-      }
-
-      .price-table td:first-child {
-        display: block;
-        text-align: left;
-        font-size: 22px;
-        font-weight: 800;
-        line-height: 1.35;
-        padding-bottom: 12px;
-        word-break: keep-all;
-        overflow-wrap: normal;
-      }
-
-      .price-table td:first-child::before {
-        display: block;
-        margin-bottom: 4px;
-      }
-
-      .cycle-report table, .cycle-report thead, .cycle-report tbody, .cycle-report tr, .cycle-report th, .cycle-report td {
-        display: block;
-        width: 100%;
-      }
-
-      .cycle-report thead { display: none; }
-      .cycle-report tr {
-        margin: 0 0 12px;
-        padding: 12px;
-        border: 1px solid var(--line);
-        border-radius: 10px;
-        background: var(--soft);
-      }
-      .cycle-report th, .cycle-report td {
-        border: 0;
-        padding: 4px 0;
-        text-align: left;
-        font-size: 14px;
-        white-space: normal;
-        overflow-wrap: anywhere;
-      }
-
-      .charts figure { overflow: visible; }
-      figcaption { font-size: 12px; }
+    @media (min-width: 1040px) {
+      .stock-grid { grid-template-columns: repeat(4, minmax(0,1fr)); }
+      .factor-grid { grid-template-columns: repeat(4, minmax(0,1fr)); }
     }
   """
 
@@ -738,6 +638,172 @@ def news_article_html(name: str, items: list[dict]) -> str:
         </article>"""
 
 
+
+def strip_tags(value: str) -> str:
+    return html.unescape(re.sub(r"<[^>]+>", "", value)).strip()
+
+
+def cycle_report_cards_html(report_html: str) -> str:
+    def table_to_cards(match: re.Match) -> str:
+        table = match.group(0)
+        rows = re.findall(r"<tr>(.*?)</tr>", table, flags=re.IGNORECASE | re.DOTALL)
+        if not rows:
+            return ""
+        headers = [strip_tags(cell) for cell in re.findall(r"<t[hd]>(.*?)</t[hd]>", rows[0], flags=re.IGNORECASE | re.DOTALL)]
+        body_rows = rows[1:] if headers else rows
+        cards = []
+        for row in body_rows:
+            cells = [strip_tags(cell) for cell in re.findall(r"<t[hd]>(.*?)</t[hd]>", row, flags=re.IGNORECASE | re.DOTALL)]
+            if not any(cells):
+                continue
+            fields = []
+            for idx, cell in enumerate(cells):
+                label = headers[idx] if idx < len(headers) and headers[idx] else f"항목 {idx + 1}"
+                fields.append(f'<div class="report-field"><strong>{html.escape(label)}</strong><span>{html.escape(cell)}</span></div>')
+            cards.append(f'<article class="report-card">{"".join(fields)}</article>')
+        return "".join(cards)
+
+    return re.sub(r"<table>.*?</table>", table_to_cards, report_html, flags=re.IGNORECASE | re.DOTALL)
+
+
+def stock_tags(row: PriceRow) -> list[str]:
+    tags = []
+    if "삼성" in row.name:
+        tags = ["HBM 추격", "NAND", "파운드리"]
+    elif "하이닉스" in row.name:
+        tags = ["HBM 순도", "AI 서버", "DRAM"]
+    elif "TIGER" in row.name:
+        tags = ["반도체 ETF", "대형주", "분산"]
+    elif "KODEX" in row.name:
+        tags = ["커버드콜", "분배", "방어"]
+    else:
+        tags = ["포트폴리오", "관찰"]
+    tags.append("상승" if row.change_pct >= 0 else "하락")
+    return tags[:4]
+
+
+def stock_summary(row: PriceRow) -> str:
+    direction = "상승" if row.change_pct >= 0 else "하락"
+    if "삼성" in row.name:
+        base = "HBM·NAND·파운드리 회복 기대와 수급 변화를 함께 확인할 종목입니다."
+    elif "하이닉스" in row.name:
+        base = "HBM 노출도가 높아 AI 메모리 사이클을 가장 직접적으로 반영합니다."
+    elif "TIGER" in row.name:
+        base = "반도체 대형주 흐름을 묶어서 보는 섹터 온도계 역할입니다."
+    elif "KODEX" in row.name:
+        base = "분배와 변동성 완충 목적의 보유 성격이 강한 상품입니다."
+    else:
+        base = "포트폴리오 내 상대 강도와 수급을 함께 확인합니다."
+    return f"오늘은 {direction} 마감했습니다. {base}"
+
+
+def stock_cards_html(rows: list[PriceRow]) -> str:
+    cards = []
+    for row in rows:
+        direction = "up" if row.change_pct >= 0 else "down"
+        tags = "".join(f'<span class="tag {direction}">{html.escape(tag)}</span>' for tag in stock_tags(row))
+        cards.append(f"""
+        <article class="stock-card">
+          <div class="stock-top">
+            <div>
+              <h3 class="stock-name">{html.escape(row.name)}</h3>
+              <div class="ticker">{row.ticker}</div>
+            </div>
+            <div class="price-box">
+              <div class="price">{money_krw(row.close)}</div>
+              <div class="change-line {direction}">{signed_money(row.change)} · {signed_pct(row.change_pct)}</div>
+            </div>
+          </div>
+          <div class="tag-row">{tags}</div>
+          <p class="stock-summary">{html.escape(stock_summary(row))}</p>
+        </article>""")
+    return "\n".join(cards)
+
+
+def text_bars_html(rows: list[PriceRow]) -> str:
+    max_abs = max(max(abs(row.change_pct) for row in rows), 0.01)
+    parts = []
+    for row in sorted(rows, key=lambda r: r.change_pct, reverse=True):
+        direction = "up" if row.change_pct >= 0 else "down"
+        parts.append(f"""
+        <div class="mini-bar-row">
+          <strong>{html.escape(row.name.replace('KODEX 200타겟위클리커버드콜', 'KODEX 커버드콜'))}</strong>
+          <span class="{direction}">{'▲' if row.change_pct >= 0 else '▼'} {signed_pct(row.change_pct)}</span>
+          <div class="bar-track"><div class="bar-fill {direction}-bg" style="width: {max(4, min(100, abs(row.change_pct) / max_abs * 100)):.0f}%"></div></div>
+        </div>""")
+    return "\n".join(parts)
+
+
+def macro_factor_html(macro: dict) -> str:
+    labels = {
+        "원/달러": ("환율", "원", "외국인 수급과 반도체 대형주 투자심리에 직접 영향을 줍니다."),
+        "미국 10년물": ("미국 10년물", "%", "성장주·AI 반도체 밸류에이션 할인율을 좌우합니다."),
+        "WTI": ("유가", "달러", "비용 부담과 인플레이션 기대를 통해 금리 경로에 영향을 줍니다."),
+        "KOSPI": ("KOSPI", "", "국내 위험자산 선호와 대형주 수급 배경을 보여줍니다."),
+    }
+    cards = []
+    for key, (title, suffix, copy) in labels.items():
+        data = macro.get(key, {})
+        change = data.get("change_pct")
+        direction = "up" if (change or 0) >= 0 else "down"
+        cards.append(f"""
+        <article class="factor-card">
+          <div class="card-label">{html.escape(title)}</div>
+          <div class="factor-value">{metric_text(data.get('value'), suffix)}</div>
+          <div class="change-line {direction}">{metric_text_signed(change, '%')}</div>
+          <p class="factor-copy">{html.escape(copy)}</p>
+        </article>""")
+    return "\n".join(cards)
+
+
+def company_cards_html(rows: list[PriceRow], valuation: dict) -> str:
+    specs = [
+        ("삼성전자", "HBM 추격형 · 복합 회복형", "메모리, NAND, 파운드리까지 회복 레버리지가 넓습니다.", "HBM 경쟁력 확인과 파운드리 부담이 같이 남아 있습니다."),
+        ("SK하이닉스", "HBM 순도 우위", "AI 서버와 HBM 사이클을 가장 직접적으로 반영합니다.", "급등 후 밸류에이션 부담과 CAPEX 확대 속도를 확인해야 합니다."),
+    ]
+    cards = []
+    row_map = {row.name: row for row in rows}
+    for name, position, strength, risk in specs:
+        row = row_map.get(name)
+        val = valuation.get(name, {})
+        today = f"오늘 변동률은 {signed_pct(row.change_pct)}입니다." if row else "오늘 가격 데이터는 제한적입니다."
+        cards.append(f"""
+        <article class="company-card">
+          <h3>{html.escape(name)}</h3>
+          <div class="badge neutral position">{html.escape(position)}</div>
+          <div class="split-list">
+            <div><strong>강점</strong>{html.escape(strength)}</div>
+            <div><strong>리스크</strong>{html.escape(risk)}</div>
+            <div><strong>오늘의 해석</strong>{html.escape(today)} 시총 {cap_text(val.get('market_cap'))}, Forward PE {metric_text(val.get('forward_pe'))} 기준으로 추세 지속성을 점검합니다.</div>
+          </div>
+        </article>""")
+    return "\n".join(cards)
+
+
+def news_timeline_html(rows: list[PriceRow], news: dict) -> str:
+    items = []
+    name_by_ticker = {row.ticker: row.name for row in rows}
+    for ticker, articles in news.items():
+        for item in articles:
+            items.append({**item, "stock": name_by_ticker.get(ticker, ticker)})
+    items.sort(key=lambda item: item.get("time", ""), reverse=True)
+    if not items:
+        return '<article class="news-card"><div class="news-title">오늘자 뉴스가 아직 충분히 수집되지 않았습니다.</div><p class="muted">장중 업데이트와 원문 확인이 필요합니다.</p></article>'
+    cards = []
+    for item in items[:12]:
+        cards.append(f"""
+        <article class="news-card">
+          <div class="news-meta">{html.escape(item.get('time',''))} · {html.escape(item.get('source',''))} · {html.escape(item.get('stock',''))}</div>
+          <a class="news-title" href="{html.escape(item.get('link',''))}">{html.escape(item.get('title',''))}</a>
+        </article>""")
+    return "\n".join(cards)
+
+
+def checklist_html(items: list[str]) -> str:
+    clean_items = [item for item in items if str(item).strip()]
+    return "\n".join(f'<li class="check-item"><span class="check-box" aria-hidden="true"></span><span>{html.escape(str(item))}</span></li>' for item in clean_items)
+
+
 def render_html(rows: list[PriceRow], news: dict, macro: dict, valuation: dict, today: datetime, chart_files: dict, cycle_analysis: dict | None = None) -> str:
     cycle_analysis = cycle_analysis or DEFAULT_CYCLE_ANALYSIS
     css = css_from_existing()
@@ -748,38 +814,15 @@ def render_html(rows: list[PriceRow], news: dict, macro: dict, valuation: dict, 
     max_row = max(rows, key=lambda row: abs(row.change_pct))
     max_up = max(rows, key=lambda row: row.change_pct)
     max_down = min(rows, key=lambda row: row.change_pct)
+    max_direction = "up" if max_row.change_pct >= 0 else "down"
 
     summary_line = cycle_analysis["summary_line"]
-    table_rows = "\n".join(
-        f"""
-            <tr>
-              <td data-label="종목">{html.escape(row.name)}</td>
-              <td data-label="티커">{row.ticker}</td>
-              <td data-label="기준 가격">{money_krw(row.close)}</td>
-              <td data-label="전 거래일">{money_krw(row.prev_close)}</td>
-              <td data-label="등락" class="{'up' if row.change >= 0 else 'down'}">{signed_money(row.change)}</td>
-              <td data-label="변동률" class="{'up' if row.change_pct >= 0 else 'down'}">{signed_pct(row.change_pct)}</td>
-            </tr>"""
-        for row in rows
-    )
-    text_bars = "\n".join(
-        f"""
-        <div class="bar-row">
-          <strong>{html.escape(row.name.replace("KODEX 200타겟위클리커버드콜", "KODEX 커버드콜"))}</strong>
-          <span class="{'up' if row.change_pct >= 0 else 'down'}">{'▲' if row.change_pct >= 0 else '▼'} {signed_pct(row.change_pct)}</span>
-          <div class="bar-track"><div class="bar-fill {'up-bg' if row.change_pct >= 0 else 'down-bg'}" style="width: {max(3, min(100, abs(row.change_pct) / max(abs(max_row.change_pct), 0.01) * 100)):.0f}%"></div></div>
-        </div>"""
-        for row in sorted(rows, key=lambda r: r.change_pct, reverse=True)
-    )
-    news_html = "\n".join(news_article_html(row.name, news.get(row.ticker, [])) for row in rows)
-
-    samsung = valuation.get("삼성전자", {})
-    hynix = valuation.get("SK하이닉스", {})
-    fx = macro.get("원/달러", {})
-    tnx = macro.get("미국 10년물", {})
-    oil = macro.get("WTI", {})
-    kospi = macro.get("KOSPI", {})
-    action_items = action_items_html(cycle_analysis.get("action_items", DEFAULT_CYCLE_ANALYSIS["action_items"]))
+    stock_cards = stock_cards_html(rows)
+    mini_bars = text_bars_html(rows)
+    factor_cards = macro_factor_html(macro)
+    company_cards = company_cards_html(rows, valuation)
+    timeline = news_timeline_html(rows, news)
+    checks = checklist_html(cycle_analysis.get("action_items", DEFAULT_CYCLE_ANALYSIS["action_items"]))
 
     return f"""<!doctype html>
 <html lang="ko">
@@ -792,94 +835,119 @@ def render_html(rows: list[PriceRow], news: dict, macro: dict, valuation: dict, 
 </head>
 <body>
   <main>
-    <header>
+    <header class="hero-card">
+      <div class="eyebrow">DAILY SEMICONDUCTOR BRIEFING</div>
       <h1>일일 포트폴리오 브리핑</h1>
-      <p class="meta">작성일: {today_s} KST | 가격 기준: {basis_date} 종가</p>
+      <p class="meta">작성일: {today_s} KST · 가격 기준: {basis_date} 종가</p>
+      <div class="badge-row" aria-label="오늘 요약 지표">
+        <span class="badge up">상승 {up_count}</span>
+        <span class="badge down">하락 {down_count}</span>
+        <span class="badge {max_direction}">최대 변동 {html.escape(max_row.name)} {signed_pct(max_row.change_pct)}</span>
+      </div>
+      <p class="hero-summary"><strong>{cycle_analysis['headline']}</strong></p>
+      <p class="hero-summary">{summary_line}</p>
     </header>
 
-    <div class="summary">
-      <div class="tile">
-        <div class="tile-label">오늘의 핵심 한 줄</div>
-        <div class="tile-value">{cycle_analysis['headline']}</div>
-        <p class="meta">{summary_line}</p>
+    <section class="section" aria-labelledby="stocks-title">
+      <div class="section-head">
+        <div class="section-kicker">PORTFOLIO</div>
+        <h2 id="stocks-title">오늘의 종목 카드</h2>
+        <p class="meta">표 대신 카드로 가격, 등락, 핵심 태그와 짧은 해석을 한 번에 확인합니다.</p>
       </div>
-      <div class="tile">
-        <div class="tile-label">상승 / 하락</div>
-        <div class="tile-value"><span class="up">{up_count}</span> / <span class="down">{down_count}</span></div>
-        <p class="meta">상승 {up_count}종목, 하락 {down_count}종목</p>
-      </div>
-      <div class="tile">
-        <div class="tile-label">최대 변동</div>
-        <div class="tile-value"><span class="{'up' if max_up.change_pct >= abs(max_down.change_pct) else 'down'}">{html.escape(max_row.name)} {signed_pct(max_row.change_pct)}</span></div>
-        <p class="meta">최대 상승: {max_up.name} {signed_pct(max_up.change_pct)} | 최대 하락: {max_down.name} {signed_pct(max_down.change_pct)}</p>
-      </div>
-    </div>
-
-    <section>
-      <h2>가격 요약</h2>
-      <p class="meta">당일 장중 데이터가 제한되는 경우 마지막 확인 가능 거래일 종가를 기준으로 정리합니다.</p>
-      <div class="table-wrap">
-        <table class="price-table">
-          <thead>
-            <tr>
-              <th>종목</th><th>티커</th><th>기준 가격</th><th>전 거래일 종가</th><th>등락</th><th>변동률</th>
-            </tr>
-          </thead>
-          <tbody>{table_rows}
-          </tbody>
-        </table>
+      <div class="stock-grid">{stock_cards}
       </div>
     </section>
 
-    <section>
-      <h2>시각화</h2>
-      <div class="charts">
-        <figure>
+    <section class="section" aria-labelledby="visual-title">
+      <div class="section-head">
+        <div class="section-kicker">VISUAL</div>
+        <h2 id="visual-title">시각화</h2>
+        <p class="meta">기존 차트는 유지하되 모바일 카드 안에서 잘리지 않도록 배치했습니다.</p>
+      </div>
+      <div class="chart-grid">
+        <figure class="chart-card">
           <img src="{chart_files['change']}" alt="전 거래일 대비 변동률 차트">
-          <figcaption>전 거래일 대비 변동률 차트입니다. 수치 라벨을 오른쪽 고정 영역으로 분리해 종목명과 겹치지 않게 했습니다.</figcaption>
+          <figcaption>전 거래일 대비 변동률 차트입니다.</figcaption>
         </figure>
-        <figure>
+        <figure class="chart-card">
           <img src="{chart_files['trend']}" alt="종목별 최근 4거래일 종가 흐름 차트">
-          <figcaption>종목별 최근 4거래일 종가 흐름입니다. 단일 변동률보다 가격 흐름을 파악하기 쉽도록 4개 패널로 나눴습니다.</figcaption>
+          <figcaption>종목별 최근 4거래일 종가 흐름입니다.</figcaption>
         </figure>
       </div>
     </section>
 
-    <section>
-      <h2>텍스트형 변동률 그래픽</h2>
-      <div class="text-bars">{text_bars}
+    <section class="section" aria-labelledby="bars-title">
+      <div class="section-head">
+        <div class="section-kicker">MOMENTUM</div>
+        <h2 id="bars-title">변동률 스냅샷</h2>
+      </div>
+      <div class="mini-bars">{mini_bars}
       </div>
     </section>
 
-    <section>
-      <h2>반도체 사이클 위치</h2>
-      <figure>
-        <img src="{chart_files['cycle']}" alt="반도체 메모리 사이클 위치 추정">
-        <figcaption>{cycle_analysis['chart_caption']}</figcaption>
-      </figure>
+    <section class="section" aria-labelledby="cycle-title">
+      <div class="section-head">
+        <div class="section-kicker">CYCLE CHECK</div>
+        <h2 id="cycle-title">사이클 진단</h2>
+        <p class="meta">현재 구간, 판단, 근거, 주의점을 카드로 분리했습니다.</p>
+      </div>
+      <article class="cycle-card">
+        <figure>
+          <img src="{chart_files['cycle']}" alt="반도체 메모리 사이클 위치 추정">
+          <figcaption>{cycle_analysis['chart_caption']}</figcaption>
+        </figure>
+        <div class="cycle-grid">
+          <div class="cycle-point"><strong>현재 구간</strong><span>{cycle_analysis['headline']}</span></div>
+          <div class="cycle-point"><strong>판단</strong><span>{cycle_analysis['cycle_summary']}</span></div>
+          <div class="cycle-point"><strong>근거</strong><span>가격 흐름, HBM 수요, 수급, 환율·금리·유가를 함께 확인합니다.</span></div>
+          <div class="cycle-point"><strong>주의점</strong><span>급등 후 추격보다 장중 수급과 매크로 변화를 먼저 봅니다.</span></div>
+        </div>
+        <div class="cycle-report">
+          {cycle_report_cards_html(cycle_analysis['report_html'])}
+        </div>
+      </article>
     </section>
 
-    <section>
-      <h2>반도체 섹터 투자 분석 리포트</h2>
-      <p class="meta">분석 대상: 삼성전자, SK하이닉스, TIGER 반도체TOP10, KODEX 200타겟위클리커버드콜 | 데이터 기준: {basis_date} 종가 및 {today_s} 확인 자료</p>
-
-      <div class="cycle-report">
-      {cycle_analysis['report_html']}
+    <section class="section" aria-labelledby="company-title">
+      <div class="section-head">
+        <div class="section-kicker">COMPANY</div>
+        <h2 id="company-title">기업별 분석</h2>
+      </div>
+      <div class="company-grid">{company_cards}
       </div>
     </section>
-    <section>
-      <h2>종목별 뉴스</h2>
-      <p class="meta">KST 기준 {today_s} 발행분만 포함했습니다. Google News RSS 검색은 when:1d 파라미터를 사용했습니다.</p>
-      <div class="news-grid">{news_html}
+
+    <section class="section" aria-labelledby="macro-title">
+      <div class="section-head">
+        <div class="section-kicker">MACRO</div>
+        <h2 id="macro-title">매크로 팩터</h2>
+      </div>
+      <div class="factor-grid">{factor_cards}
       </div>
     </section>
 
-    <section>
-      <h2>오늘의 액션</h2>
-      <ol class="actions">
-{action_items}
-      </ol>
-      <p class="note">이 파일은 자동 생성 결과입니다. 투자 판단 전 원문 뉴스와 실시간 호가를 다시 확인하세요.</p>
+    <section class="section" aria-labelledby="news-title">
+      <div class="section-head">
+        <div class="section-kicker">NEWS</div>
+        <h2 id="news-title">뉴스 타임라인</h2>
+        <p class="meta">KST 기준 {today_s} 발행분만 포함했습니다.</p>
+      </div>
+      <div class="news-timeline">{timeline}
+      </div>
+    </section>
+
+    <section class="section" aria-labelledby="actions-title">
+      <article class="check-card">
+        <div class="section-head">
+          <div class="section-kicker">ACTION</div>
+          <h2 id="actions-title">오늘의 액션</h2>
+          <p class="meta">장 시작 전 체크리스트처럼 확인하세요.</p>
+        </div>
+        <ul class="check-list">
+          {checks}
+        </ul>
+        <p class="footer-note">이 파일은 자동 생성 결과입니다. 투자 판단 전 원문 뉴스와 실시간 호가를 다시 확인하세요.</p>
+      </article>
     </section>
   </main>
 </body>

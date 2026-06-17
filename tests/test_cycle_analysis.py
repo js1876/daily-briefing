@@ -68,48 +68,69 @@ def test_action_items_html_renders_market_based_actions():
     assert "<li>HBM 뉴스 후 추격매수 금지</li>" in html
 
 
-def test_report_css_uses_mobile_card_layout_instead_of_wide_forced_table():
-    css = gdb.css_from_existing()
-
-    assert "@media (max-width: 640px)" in css
-    assert ".price-table tr" in css
-    assert "grid-template-columns: 92px minmax(0, 1fr)" in css
-    assert "grid-template-columns: minmax(0, 1fr) auto" not in css
-    assert ".price-table td:nth-child(n)" in css
-    assert "width: 100% !important" in css
-    assert "word-break: keep-all" in css
-    assert "min-width: 760px" not in css
-    assert "overflow-wrap: anywhere" in css
-
-
-def test_rendered_price_table_cells_have_mobile_labels():
-    row = gdb.PriceRow(
-        ticker="005930",
-        name="삼성전자",
-        close=1000,
-        prev_close=900,
-        change=100,
-        change_pct=11.1,
-        basis_date=datetime(2026, 6, 17, tzinfo=ZoneInfo("Asia/Seoul")),
-        closes=[800, 850, 900, 1000],
-        dates=["6/14", "6/15", "6/16", "6/17"],
-    )
+def sample_rendered_html():
+    rows = [
+        gdb.PriceRow(
+            ticker="005930",
+            name="삼성전자",
+            close=1000,
+            prev_close=900,
+            change=100,
+            change_pct=11.1,
+            basis_date=datetime(2026, 6, 17, tzinfo=ZoneInfo("Asia/Seoul")),
+            closes=[800, 850, 900, 1000],
+            dates=["6/14", "6/15", "6/16", "6/17"],
+        ),
+        gdb.PriceRow(
+            ticker="000660",
+            name="SK하이닉스",
+            close=2400,
+            prev_close=2500,
+            change=-100,
+            change_pct=-4.0,
+            basis_date=datetime(2026, 6, 17, tzinfo=ZoneInfo("Asia/Seoul")),
+            closes=[2300, 2450, 2500, 2400],
+            dates=["6/14", "6/15", "6/16", "6/17"],
+        ),
+    ]
     cycle_analysis = {
         **gdb.DEFAULT_CYCLE_ANALYSIS,
         "report_html": "<table><tr><th>구분</th><th>내용</th></tr><tr><td>긴 항목</td><td>메모리 회복, HBM 추격, NAND, 파운드리 같은 긴 문장</td></tr></table>",
+        "action_items": ["장 초반 수급 확인", "환율과 금리 체크"],
     }
-
-    rendered = gdb.render_html(
-        [row],
-        news={"005930": []},
-        macro={},
+    return gdb.render_html(
+        rows,
+        news={"005930": [{"time": "09:10", "source": "테스트뉴스", "title": "HBM 뉴스", "link": "https://example.com"}]},
+        macro={"원/달러": {"value": 1511.7, "change_pct": -0.2}, "미국 10년물": {"value": 4.4, "change_pct": 0.1}},
         valuation={},
         today=datetime(2026, 6, 17, tzinfo=ZoneInfo("Asia/Seoul")),
         chart_files={"change": "change.png", "trend": "trend.png", "cycle": "cycle.png"},
         cycle_analysis=cycle_analysis,
     )
 
-    assert '<table class="price-table">' in rendered
-    assert 'data-label="종목"' in rendered
-    assert 'data-label="기준 가격"' in rendered
-    assert '<div class="cycle-report">' in rendered
+
+def test_report_css_is_mobile_first_card_dashboard():
+    css = gdb.css_from_existing()
+
+    assert "overflow-x: hidden" in css
+    assert "img, svg, canvas" in css
+    assert ".stock-card" in css
+    assert ".factor-card" in css
+    assert ".news-timeline" in css
+    assert "border-radius: 22px" in css
+    assert "min-width: 760px" not in css
+    assert "overflow-x: auto" not in css
+
+
+def test_rendered_html_uses_cards_instead_of_price_table():
+    rendered = sample_rendered_html()
+
+    assert "stock-card" in rendered
+    assert "stock-grid" in rendered
+    assert "factor-card" in rendered
+    assert "news-timeline" in rendered
+    assert "check-item" in rendered
+    assert "<table" not in rendered
+    assert "report-card" in rendered
+    assert "오늘의 종목 카드" in rendered
+    assert "매크로 팩터" in rendered
