@@ -66,3 +66,46 @@ def test_action_items_html_renders_market_based_actions():
 
     assert "<li>외국인 순매수 전환 확인</li>" in html
     assert "<li>HBM 뉴스 후 추격매수 금지</li>" in html
+
+
+def test_report_css_uses_mobile_card_layout_instead_of_wide_forced_table():
+    css = gdb.css_from_existing()
+
+    assert "@media (max-width: 640px)" in css
+    assert ".price-table tr" in css
+    assert "grid-template-columns: minmax(0, 1fr) auto" in css
+    assert "min-width: 760px" not in css
+    assert "overflow-wrap: anywhere" in css
+
+
+def test_rendered_price_table_cells_have_mobile_labels():
+    row = gdb.PriceRow(
+        ticker="005930",
+        name="삼성전자",
+        close=1000,
+        prev_close=900,
+        change=100,
+        change_pct=11.1,
+        basis_date=datetime(2026, 6, 17, tzinfo=ZoneInfo("Asia/Seoul")),
+        closes=[800, 850, 900, 1000],
+        dates=["6/14", "6/15", "6/16", "6/17"],
+    )
+    cycle_analysis = {
+        **gdb.DEFAULT_CYCLE_ANALYSIS,
+        "report_html": "<table><tr><th>구분</th><th>내용</th></tr><tr><td>긴 항목</td><td>메모리 회복, HBM 추격, NAND, 파운드리 같은 긴 문장</td></tr></table>",
+    }
+
+    rendered = gdb.render_html(
+        [row],
+        news={"005930": []},
+        macro={},
+        valuation={},
+        today=datetime(2026, 6, 17, tzinfo=ZoneInfo("Asia/Seoul")),
+        chart_files={"change": "change.png", "trend": "trend.png", "cycle": "cycle.png"},
+        cycle_analysis=cycle_analysis,
+    )
+
+    assert '<table class="price-table">' in rendered
+    assert 'data-label="종목"' in rendered
+    assert 'data-label="기준 가격"' in rendered
+    assert '<div class="cycle-report">' in rendered

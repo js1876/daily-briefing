@@ -499,17 +499,204 @@ def save_cycle_chart(out: Path) -> None:
 
 
 def css_from_existing() -> str:
-    candidates = [
-        PUBLIC_DIR / "latest.html",
-        REPORT_ARCHIVE_DIR / "daily_briefing_2026-06-03.html",
-    ]
-    existing = next((path for path in candidates if path.exists()), None)
-    if existing is None:
-        return ""
-    text = existing.read_text(encoding="utf-8")
-    start = text.index("<style>") + len("<style>")
-    end = text.index("</style>")
-    return text[start:end]
+    return """
+    :root {
+      --bg: #f6f7f9;
+      --panel: #ffffff;
+      --line: #e5e7eb;
+      --text: #171717;
+      --muted: #667085;
+      --up: #d62728;
+      --down: #1f77b4;
+      --accent: #0f766e;
+      --soft: #f8fafc;
+      --shadow: 0 10px 28px rgba(15, 23, 42, 0.08);
+    }
+
+    * { box-sizing: border-box; }
+
+    html, body { max-width: 100%; overflow-x: hidden; }
+
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--text);
+      font-family: "Malgun Gothic", "Apple SD Gothic Neo", "Noto Sans KR", Arial, sans-serif;
+      line-height: 1.55;
+      word-break: keep-all;
+      overflow-wrap: anywhere;
+    }
+
+    main {
+      width: min(1180px, calc(100% - 32px));
+      margin: 0 auto;
+      padding: 28px 0 48px;
+    }
+
+    header { display: grid; gap: 10px; margin-bottom: 18px; }
+
+    h1 { margin: 0; font-size: clamp(26px, 4vw, 42px); line-height: 1.18; }
+    h2 { margin: 0 0 16px; font-size: 22px; line-height: 1.28; }
+    h3 { margin: 18px 0 10px; font-size: 18px; line-height: 1.35; }
+    p { margin: 0 0 12px; }
+    a { color: #155eef; text-decoration: none; }
+    a:hover { text-decoration: underline; }
+
+    .meta { color: var(--muted); font-size: 14px; }
+
+    .summary {
+      display: grid;
+      grid-template-columns: 1.6fr 1fr 1fr;
+      gap: 12px;
+      margin: 18px 0 22px;
+    }
+
+    .tile, section, .stock-news {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      box-shadow: var(--shadow);
+    }
+
+    .tile { padding: 18px; min-height: 96px; }
+    .tile-label { color: var(--muted); font-size: 13px; margin-bottom: 6px; }
+    .tile-value { font-size: clamp(20px, 4.8vw, 24px); font-weight: 800; line-height: 1.25; }
+
+    section { padding: 22px; margin: 16px 0; overflow: hidden; }
+
+    .table-wrap { width: 100%; overflow-x: visible; }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      table-layout: fixed;
+      font-size: 15px;
+    }
+
+    th, td {
+      padding: 12px 10px;
+      border-bottom: 1px solid var(--line);
+      text-align: right;
+      vertical-align: top;
+      white-space: normal;
+      overflow-wrap: anywhere;
+    }
+
+    th:first-child, td:first-child { text-align: left; }
+    th { color: var(--muted); font-size: 13px; font-weight: 700; background: #fafafa; }
+
+    .price-table th:nth-child(1), .price-table td:nth-child(1) { width: 32%; }
+    .price-table th:nth-child(2), .price-table td:nth-child(2) { width: 12%; }
+    .price-table th:nth-child(3), .price-table td:nth-child(3),
+    .price-table th:nth-child(4), .price-table td:nth-child(4) { width: 18%; }
+    .price-table th:nth-child(5), .price-table td:nth-child(5),
+    .price-table th:nth-child(6), .price-table td:nth-child(6) { width: 10%; }
+
+    .cycle-report table { margin: 12px 0 18px; }
+    .cycle-report th, .cycle-report td { line-height: 1.5; }
+    .cycle-report ul, .cycle-report ol { padding-left: 22px; }
+    .cycle-report li { margin: 6px 0; }
+
+    .up { color: var(--up); font-weight: 800; }
+    .down { color: var(--down); font-weight: 800; }
+
+    .charts { display: grid; grid-template-columns: 1fr; gap: 18px; }
+    figure { margin: 0; background: #fff; border: 1px solid var(--line); border-radius: 10px; overflow: hidden; }
+    figure img { display: block; width: 100%; height: auto; }
+    figcaption { padding: 12px 14px; border-top: 1px solid var(--line); color: var(--muted); font-size: 13px; }
+
+    .text-bars { display: grid; gap: 10px; margin-top: 10px; }
+    .bar-row { display: grid; grid-template-columns: 210px 72px 1fr; gap: 12px; align-items: center; font-size: 14px; }
+    .bar-track { height: 12px; background: #eef2f7; border-radius: 999px; overflow: hidden; }
+    .bar-fill { height: 100%; border-radius: 999px; }
+    .bar-fill.up-bg { background: var(--up); }
+    .bar-fill.down-bg { background: var(--down); }
+
+    .news-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; }
+    .stock-news { padding: 18px; box-shadow: none; }
+    .stock-news ol { margin: 8px 0 0 20px; padding: 0; }
+    .stock-news li { margin: 0 0 12px; padding-left: 4px; }
+    .source { display: block; color: var(--muted); font-size: 13px; margin-bottom: 3px; }
+    .empty { color: var(--muted); background: #f9fafb; border: 1px dashed #d0d5dd; border-radius: 8px; padding: 14px; }
+    .actions { display: grid; gap: 10px; margin: 0; padding-left: 20px; }
+    .note { color: var(--muted); font-size: 14px; margin-top: 12px; }
+
+    @media (max-width: 840px) {
+      .summary, .news-grid { grid-template-columns: 1fr; }
+      .bar-row { grid-template-columns: 1fr; gap: 6px; }
+    }
+
+    @media (max-width: 640px) {
+      main { width: min(100% - 24px, 100%); padding: 18px 0 36px; }
+      section { padding: 18px 14px; border-radius: 12px; }
+      h2 { font-size: 21px; }
+      .tile { padding: 16px; }
+
+      .price-table, .price-table thead, .price-table tbody, .price-table tr, .price-table td {
+        display: block;
+        width: 100%;
+      }
+
+      .price-table thead { display: none; }
+
+      .price-table tr {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) auto;
+        gap: 8px 12px;
+        padding: 14px 0;
+        border-bottom: 1px solid var(--line);
+      }
+
+      .price-table td {
+        border: 0;
+        padding: 0;
+        text-align: right;
+        min-width: 0;
+        font-size: 14px;
+      }
+
+      .price-table td::before {
+        content: attr(data-label);
+        display: block;
+        color: var(--muted);
+        font-size: 12px;
+        font-weight: 700;
+        margin-bottom: 2px;
+      }
+
+      .price-table td:first-child {
+        grid-column: 1 / -1;
+        text-align: left;
+        font-size: 17px;
+        font-weight: 800;
+      }
+
+      .cycle-report table, .cycle-report thead, .cycle-report tbody, .cycle-report tr, .cycle-report th, .cycle-report td {
+        display: block;
+        width: 100%;
+      }
+
+      .cycle-report thead { display: none; }
+      .cycle-report tr {
+        margin: 0 0 12px;
+        padding: 12px;
+        border: 1px solid var(--line);
+        border-radius: 10px;
+        background: var(--soft);
+      }
+      .cycle-report th, .cycle-report td {
+        border: 0;
+        padding: 4px 0;
+        text-align: left;
+        font-size: 14px;
+        white-space: normal;
+        overflow-wrap: anywhere;
+      }
+
+      .charts figure { overflow: visible; }
+      figcaption { font-size: 12px; }
+    }
+  """
 
 
 def news_article_html(name: str, items: list[dict]) -> str:
@@ -551,12 +738,12 @@ def render_html(rows: list[PriceRow], news: dict, macro: dict, valuation: dict, 
     table_rows = "\n".join(
         f"""
             <tr>
-              <td>{html.escape(row.name)}</td>
-              <td>{row.ticker}</td>
-              <td>{money_krw(row.close)}</td>
-              <td>{money_krw(row.prev_close)}</td>
-              <td class="{'up' if row.change >= 0 else 'down'}">{signed_money(row.change)}</td>
-              <td class="{'up' if row.change_pct >= 0 else 'down'}">{signed_pct(row.change_pct)}</td>
+              <td data-label="종목">{html.escape(row.name)}</td>
+              <td data-label="티커">{row.ticker}</td>
+              <td data-label="기준 가격">{money_krw(row.close)}</td>
+              <td data-label="전 거래일">{money_krw(row.prev_close)}</td>
+              <td data-label="등락" class="{'up' if row.change >= 0 else 'down'}">{signed_money(row.change)}</td>
+              <td data-label="변동률" class="{'up' if row.change_pct >= 0 else 'down'}">{signed_pct(row.change_pct)}</td>
             </tr>"""
         for row in rows
     )
@@ -617,7 +804,7 @@ def render_html(rows: list[PriceRow], news: dict, macro: dict, valuation: dict, 
       <h2>가격 요약</h2>
       <p class="meta">당일 장중 데이터가 제한되는 경우 마지막 확인 가능 거래일 종가를 기준으로 정리합니다.</p>
       <div class="table-wrap">
-        <table>
+        <table class="price-table">
           <thead>
             <tr>
               <th>종목</th><th>티커</th><th>기준 가격</th><th>전 거래일 종가</th><th>등락</th><th>변동률</th>
@@ -661,7 +848,9 @@ def render_html(rows: list[PriceRow], news: dict, macro: dict, valuation: dict, 
       <h2>반도체 섹터 투자 분석 리포트</h2>
       <p class="meta">분석 대상: 삼성전자, SK하이닉스, TIGER 반도체TOP10, KODEX 200타겟위클리커버드콜 | 데이터 기준: {basis_date} 종가 및 {today_s} 확인 자료</p>
 
+      <div class="cycle-report">
       {cycle_analysis['report_html']}
+      </div>
     </section>
     <section>
       <h2>종목별 뉴스</h2>
