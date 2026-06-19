@@ -128,6 +128,10 @@ def test_report_css_is_mobile_first_card_dashboard():
     assert "@media (prefers-reduced-motion: reduce)" in css
     assert "img, svg, canvas, video" in css
     assert "color-scheme: dark" in css
+    assert "IntersectionObserver" not in css
+    assert "reveal-target" in css
+    assert "skeleton-shimmer" in css
+    assert "transition: all" not in css
     assert "position: sticky" not in css
     assert "max-height: calc(100vh" not in css
     assert "overflow: auto" not in css
@@ -161,3 +165,8 @@ def test_rendered_html_uses_cards_instead_of_price_table():
     assert '표시 가격: 조회 시점 최신가' in rendered
     assert '가격 기준:' not in rendered
     assert '가격 기준' not in rendered
+    assert 'skeleton-screen' in rendered
+    assert 'IntersectionObserver' in rendered
+    assert 'num-animate' in rendered
+    assert 'requestAnimationFrame' in rendered
+    assert 'prefers-reduced-motion: reduce' in rendered

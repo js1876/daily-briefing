@@ -589,10 +589,25 @@ def css_from_existing() -> str:
     }
     img, svg, canvas, video { display: block; max-width: 100%; height: auto; }
     p, li, span, div, a, h1, h2, h3, h4 { overflow-wrap: anywhere; word-break: keep-all; }
-    a { color: var(--accent-strong); text-decoration: none; }
+    a { color: var(--accent-strong); text-decoration: none; transition: color .22s ease, opacity .22s ease; }
     a:hover { text-decoration: underline; }
     main { width: min(var(--content-max), calc(100% - clamp(24px, 5vw, 56px))); margin: 0 auto; padding: clamp(14px, 2.2vw, 28px) 0 clamp(44px, 6vw, 76px); }
-    .section, .card, .stock-card, .factor-card, .news-card, .action-card, .company-card, .hero-card, .chart-card, .cycle-card, .check-card, .metric-card, .side-card { min-width: 0; }
+    .section, .card, .stock-card, .factor-card, .news-card, .action-card, .company-card, .hero-card, .chart-card, .cycle-card, .check-card, .metric-card, .side-card, .trend-card, .cycle-point, .check-item { min-width: 0; }
+
+    .skeleton-screen { position: fixed; inset: 0; z-index: 20; display: none; align-items: center; justify-content: center; padding: 24px; background: var(--bg); transition: opacity .28s ease, visibility .28s ease; }
+    body.is-loading .skeleton-screen { display: flex; }
+    body.is-loaded .skeleton-screen { opacity: 0; visibility: hidden; pointer-events: none; }
+    .skeleton-stack { width: min(860px, 100%); display: grid; gap: 14px; }
+    .skeleton-card { border-radius: var(--radius-lg); border: 1px solid var(--border); background: var(--surface-elevated); padding: 18px; box-shadow: var(--shadow-soft); overflow: hidden; }
+    .skeleton-line { height: 14px; border-radius: 999px; margin: 10px 0; background: linear-gradient(90deg, var(--surface-muted), color-mix(in srgb, var(--surface-muted) 72%, var(--accent-soft)), var(--surface-muted)); background-size: 220% 100%; animation: skeleton-shimmer 1.15s ease-in-out infinite; }
+    .skeleton-line.short { width: 38%; }
+    .skeleton-line.mid { width: 62%; }
+    .skeleton-line.long { width: 88%; }
+    @keyframes skeleton-shimmer { 0% { background-position: 120% 0; } 100% { background-position: -120% 0; } }
+
+    body.motion-ready .reveal-target { opacity: 0; transform: translate3d(0, 14px, 0); }
+    body.motion-ready .reveal-target.is-visible { opacity: 1; transform: translate3d(0, 0, 0); transition: opacity .46s cubic-bezier(.22, 1, .36, 1), transform .46s cubic-bezier(.22, 1, .36, 1); transition-delay: var(--reveal-delay, 0ms); }
+    .num-animate { font-variant-numeric: tabular-nums; }
 
     .topbar { display: flex; justify-content: flex-end; margin: 4px 0 12px; }
     .theme-toggle {
@@ -600,9 +615,10 @@ def css_from_existing() -> str:
       border: 1px solid var(--border); border-radius: 999px; padding: 10px 14px;
       background: color-mix(in srgb, var(--surface-elevated) 84%, transparent);
       color: var(--text); box-shadow: var(--shadow-soft); font: inherit; font-size: 13px; font-weight: 850; cursor: pointer;
-      backdrop-filter: blur(18px); -webkit-backdrop-filter: blur(18px); transition: transform .18s ease, background .18s ease, border-color .18s ease;
+      backdrop-filter: blur(18px); -webkit-backdrop-filter: blur(18px); transition: transform .2s ease, background-color .22s ease, border-color .22s ease, box-shadow .22s ease, color .22s ease;
     }
-    .theme-toggle:hover { transform: translateY(-1px); }
+    .theme-toggle:hover { transform: translateY(-1px); box-shadow: 0 14px 34px rgba(15, 23, 42, .09); }
+    .theme-toggle:active { transform: scale(.985); }
     .theme-toggle:focus-visible { outline: 3px solid var(--accent-soft); outline-offset: 3px; }
     .theme-icon { font-size: 15px; line-height: 1; }
 
@@ -648,9 +664,13 @@ def css_from_existing() -> str:
     .factor-grid { display: grid; grid-template-columns: 1fr; gap: 12px; }
     .stock-card, .company-card, .factor-card, .chart-card, .cycle-card, .news-card, .check-card, .metric-card, .report-card {
       background: var(--surface-elevated); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: clamp(15px, 2.4vw, 20px); box-shadow: var(--shadow-soft);
-      transition: transform .18s ease, box-shadow .18s ease, border-color .18s ease;
+      transition: transform .22s cubic-bezier(.22, 1, .36, 1), box-shadow .22s ease, border-color .22s ease, background-color .22s ease, color .22s ease;
+      will-change: transform;
     }
-    .stock-card:hover, .company-card:hover, .factor-card:hover, .news-card:hover { transform: translateY(-2px); border-color: color-mix(in srgb, var(--accent) 24%, var(--border)); }
+    @media (hover: hover) and (pointer: fine) {
+      .stock-card:hover, .company-card:hover, .factor-card:hover, .news-card:hover, .metric-card:hover, .trend-card:hover, .check-item:hover { transform: translateY(-2px); border-color: color-mix(in srgb, var(--accent) 24%, var(--border)); box-shadow: 0 16px 38px rgba(15, 23, 42, .09); }
+    }
+    .stock-card:active, .company-card:active, .factor-card:active, .news-card:active, .metric-card:active, .check-item:active, .theme-toggle:active { transform: scale(.99); }
     .stock-card { container-type: inline-size; display: grid; gap: 13px; }
     .stock-top { display: flex; align-items: flex-start; justify-content: space-between; gap: 14px; }
     .stock-name { font-size: clamp(18px, 4vw, 22px); font-weight: 950; letter-spacing: -.04em; word-break: keep-all; overflow-wrap: normal; }
@@ -685,7 +705,7 @@ def css_from_existing() -> str:
     .change-row strong { text-align:right; font-size:13px; color:var(--up); }
     .change-row.down strong { color:var(--down); }
     .native-trend-grid { display:grid; grid-template-columns:repeat(2, minmax(0, 1fr)); gap:12px; }
-    .trend-card { border:1px solid var(--border); border-radius:20px; padding:14px; background:linear-gradient(180deg, var(--surface-muted), color-mix(in srgb, var(--surface-elevated) 84%, transparent)); }
+    .trend-card { border:1px solid var(--border); border-radius:20px; padding:14px; background:linear-gradient(180deg, var(--surface-muted), color-mix(in srgb, var(--surface-elevated) 84%, transparent)); transition: transform .22s cubic-bezier(.22,1,.36,1), box-shadow .22s ease, border-color .22s ease; }
     .trend-head, .trend-value, .trend-dates { display:flex; justify-content:space-between; align-items:center; gap:8px; }
     .trend-head strong { font-size:14px; }
     .trend-head span, .trend-dates { color:var(--text-muted); font-size:11px; }
@@ -732,7 +752,7 @@ def css_from_existing() -> str:
     .cycle-grid { display: grid; grid-template-columns: 1fr; gap: 10px; }
     .cycle-point { background: var(--surface-muted); border: 1px solid var(--border); border-radius: var(--radius-md); padding: 13px; }
     .cycle-point strong { display: block; margin-bottom: 4px; color: var(--text); }
-    details.detail-pack { border: 1px solid var(--border); border-radius: var(--radius-lg); background: var(--surface-muted); padding: 4px; }
+    details.detail-pack { border: 1px solid var(--border); border-radius: var(--radius-lg); background: var(--surface-muted); padding: 4px; transition: background-color .22s ease, border-color .22s ease, box-shadow .22s ease; }
     details.detail-pack > summary { cursor: pointer; list-style: none; padding: 13px 14px; font-weight: 900; color: var(--text); }
     details.detail-pack > summary::-webkit-details-marker { display: none; }
     details.detail-pack > summary::after { content: "＋"; float: right; color: var(--accent-strong); }
@@ -801,6 +821,8 @@ def css_from_existing() -> str:
     }
     @media (prefers-reduced-motion: reduce) {
       *, *::before, *::after { animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; scroll-behavior: auto !important; transition-duration: 0.01ms !important; }
+      body.motion-ready .reveal-target { opacity: 1 !important; transform: none !important; }
+      .skeleton-line { animation: none !important; }
     }
   """
 
@@ -901,7 +923,7 @@ def stock_cards_html(rows: list[PriceRow]) -> str:
               <div class="ticker">{row.ticker}</div>
             </div>
             <div class="price-box">
-              <div class="price">{money_krw(row.close)}</div>
+              <div class="price num-animate">{money_krw(row.close)}</div>
               <div class="change-line {direction}">{signed_money(row.change)} · {signed_pct(row.change_pct)}</div>
             </div>
           </div>
@@ -919,7 +941,7 @@ def text_bars_html(rows: list[PriceRow]) -> str:
         parts.append(f"""
         <div class="mini-bar-row">
           <strong>{html.escape(row.name.replace('KODEX 200타겟위클리커버드콜', 'KODEX 커버드콜'))}</strong>
-          <span class="{direction}">{'▲' if row.change_pct >= 0 else '▼'} {signed_pct(row.change_pct)}</span>
+          <span class="{direction} num-animate">{'▲' if row.change_pct >= 0 else '▼'} {signed_pct(row.change_pct)}</span>
           <div class="bar-track"><div class="bar-fill {direction}-bg" style="width: {max(4, min(100, abs(row.change_pct) / max_abs * 100)):.0f}%"></div></div>
         </div>""")
     return "\n".join(parts)
@@ -940,8 +962,8 @@ def macro_factor_html(macro: dict) -> str:
         cards.append(f"""
         <article class="factor-card">
           <div class="card-label">{html.escape(title)}</div>
-          <div class="factor-value">{metric_text(data.get('value'), suffix)}</div>
-          <div class="change-line {direction}">{metric_text_signed(change, '%')}</div>
+          <div class="factor-value num-animate">{metric_text(data.get('value'), suffix)}</div>
+          <div class="change-line {direction} num-animate">{metric_text_signed(change, '%')}</div>
           <p class="factor-copy">{html.escape(copy)}</p>
         </article>""")
     return "\n".join(cards)
@@ -1011,17 +1033,17 @@ def summary_metrics_html(up_count: int, down_count: int, max_row: PriceRow, max_
       <div class="metric-grid dashboard-metrics">
         <article class="metric-card">
           <div class="card-label">상승 종목</div>
-          <div class="metric-value up">{up_count}</div>
+          <div class="metric-value up num-animate">{up_count}</div>
           <p class="muted">포트폴리오 내 상승 마감</p>
         </article>
         <article class="metric-card">
           <div class="card-label">하락 종목</div>
-          <div class="metric-value down">{down_count}</div>
+          <div class="metric-value down num-animate">{down_count}</div>
           <p class="muted">포트폴리오 내 하락 마감</p>
         </article>
         <article class="metric-card">
           <div class="card-label">최대 변동</div>
-          <div class="metric-value {direction}">{signed_pct(max_row.change_pct)}</div>
+          <div class="metric-value {direction} num-animate">{signed_pct(max_row.change_pct)}</div>
           <p class="muted">{html.escape(max_row.name)} · 상승 {html.escape(max_up.name)} {signed_pct(max_up.change_pct)} / 하락 {html.escape(max_down.name)} {signed_pct(max_down.change_pct)}</p>
         </article>
       </div>"""
@@ -1044,7 +1066,7 @@ def inline_change_chart_html(rows: list[PriceRow]) -> str:
           <div class="change-row {direction}">
             <div class="change-label">{label}</div>
             <div class="change-track" aria-hidden="true"><span style="width:{width:.1f}%"></span></div>
-            <strong>{signed_pct(row.change_pct)}</strong>
+            <strong class="num-animate">{signed_pct(row.change_pct)}</strong>
           </div>""")
     basis = html.escape(rows[0].basis_date.strftime("%Y-%m-%d"))
     return f"""
@@ -1082,7 +1104,7 @@ def inline_price_trends_html(rows: list[PriceRow]) -> str:
         cards.append(f"""
           <article class="trend-card {direction}">
             <div class="trend-head"><strong>{label}</strong><span>{row.ticker}</span></div>
-            <div class="trend-value"><b>{format_krw_short(row.close)}</b><em>{signed_pct(row.change_pct)}</em></div>
+            <div class="trend-value"><b class="num-animate">{format_krw_short(row.close)}</b><em class="num-animate">{signed_pct(row.change_pct)}</em></div>
             <svg class="trend-svg" viewBox="0 0 {w} {h}" role="img" aria-label="{label} 최근 가격 흐름">
               <polygon points="{_svg_polyline(area)}" />
               <polyline points="{_svg_polyline(points)}" />
@@ -1183,7 +1205,14 @@ def render_html(rows: list[PriceRow], news: dict, macro: dict, valuation: dict, 
   <style>{css}
   </style>
 </head>
-<body>
+<body class="is-loading">
+  <div class="skeleton-screen" aria-hidden="true">
+    <div class="skeleton-stack">
+      <div class="skeleton-card"><div class="skeleton-line short"></div><div class="skeleton-line long"></div><div class="skeleton-line mid"></div></div>
+      <div class="skeleton-card"><div class="skeleton-line mid"></div><div class="skeleton-line long"></div><div class="skeleton-line long"></div></div>
+      <div class="skeleton-card"><div class="skeleton-line short"></div><div class="skeleton-line mid"></div></div>
+    </div>
+  </div>
   <main>
     <div class="topbar">
       <button class="theme-toggle" type="button" aria-label="다크모드 전환" aria-pressed="false" data-theme-toggle>
@@ -1316,8 +1345,10 @@ def render_html(rows: list[PriceRow], news: dict, macro: dict, valuation: dict, 
   <script>
     (() => {{
       const root = document.documentElement;
+      const body = document.body;
       const button = document.querySelector('[data-theme-toggle]');
       const storageKey = 'daily-briefing-theme';
+      const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
       const preferred = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
       const saved = localStorage.getItem(storageKey);
       const setTheme = (theme) => {{
@@ -1330,8 +1361,82 @@ def render_html(rows: list[PriceRow], news: dict, macro: dict, valuation: dict, 
           button.querySelector('.theme-label').textContent = isDark ? '라이트모드' : '다크모드';
         }}
       }};
+
+      const prepareReveal = () => {{
+        const targets = [...document.querySelectorAll('.hero-card, .section, .stock-card, .metric-card, .factor-card, .news-card, .company-card, .chart-card, .cycle-point, .trend-card, .check-item')];
+        if (reduceMotion) {{
+          targets.forEach((el) => el.classList.add('is-visible'));
+          return;
+        }}
+        body.classList.add('motion-ready');
+        targets.forEach((el, index) => {{
+          el.classList.add('reveal-target');
+          el.style.setProperty('--reveal-delay', `${{Math.min(index * 48, 360)}}ms`);
+        }});
+        const observer = new IntersectionObserver((entries, io) => {{
+          entries.forEach((entry) => {{
+            if (!entry.isIntersecting) return;
+            entry.target.classList.add('is-visible');
+            io.unobserve(entry.target);
+          }});
+        }}, {{ threshold: 0.12, rootMargin: '0px 0px -8% 0px' }});
+        targets.forEach((el) => observer.observe(el));
+      }};
+
+      const animateNumbers = () => {{
+        if (reduceMotion) return;
+        const formatter = new Intl.NumberFormat('ko-KR');
+        const numberPattern = /[-+]?\d[\d,]*(?:\.\d+)?/;
+        const nodes = [...document.querySelectorAll('.num-animate')];
+        const run = (el) => {{
+          if (el.dataset.counted === 'true') return;
+          const finalText = el.dataset.finalText || el.textContent.trim();
+          el.dataset.finalText = finalText;
+          const match = finalText.match(numberPattern);
+          if (!match) return;
+          const raw = match[0];
+          const finalValue = Number(raw.replace(/,/g, ''));
+          if (!Number.isFinite(finalValue)) return;
+          const decimals = raw.includes('.') ? raw.split('.')[1].length : 0;
+          const startValue = Math.abs(finalValue) < 1 ? 0 : finalValue * 0.97;
+          const duration = 720;
+          const started = performance.now();
+          el.dataset.counted = 'true';
+          const formatValue = (value) => {{
+            const fixed = decimals ? value.toFixed(decimals) : String(Math.round(value));
+            const [intPart, decimalPart] = fixed.split('.');
+            return formatter.format(Number(intPart)) + (decimalPart ? `.${{decimalPart}}` : '');
+          }};
+          const tick = (now) => {{
+            const progress = Math.min((now - started) / duration, 1);
+            const eased = 1 - Math.pow(1 - progress, 3);
+            const current = startValue + (finalValue - startValue) * eased;
+            el.textContent = finalText.replace(raw, formatValue(current));
+            if (progress < 1) requestAnimationFrame(tick);
+            else el.textContent = finalText;
+          }};
+          requestAnimationFrame(tick);
+        }};
+        const observer = new IntersectionObserver((entries, io) => {{
+          entries.forEach((entry) => {{
+            if (!entry.isIntersecting) return;
+            run(entry.target);
+            io.unobserve(entry.target);
+          }});
+        }}, {{ threshold: 0.35 }});
+        nodes.forEach((el) => observer.observe(el));
+      }};
+
       setTheme(saved || preferred);
       button?.addEventListener('click', () => setTheme(root.dataset.theme === 'dark' ? 'light' : 'dark'));
+      window.addEventListener('DOMContentLoaded', () => {{
+        prepareReveal();
+        animateNumbers();
+        requestAnimationFrame(() => {{
+          body.classList.remove('is-loading');
+          body.classList.add('is-loaded');
+        }});
+      }});
     }})();
   </script>
 </body>

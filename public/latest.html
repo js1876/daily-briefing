@@ -85,10 +85,25 @@
     }
     img, svg, canvas, video { display: block; max-width: 100%; height: auto; }
     p, li, span, div, a, h1, h2, h3, h4 { overflow-wrap: anywhere; word-break: keep-all; }
-    a { color: var(--accent-strong); text-decoration: none; }
+    a { color: var(--accent-strong); text-decoration: none; transition: color .22s ease, opacity .22s ease; }
     a:hover { text-decoration: underline; }
     main { width: min(var(--content-max), calc(100% - clamp(24px, 5vw, 56px))); margin: 0 auto; padding: clamp(14px, 2.2vw, 28px) 0 clamp(44px, 6vw, 76px); }
-    .section, .card, .stock-card, .factor-card, .news-card, .action-card, .company-card, .hero-card, .chart-card, .cycle-card, .check-card, .metric-card, .side-card { min-width: 0; }
+    .section, .card, .stock-card, .factor-card, .news-card, .action-card, .company-card, .hero-card, .chart-card, .cycle-card, .check-card, .metric-card, .side-card, .trend-card, .cycle-point, .check-item { min-width: 0; }
+
+    .skeleton-screen { position: fixed; inset: 0; z-index: 20; display: none; align-items: center; justify-content: center; padding: 24px; background: var(--bg); transition: opacity .28s ease, visibility .28s ease; }
+    body.is-loading .skeleton-screen { display: flex; }
+    body.is-loaded .skeleton-screen { opacity: 0; visibility: hidden; pointer-events: none; }
+    .skeleton-stack { width: min(860px, 100%); display: grid; gap: 14px; }
+    .skeleton-card { border-radius: var(--radius-lg); border: 1px solid var(--border); background: var(--surface-elevated); padding: 18px; box-shadow: var(--shadow-soft); overflow: hidden; }
+    .skeleton-line { height: 14px; border-radius: 999px; margin: 10px 0; background: linear-gradient(90deg, var(--surface-muted), color-mix(in srgb, var(--surface-muted) 72%, var(--accent-soft)), var(--surface-muted)); background-size: 220% 100%; animation: skeleton-shimmer 1.15s ease-in-out infinite; }
+    .skeleton-line.short { width: 38%; }
+    .skeleton-line.mid { width: 62%; }
+    .skeleton-line.long { width: 88%; }
+    @keyframes skeleton-shimmer { 0% { background-position: 120% 0; } 100% { background-position: -120% 0; } }
+
+    body.motion-ready .reveal-target { opacity: 0; transform: translate3d(0, 14px, 0); }
+    body.motion-ready .reveal-target.is-visible { opacity: 1; transform: translate3d(0, 0, 0); transition: opacity .46s cubic-bezier(.22, 1, .36, 1), transform .46s cubic-bezier(.22, 1, .36, 1); transition-delay: var(--reveal-delay, 0ms); }
+    .num-animate { font-variant-numeric: tabular-nums; }
 
     .topbar { display: flex; justify-content: flex-end; margin: 4px 0 12px; }
     .theme-toggle {
@@ -96,9 +111,10 @@
       border: 1px solid var(--border); border-radius: 999px; padding: 10px 14px;
       background: color-mix(in srgb, var(--surface-elevated) 84%, transparent);
       color: var(--text); box-shadow: var(--shadow-soft); font: inherit; font-size: 13px; font-weight: 850; cursor: pointer;
-      backdrop-filter: blur(18px); -webkit-backdrop-filter: blur(18px); transition: transform .18s ease, background .18s ease, border-color .18s ease;
+      backdrop-filter: blur(18px); -webkit-backdrop-filter: blur(18px); transition: transform .2s ease, background-color .22s ease, border-color .22s ease, box-shadow .22s ease, color .22s ease;
     }
-    .theme-toggle:hover { transform: translateY(-1px); }
+    .theme-toggle:hover { transform: translateY(-1px); box-shadow: 0 14px 34px rgba(15, 23, 42, .09); }
+    .theme-toggle:active { transform: scale(.985); }
     .theme-toggle:focus-visible { outline: 3px solid var(--accent-soft); outline-offset: 3px; }
     .theme-icon { font-size: 15px; line-height: 1; }
 
@@ -144,9 +160,13 @@
     .factor-grid { display: grid; grid-template-columns: 1fr; gap: 12px; }
     .stock-card, .company-card, .factor-card, .chart-card, .cycle-card, .news-card, .check-card, .metric-card, .report-card {
       background: var(--surface-elevated); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: clamp(15px, 2.4vw, 20px); box-shadow: var(--shadow-soft);
-      transition: transform .18s ease, box-shadow .18s ease, border-color .18s ease;
+      transition: transform .22s cubic-bezier(.22, 1, .36, 1), box-shadow .22s ease, border-color .22s ease, background-color .22s ease, color .22s ease;
+      will-change: transform;
     }
-    .stock-card:hover, .company-card:hover, .factor-card:hover, .news-card:hover { transform: translateY(-2px); border-color: color-mix(in srgb, var(--accent) 24%, var(--border)); }
+    @media (hover: hover) and (pointer: fine) {
+      .stock-card:hover, .company-card:hover, .factor-card:hover, .news-card:hover, .metric-card:hover, .trend-card:hover, .check-item:hover { transform: translateY(-2px); border-color: color-mix(in srgb, var(--accent) 24%, var(--border)); box-shadow: 0 16px 38px rgba(15, 23, 42, .09); }
+    }
+    .stock-card:active, .company-card:active, .factor-card:active, .news-card:active, .metric-card:active, .check-item:active, .theme-toggle:active { transform: scale(.99); }
     .stock-card { container-type: inline-size; display: grid; gap: 13px; }
     .stock-top { display: flex; align-items: flex-start; justify-content: space-between; gap: 14px; }
     .stock-name { font-size: clamp(18px, 4vw, 22px); font-weight: 950; letter-spacing: -.04em; word-break: keep-all; overflow-wrap: normal; }
@@ -181,7 +201,7 @@
     .change-row strong { text-align:right; font-size:13px; color:var(--up); }
     .change-row.down strong { color:var(--down); }
     .native-trend-grid { display:grid; grid-template-columns:repeat(2, minmax(0, 1fr)); gap:12px; }
-    .trend-card { border:1px solid var(--border); border-radius:20px; padding:14px; background:linear-gradient(180deg, var(--surface-muted), color-mix(in srgb, var(--surface-elevated) 84%, transparent)); }
+    .trend-card { border:1px solid var(--border); border-radius:20px; padding:14px; background:linear-gradient(180deg, var(--surface-muted), color-mix(in srgb, var(--surface-elevated) 84%, transparent)); transition: transform .22s cubic-bezier(.22,1,.36,1), box-shadow .22s ease, border-color .22s ease; }
     .trend-head, .trend-value, .trend-dates { display:flex; justify-content:space-between; align-items:center; gap:8px; }
     .trend-head strong { font-size:14px; }
     .trend-head span, .trend-dates { color:var(--text-muted); font-size:11px; }
@@ -228,7 +248,7 @@
     .cycle-grid { display: grid; grid-template-columns: 1fr; gap: 10px; }
     .cycle-point { background: var(--surface-muted); border: 1px solid var(--border); border-radius: var(--radius-md); padding: 13px; }
     .cycle-point strong { display: block; margin-bottom: 4px; color: var(--text); }
-    details.detail-pack { border: 1px solid var(--border); border-radius: var(--radius-lg); background: var(--surface-muted); padding: 4px; }
+    details.detail-pack { border: 1px solid var(--border); border-radius: var(--radius-lg); background: var(--surface-muted); padding: 4px; transition: background-color .22s ease, border-color .22s ease, box-shadow .22s ease; }
     details.detail-pack > summary { cursor: pointer; list-style: none; padding: 13px 14px; font-weight: 900; color: var(--text); }
     details.detail-pack > summary::-webkit-details-marker { display: none; }
     details.detail-pack > summary::after { content: "＋"; float: right; color: var(--accent-strong); }
@@ -297,11 +317,20 @@
     }
     @media (prefers-reduced-motion: reduce) {
       *, *::before, *::after { animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; scroll-behavior: auto !important; transition-duration: 0.01ms !important; }
+      body.motion-ready .reveal-target { opacity: 1 !important; transform: none !important; }
+      .skeleton-line { animation: none !important; }
     }
   
   </style>
 </head>
-<body>
+<body class="is-loading">
+  <div class="skeleton-screen" aria-hidden="true">
+    <div class="skeleton-stack">
+      <div class="skeleton-card"><div class="skeleton-line short"></div><div class="skeleton-line long"></div><div class="skeleton-line mid"></div></div>
+      <div class="skeleton-card"><div class="skeleton-line mid"></div><div class="skeleton-line long"></div><div class="skeleton-line long"></div></div>
+      <div class="skeleton-card"><div class="skeleton-line short"></div><div class="skeleton-line mid"></div></div>
+    </div>
+  </div>
   <main>
     <div class="topbar">
       <button class="theme-toggle" type="button" aria-label="다크모드 전환" aria-pressed="false" data-theme-toggle>
@@ -316,11 +345,11 @@
           <div class="hero-content">
             <div class="eyebrow">DAILY SEMICONDUCTOR BRIEFING</div>
             <h1>일일 포트폴리오 브리핑</h1>
-            <p class="meta">작성일: 2026-06-19 KST · 가격 확인: 2026-06-19 09:32 KST · 표시 가격: 조회 시점 최신가</p>
+            <p class="meta">작성일: 2026-06-19 KST · 가격 확인: 2026-06-19 15:43 KST · 표시 가격: 조회 시점 최신가</p>
             <div class="badge-row" aria-label="오늘 요약 지표">
-              <span class="badge up">상승 4</span>
-              <span class="badge down">하락 0</span>
-              <span class="badge up">최대 변동 SK하이닉스 +4.99%</span>
+              <span class="badge up">상승 2</span>
+              <span class="badge down">하락 2</span>
+              <span class="badge up">최대 변동 SK하이닉스 +2.94%</span>
               <span class="badge neutral">반도체 사이클 점검</span>
             </div>
             <p class="hero-summary"><strong>HBM 랠리 확산</strong></p>
@@ -329,18 +358,18 @@
       <div class="metric-grid dashboard-metrics">
         <article class="metric-card">
           <div class="card-label">상승 종목</div>
-          <div class="metric-value up">4</div>
+          <div class="metric-value up num-animate">2</div>
           <p class="muted">포트폴리오 내 상승 마감</p>
         </article>
         <article class="metric-card">
           <div class="card-label">하락 종목</div>
-          <div class="metric-value down">0</div>
+          <div class="metric-value down num-animate">2</div>
           <p class="muted">포트폴리오 내 하락 마감</p>
         </article>
         <article class="metric-card">
           <div class="card-label">최대 변동</div>
-          <div class="metric-value up">+4.99%</div>
-          <p class="muted">SK하이닉스 · 상승 SK하이닉스 +4.99% / 하락 TIGER 반도체TOP10 +1.95%</p>
+          <div class="metric-value up num-animate">+2.94%</div>
+          <p class="muted">SK하이닉스 · 상승 SK하이닉스 +2.94% / 하락 삼성전자 -2.34%</p>
         </article>
       </div>
           </div>
@@ -360,12 +389,12 @@
               <div class="ticker">396500</div>
             </div>
             <div class="price-box">
-              <div class="price">55,540원</div>
-              <div class="change-line up">+1,060원 · +1.95%</div>
+              <div class="price num-animate">53,750원</div>
+              <div class="change-line down">-730원 · -1.34%</div>
             </div>
           </div>
-          <div class="tag-row"><span class="tag up">반도체 ETF</span><span class="tag up">대형주</span><span class="tag up">분산</span><span class="tag up">상승</span></div>
-          <p class="stock-summary">오늘은 상승 마감했습니다. 반도체 대형주 흐름을 묶어서 보는 섹터 온도계 역할입니다.</p>
+          <div class="tag-row"><span class="tag down">반도체 ETF</span><span class="tag down">대형주</span><span class="tag down">분산</span><span class="tag down">하락</span></div>
+          <p class="stock-summary">오늘은 하락 마감했습니다. 반도체 대형주 흐름을 묶어서 보는 섹터 온도계 역할입니다.</p>
         </article>
 
         <article class="stock-card">
@@ -375,8 +404,8 @@
               <div class="ticker">498400</div>
             </div>
             <div class="price-box">
-              <div class="price">29,005원</div>
-              <div class="change-line up">+735원 · +2.60%</div>
+              <div class="price num-animate">28,460원</div>
+              <div class="change-line up">+190원 · +0.67%</div>
             </div>
           </div>
           <div class="tag-row"><span class="tag up">커버드콜</span><span class="tag up">분배</span><span class="tag up">방어</span><span class="tag up">상승</span></div>
@@ -390,12 +419,12 @@
               <div class="ticker">005930</div>
             </div>
             <div class="price-box">
-              <div class="price">370,000원</div>
-              <div class="change-line up">+7,500원 · +2.07%</div>
+              <div class="price num-animate">354,000원</div>
+              <div class="change-line down">-8,500원 · -2.34%</div>
             </div>
           </div>
-          <div class="tag-row"><span class="tag up">HBM 추격</span><span class="tag up">NAND</span><span class="tag up">파운드리</span><span class="tag up">상승</span></div>
-          <p class="stock-summary">오늘은 상승 마감했습니다. HBM·NAND·파운드리 회복 기대와 수급 변화를 함께 확인할 종목입니다.</p>
+          <div class="tag-row"><span class="tag down">HBM 추격</span><span class="tag down">NAND</span><span class="tag down">파운드리</span><span class="tag down">하락</span></div>
+          <p class="stock-summary">오늘은 하락 마감했습니다. HBM·NAND·파운드리 회복 기대와 수급 변화를 함께 확인할 종목입니다.</p>
         </article>
 
         <article class="stock-card">
@@ -405,8 +434,8 @@
               <div class="ticker">000660</div>
             </div>
             <div class="price-box">
-              <div class="price">2,819,000원</div>
-              <div class="change-line up">+134,000원 · +4.99%</div>
+              <div class="price num-animate">2,764,000원</div>
+              <div class="change-line up">+79,000원 · +2.94%</div>
             </div>
           </div>
           <div class="tag-row"><span class="tag up">HBM 순도</span><span class="tag up">AI 서버</span><span class="tag up">DRAM</span><span class="tag up">상승</span></div>
@@ -427,25 +456,25 @@
         <div class="chart-title-row"><h3>전 거래일 대비 변동률</h3><span>기준 2026-06-19</span></div>
         <div class="native-change-chart" role="img" aria-label="전 거래일 대비 변동률 막대 차트">
           
-          <div class="change-row up">
-            <div class="change-label">TIGER 반도체TOP10</div>
-            <div class="change-track" aria-hidden="true"><span style="width:39.0%"></span></div>
-            <strong>+1.95%</strong>
-          </div>
-          <div class="change-row up">
+          <div class="change-row down">
             <div class="change-label">삼성전자</div>
-            <div class="change-track" aria-hidden="true"><span style="width:41.5%"></span></div>
-            <strong>+2.07%</strong>
+            <div class="change-track" aria-hidden="true"><span style="width:79.7%"></span></div>
+            <strong class="num-animate">-2.34%</strong>
+          </div>
+          <div class="change-row down">
+            <div class="change-label">TIGER 반도체TOP10</div>
+            <div class="change-track" aria-hidden="true"><span style="width:45.5%"></span></div>
+            <strong class="num-animate">-1.34%</strong>
           </div>
           <div class="change-row up">
             <div class="change-label">KODEX 커버드콜</div>
-            <div class="change-track" aria-hidden="true"><span style="width:52.1%"></span></div>
-            <strong>+2.60%</strong>
+            <div class="change-track" aria-hidden="true"><span style="width:22.8%"></span></div>
+            <strong class="num-animate">+0.67%</strong>
           </div>
           <div class="change-row up">
             <div class="change-label">SK하이닉스</div>
             <div class="change-track" aria-hidden="true"><span style="width:100.0%"></span></div>
-            <strong>+4.99%</strong>
+            <strong class="num-animate">+2.94%</strong>
           </div>
         </div>
         <figcaption>이미지 없이 HTML/CSS 막대로 직접 렌더링한 변동률 차트입니다.</figcaption>
@@ -454,43 +483,43 @@
       <figure class="chart-card native-chart-card">
         <div class="chart-title-row"><h3>종목별 최근 4거래일 가격 흐름</h3><span>SVG 직접 렌더링</span></div>
         <div class="native-trend-grid">
-          <article class="trend-card up">
+          <article class="trend-card down">
             <div class="trend-head"><strong>삼성전자</strong><span>005930</span></div>
-            <div class="trend-value"><b>370,000원</b><em>+2.07%</em></div>
+            <div class="trend-value"><b class="num-animate">354,000원</b><em class="num-animate">-2.34%</em></div>
             <svg class="trend-svg" viewBox="0 0 320 128" role="img" aria-label="삼성전자 최근 가격 흐름">
-              <polygon points="18.0,102.0 18.0,102.0 114.0,90.6 210.0,38.4 306.0,14.0 306.0,102.0" />
-              <polyline points="18.0,102.0 114.0,90.6 210.0,38.4 306.0,14.0" />
-              <circle cx="18.0" cy="102.0" r="4.4" /><circle cx="114.0" cy="90.6" r="4.4" /><circle cx="210.0" cy="38.4" r="4.4" /><circle cx="306.0" cy="14.0" r="4.4" />
+              <polygon points="18.0,102.0 18.0,102.0 114.0,86.2 210.0,14.0 306.0,52.4 306.0,102.0" />
+              <polyline points="18.0,102.0 114.0,86.2 210.0,14.0 306.0,52.4" />
+              <circle cx="18.0" cy="102.0" r="4.4" /><circle cx="114.0" cy="86.2" r="4.4" /><circle cx="210.0" cy="14.0" r="4.4" /><circle cx="306.0" cy="52.4" r="4.4" />
             </svg>
             <div class="trend-dates"><span>6/16</span><span>6/17</span><span>6/18</span><span>6/19</span></div>
           </article>
           <article class="trend-card up">
             <div class="trend-head"><strong>KODEX 커버드콜</strong><span>498400</span></div>
-            <div class="trend-value"><b>29,005원</b><em>+2.60%</em></div>
+            <div class="trend-value"><b class="num-animate">28,460원</b><em class="num-animate">+0.67%</em></div>
             <svg class="trend-svg" viewBox="0 0 320 128" role="img" aria-label="KODEX 커버드콜 최근 가격 흐름">
-              <polygon points="18.0,102.0 18.0,102.0 114.0,78.9 210.0,43.7 306.0,14.0 306.0,102.0" />
-              <polyline points="18.0,102.0 114.0,78.9 210.0,43.7 306.0,14.0" />
-              <circle cx="18.0" cy="102.0" r="4.4" /><circle cx="114.0" cy="78.9" r="4.4" /><circle cx="210.0" cy="43.7" r="4.4" /><circle cx="306.0" cy="14.0" r="4.4" />
+              <polygon points="18.0,102.0 18.0,102.0 114.0,71.2 210.0,24.3 306.0,14.0 306.0,102.0" />
+              <polyline points="18.0,102.0 114.0,71.2 210.0,24.3 306.0,14.0" />
+              <circle cx="18.0" cy="102.0" r="4.4" /><circle cx="114.0" cy="71.2" r="4.4" /><circle cx="210.0" cy="24.3" r="4.4" /><circle cx="306.0" cy="14.0" r="4.4" />
             </svg>
             <div class="trend-dates"><span>6/16</span><span>6/17</span><span>6/18</span><span>6/19</span></div>
           </article>
           <article class="trend-card up">
             <div class="trend-head"><strong>SK하이닉스</strong><span>000660</span></div>
-            <div class="trend-value"><b>2.82백만원</b><em>+4.99%</em></div>
+            <div class="trend-value"><b class="num-animate">2.76백만원</b><em class="num-animate">+2.94%</em></div>
             <svg class="trend-svg" viewBox="0 0 320 128" role="img" aria-label="SK하이닉스 최근 가격 흐름">
-              <polygon points="18.0,102.0 18.0,102.0 114.0,74.0 210.0,41.0 306.0,14.0 306.0,102.0" />
-              <polyline points="18.0,102.0 114.0,74.0 210.0,41.0 306.0,14.0" />
-              <circle cx="18.0" cy="102.0" r="4.4" /><circle cx="114.0" cy="74.0" r="4.4" /><circle cx="210.0" cy="41.0" r="4.4" /><circle cx="306.0" cy="14.0" r="4.4" />
+              <polygon points="18.0,102.0 18.0,102.0 114.0,70.0 210.0,32.2 306.0,14.0 306.0,102.0" />
+              <polyline points="18.0,102.0 114.0,70.0 210.0,32.2 306.0,14.0" />
+              <circle cx="18.0" cy="102.0" r="4.4" /><circle cx="114.0" cy="70.0" r="4.4" /><circle cx="210.0" cy="32.2" r="4.4" /><circle cx="306.0" cy="14.0" r="4.4" />
             </svg>
             <div class="trend-dates"><span>6/16</span><span>6/17</span><span>6/18</span><span>6/19</span></div>
           </article>
-          <article class="trend-card up">
+          <article class="trend-card down">
             <div class="trend-head"><strong>TIGER 반도체TOP10</strong><span>396500</span></div>
-            <div class="trend-value"><b>55,540원</b><em>+1.95%</em></div>
+            <div class="trend-value"><b class="num-animate">53,750원</b><em class="num-animate">-1.34%</em></div>
             <svg class="trend-svg" viewBox="0 0 320 128" role="img" aria-label="TIGER 반도체TOP10 최근 가격 흐름">
-              <polygon points="18.0,102.0 18.0,102.0 114.0,82.9 210.0,44.2 306.0,14.0 306.0,102.0" />
-              <polyline points="18.0,102.0 114.0,82.9 210.0,44.2 306.0,14.0" />
-              <circle cx="18.0" cy="102.0" r="4.4" /><circle cx="114.0" cy="82.9" r="4.4" /><circle cx="210.0" cy="44.2" r="4.4" /><circle cx="306.0" cy="14.0" r="4.4" />
+              <polygon points="18.0,102.0 18.0,102.0 114.0,73.0 210.0,14.0 306.0,45.6 306.0,102.0" />
+              <polyline points="18.0,102.0 114.0,73.0 210.0,14.0 306.0,45.6" />
+              <circle cx="18.0" cy="102.0" r="4.4" /><circle cx="114.0" cy="73.0" r="4.4" /><circle cx="210.0" cy="14.0" r="4.4" /><circle cx="306.0" cy="45.6" r="4.4" />
             </svg>
             <div class="trend-dates"><span>6/16</span><span>6/17</span><span>6/18</span><span>6/19</span></div>
           </article></div>
@@ -587,7 +616,7 @@
           <details class="detail-pack company-detail">
             <summary>오늘의 해석 자세히 보기</summary>
             <div class="split-list">
-              <div><strong>오늘의 해석</strong>오늘 변동률은 +2.07%입니다. 시총 약 2410조원, Forward PE 6.32 기준으로 추세 지속성을 점검합니다.</div>
+              <div><strong>오늘의 해석</strong>오늘 변동률은 -2.34%입니다. 시총 약 2348조원, Forward PE 6.16 기준으로 추세 지속성을 점검합니다.</div>
             </div>
           </details>
         </article>
@@ -605,7 +634,7 @@
           <details class="detail-pack company-detail">
             <summary>오늘의 해석 자세히 보기</summary>
             <div class="split-list">
-              <div><strong>오늘의 해석</strong>오늘 변동률은 +4.99%입니다. 시총 약 1996조원, Forward PE 6.80 기준으로 추세 지속성을 점검합니다.</div>
+              <div><strong>오늘의 해석</strong>오늘 변동률은 +2.94%입니다. 시총 약 1970조원, Forward PE 6.71 기준으로 추세 지속성을 점검합니다.</div>
             </div>
           </details>
         </article>
@@ -622,26 +651,26 @@
           <div class="mini-bars">
         <div class="mini-bar-row">
           <strong>SK하이닉스</strong>
-          <span class="up">▲ +4.99%</span>
+          <span class="up num-animate">▲ +2.94%</span>
           <div class="bar-track"><div class="bar-fill up-bg" style="width: 100%"></div></div>
         </div>
 
         <div class="mini-bar-row">
           <strong>KODEX 커버드콜</strong>
-          <span class="up">▲ +2.60%</span>
-          <div class="bar-track"><div class="bar-fill up-bg" style="width: 52%"></div></div>
-        </div>
-
-        <div class="mini-bar-row">
-          <strong>삼성전자</strong>
-          <span class="up">▲ +2.07%</span>
-          <div class="bar-track"><div class="bar-fill up-bg" style="width: 41%"></div></div>
+          <span class="up num-animate">▲ +0.67%</span>
+          <div class="bar-track"><div class="bar-fill up-bg" style="width: 23%"></div></div>
         </div>
 
         <div class="mini-bar-row">
           <strong>TIGER 반도체TOP10</strong>
-          <span class="up">▲ +1.95%</span>
-          <div class="bar-track"><div class="bar-fill up-bg" style="width: 39%"></div></div>
+          <span class="down num-animate">▼ -1.34%</span>
+          <div class="bar-track"><div class="bar-fill down-bg" style="width: 46%"></div></div>
+        </div>
+
+        <div class="mini-bar-row">
+          <strong>삼성전자</strong>
+          <span class="down num-animate">▼ -2.34%</span>
+          <div class="bar-track"><div class="bar-fill down-bg" style="width: 80%"></div></div>
         </div>
           </div>
         </section>
@@ -654,29 +683,29 @@
           <div class="factor-grid">
         <article class="factor-card">
           <div class="card-label">환율</div>
-          <div class="factor-value">1536.08원</div>
-          <div class="change-line up">+0.70%</div>
+          <div class="factor-value num-animate">1530.18원</div>
+          <div class="change-line up num-animate">+0.31%</div>
           <p class="factor-copy">외국인 수급과 반도체 대형주 투자심리에 직접 영향을 줍니다.</p>
         </article>
 
         <article class="factor-card">
           <div class="card-label">미국 10년물</div>
-          <div class="factor-value">4.45%</div>
-          <div class="change-line down">-0.80%</div>
+          <div class="factor-value num-animate">4.49%</div>
+          <div class="change-line up num-animate">+0.54%</div>
           <p class="factor-copy">성장주·AI 반도체 밸류에이션 할인율을 좌우합니다.</p>
         </article>
 
         <article class="factor-card">
           <div class="card-label">유가</div>
-          <div class="factor-value">75.16달러</div>
-          <div class="change-line down">-2.12%</div>
+          <div class="factor-value num-animate">76.53달러</div>
+          <div class="change-line down num-animate">-0.09%</div>
           <p class="factor-copy">비용 부담과 인플레이션 기대를 통해 금리 경로에 영향을 줍니다.</p>
         </article>
 
         <article class="factor-card">
           <div class="card-label">KOSPI</div>
-          <div class="factor-value">9292.19</div>
-          <div class="change-line up">+4.83%</div>
+          <div class="factor-value num-animate">9070.79</div>
+          <div class="change-line up num-animate">+0.08%</div>
           <p class="factor-copy">국내 위험자산 선호와 대형주 수급 배경을 보여줍니다.</p>
         </article>
           </div>
@@ -690,33 +719,33 @@
           </div>
           <div class="news-timeline">
         <article class="news-card">
-          <div class="news-meta">09:28 · 매일경제 · 삼성전자</div>
-          <a class="news-title" href="https://news.google.com/rss/articles/CBMiUkFVX3lxTFBRbjV2NFROSFZZcDVER1FjUHNKNjdhRTM3TWdOU2ZtWEE4YVZTQm5nbHpVcUJvMXVlMnJacVgxbnZkczhNdDF5dzNWTDlTWTl0MFE?oc=5">‘삼전닉스’ 오늘도 신고가 랠리…코스피 9300선 돌파, 코스닥은 1000선 붕괴 - 매일경제</a>
+          <div class="news-meta">14:49 · 매일경제 · 삼성전자</div>
+          <a class="news-title" href="https://news.google.com/rss/articles/CBMiVkFVX3lxTE5tdnNzS2dhbVRmcUtYY19POUV0Vm1zNlNITG5fUlhuMWxNYXhLZFptZUFVMDhPNm9YMzV4U212UHI1RnhtTGNqYVJlQUNUcTlyaUVaLXBn?oc=5">비트코인 제친 삼성전자…글로벌 시총 12위 ‘우뚝’ - 매일경제</a>
         </article>
 
         <article class="news-card">
-          <div class="news-meta">09:20 · 네이트 · 삼성전자</div>
-          <a class="news-title" href="https://news.google.com/rss/articles/CBMiU0FVX3lxTFBzVDhKMExwal84aEZ6WVVNWnBoMEgyQmlLYXpiN3NYTC1wYVBZQkN6Rm9hMXRMTkxDQ1NYbjZaVGk3dUdIcnRRdW5yY05RYnF4U2Jn?oc=5">SK하이닉스 시총 2000조원 첫 돌파…삼전도 37만 &#x27;신고가&#x27;[핫종목] - 네이트</a>
+          <div class="news-meta">10:43 · 매일경제 마켓 · SK하이닉스</div>
+          <a class="news-title" href="https://news.google.com/rss/articles/CBMiUkFVX3lxTE9QZHFtQzRYaVZETmpLUklNdUNpeGZuVVN1MVlIdzA0OW15Vy1ZQU14bEotejI1YWN3a1A0RUlIUkx3OWlJc2VvLTItY1hVMGVxQnc?oc=5">특징주, SK하이닉스-반도체 생산 테마 상승세에 6.93% ↑ - 매일경제 마켓</a>
         </article>
 
         <article class="news-card">
-          <div class="news-meta">08:33 · 연합인포맥스 · SK하이닉스</div>
-          <a class="news-title" href="https://news.google.com/rss/articles/CBMicEFVX3lxTFA2XzZVRGRTbWo4WTJrb3o0OXhzUUZNMC16bXNueUMtUFJYeGNSQkdFQ3B5WVNhRXNXR3lITEdrbVBOVVFNZllRdU9IZEdNWHdYdGhYcHBiazdYc0NVSDlmNlR3eWM3Z2h1VTN3SzhkWTg?oc=5">[시총 3위 SK스퀘어] &#x27;하이닉스 대체재&#x27;로 시총 200조 돌파 - 연합인포맥스</a>
+          <div class="news-meta">09:19 · 뉴스1 · 삼성전자</div>
+          <a class="news-title" href="https://news.google.com/rss/articles/CBMiX0FVX3lxTE40akZWR3Z2aWZ5aWVUQTdpX1BQbmhmZ1RrSWFnd1ZuQU9DUU1GZVVPQTlFY0dZdEw0ckpGQVNzYWxETTFPZmRlaFdzWEFGVzVLQmFnVUhWXzBodUFjXzRv?oc=5">SK하이닉스 시총 2000조원 첫 돌파…삼전도 37만 &#x27;신고가&#x27;[핫종목] - 뉴스1</a>
         </article>
 
         <article class="news-card">
-          <div class="news-meta">08:30 · KB Think · SK하이닉스</div>
-          <a class="news-title" href="https://news.google.com/rss/articles/CBMickFVX3lxTE5qS0hHLXlqaWRLVXNTMDd2bVVaWG9GR2tfZGRWUnB5ZXV2elBpT1N6bm0yUzRmakJCbGpDandQbFdhODZaOEhaQWN5b2RWZS15VlJiZFlCZ0Q4dnZ2emNLYWJKWkRhS1d6ZWJRMkMxVUpMQQ?oc=5">[시총 3위 SK스퀘어] 랠리 다음 동력은 배당…하이닉스 현금흐름 주목 - KB Think</a>
+          <div class="news-meta">09:19 · 뉴스1 · SK하이닉스</div>
+          <a class="news-title" href="https://news.google.com/rss/articles/CBMiX0FVX3lxTE40akZWR3Z2aWZ5aWVUQTdpX1BQbmhmZ1RrSWFnd1ZuQU9DUU1GZVVPQTlFY0dZdEw0ckpGQVNzYWxETTFPZmRlaFdzWEFGVzVLQmFnVUhWXzBodUFjXzRv?oc=5">SK하이닉스 시총 2000조원 첫 돌파…삼전도 37만 &#x27;신고가&#x27;[핫종목] - 뉴스1</a>
+        </article>
+
+        <article class="news-card">
+          <div class="news-meta">08:39 · 연합인포맥스 · SK하이닉스</div>
+          <a class="news-title" href="https://news.google.com/rss/articles/CBMidEFVX3lxTE01TGp0ay0zSFBQMjlUWEdvWmpxRFZJVnZwWU16MFNkN0xWaU9VWEdXRThNMGcySzl2M3IwRWNuNVJrNi10MnBqcnJOUVRBQ1RyeUZvT2ViRHdFN1VQNVlaUWF4czh0ZE1pWDZPVG1uYWJjQnFF?oc=5">[시총 3위 SK스퀘어] &#x27;하이닉스 대체재&#x27;로 시총 200조 돌파 | - 연합인포맥스</a>
         </article>
 
         <article class="news-card">
           <div class="news-meta">07:56 · 서울경제 · 삼성전자</div>
-          <a class="news-title" href="https://news.google.com/rss/articles/CBMiU0FVX3lxTE9kM2V4czJySWVTWGU5ZlVKODAwSFY2QWFncnVQWmVrcUwyUllhUG1PVXJRR1hWZGw5eVVWTVFKamNlYXNVR1pfT2I0YktkYXAyLXdF0gFTQVVfeXFMT2QzZXhzMnJJZVNYZTlmVUo4MDBIVjZBYWdydVBaZWtxTDJSWWFQbU9VclFHWFZkbDl5VVZNUUpqY2Vhc1VHWl9PYjRiS2RhcDItd0U?oc=5">성과급 100배 격차의 후폭풍…DX노조 ‘세불리기’ 삼성 노조 판 흔들린다 - 서울경제</a>
-        </article>
-
-        <article class="news-card">
-          <div class="news-meta">06:30 · 서울경제 · SK하이닉스</div>
-          <a class="news-title" href="https://news.google.com/rss/articles/CBMiUkFVX3lxTE16QWdqUndHTEowZTNITlNmTnNsNjJ4UmNZd2g0YkVNNHVrN1Q4RHJsYzYxY3dXVmJaVGszcXAxbnB1UFI4UzlUbE14SWV6TGV1QnfSAVNBVV95cUxQYzRDSWdMU3dCNjBLRWd4TDVkSXhGNE0wYU9DaERweWRGYTBBallLY1IzX0tCNklDc1N5bmhtYTY0dVVJU3lUNUstcjRJMWRjQnJ1UQ?oc=5">규모 커진 하이닉스 ADR…모건 빠진 빅4 IB, 물량 배분 착수 [시그널] - 서울경제</a>
+          <a class="news-title" href="https://news.google.com/rss/articles/CBMiUkFVX3lxTE5IYThrbU1Zang5d2RXX09RQ2pOWFJLWkVxWVlXMjVvRGFHbU9GMF93LXdhN3RTcW1qYmJtY3FKQVdvOUFkcVdLUHpUWi1McWx0SmfSAVNBVV95cUxPZDNleHMyckllU1hlOWZVSjgwMEhWNkFhZ3J1UFpla3FMMlJZYVBtT1VyUUdYVmRsOXlVVk1RSmpjZWFzVUdaX09iNGJLZGFwMi13RQ?oc=5">성과급 100배 격차의 후폭풍…DX노조 ‘세불리기’ 삼성 노조 판 흔들린다 - 서울경제</a>
         </article>
           </div>
         </section>
@@ -745,8 +774,10 @@
   <script>
     (() => {
       const root = document.documentElement;
+      const body = document.body;
       const button = document.querySelector('[data-theme-toggle]');
       const storageKey = 'daily-briefing-theme';
+      const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
       const preferred = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
       const saved = localStorage.getItem(storageKey);
       const setTheme = (theme) => {
@@ -759,8 +790,82 @@
           button.querySelector('.theme-label').textContent = isDark ? '라이트모드' : '다크모드';
         }
       };
+
+      const prepareReveal = () => {
+        const targets = [...document.querySelectorAll('.hero-card, .section, .stock-card, .metric-card, .factor-card, .news-card, .company-card, .chart-card, .cycle-point, .trend-card, .check-item')];
+        if (reduceMotion) {
+          targets.forEach((el) => el.classList.add('is-visible'));
+          return;
+        }
+        body.classList.add('motion-ready');
+        targets.forEach((el, index) => {
+          el.classList.add('reveal-target');
+          el.style.setProperty('--reveal-delay', `${Math.min(index * 48, 360)}ms`);
+        });
+        const observer = new IntersectionObserver((entries, io) => {
+          entries.forEach((entry) => {
+            if (!entry.isIntersecting) return;
+            entry.target.classList.add('is-visible');
+            io.unobserve(entry.target);
+          });
+        }, { threshold: 0.12, rootMargin: '0px 0px -8% 0px' });
+        targets.forEach((el) => observer.observe(el));
+      };
+
+      const animateNumbers = () => {
+        if (reduceMotion) return;
+        const formatter = new Intl.NumberFormat('ko-KR');
+        const numberPattern = /[-+]?\d[\d,]*(?:\.\d+)?/;
+        const nodes = [...document.querySelectorAll('.num-animate')];
+        const run = (el) => {
+          if (el.dataset.counted === 'true') return;
+          const finalText = el.dataset.finalText || el.textContent.trim();
+          el.dataset.finalText = finalText;
+          const match = finalText.match(numberPattern);
+          if (!match) return;
+          const raw = match[0];
+          const finalValue = Number(raw.replace(/,/g, ''));
+          if (!Number.isFinite(finalValue)) return;
+          const decimals = raw.includes('.') ? raw.split('.')[1].length : 0;
+          const startValue = Math.abs(finalValue) < 1 ? 0 : finalValue * 0.97;
+          const duration = 720;
+          const started = performance.now();
+          el.dataset.counted = 'true';
+          const formatValue = (value) => {
+            const fixed = decimals ? value.toFixed(decimals) : String(Math.round(value));
+            const [intPart, decimalPart] = fixed.split('.');
+            return formatter.format(Number(intPart)) + (decimalPart ? `.${decimalPart}` : '');
+          };
+          const tick = (now) => {
+            const progress = Math.min((now - started) / duration, 1);
+            const eased = 1 - Math.pow(1 - progress, 3);
+            const current = startValue + (finalValue - startValue) * eased;
+            el.textContent = finalText.replace(raw, formatValue(current));
+            if (progress < 1) requestAnimationFrame(tick);
+            else el.textContent = finalText;
+          };
+          requestAnimationFrame(tick);
+        };
+        const observer = new IntersectionObserver((entries, io) => {
+          entries.forEach((entry) => {
+            if (!entry.isIntersecting) return;
+            run(entry.target);
+            io.unobserve(entry.target);
+          });
+        }, { threshold: 0.35 });
+        nodes.forEach((el) => observer.observe(el));
+      };
+
       setTheme(saved || preferred);
       button?.addEventListener('click', () => setTheme(root.dataset.theme === 'dark' ? 'light' : 'dark'));
+      window.addEventListener('DOMContentLoaded', () => {
+        prepareReveal();
+        animateNumbers();
+        requestAnimationFrame(() => {
+          body.classList.remove('is-loading');
+          body.classList.add('is-loaded');
+        });
+      });
     })();
   </script>
 </body>
