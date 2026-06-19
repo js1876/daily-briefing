@@ -134,8 +134,8 @@ def test_report_css_is_mobile_first_card_dashboard():
     assert "translate3d(0, 14px" not in css
     assert "skeleton-shimmer" in css
     assert "transition: all" not in css
-    assert "--bg: #050505" in css
-    assert "--surface-elevated: #111111" in css
+    assert "--bg: #101114" in css
+    assert "--surface-elevated: #1b1d23" in css
     assert "html[data-theme=\"dark\"] body" in css
     assert "position: sticky" not in css
     assert "max-height: calc(100vh" not in css

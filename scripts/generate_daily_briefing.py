@@ -547,11 +547,11 @@ def css_from_existing() -> str:
     }
 
     html[data-theme="dark"] {
-      --bg: #050505;
-      --bg2: #080808;
-      --surface: rgba(17, 17, 17, 0.88);
-      --surface-elevated: #111111;
-      --surface-muted: #181818;
+      --bg: #101114;
+      --bg2: #14161b;
+      --surface: rgba(28, 30, 36, 0.88);
+      --surface-elevated: #1b1d23;
+      --surface-muted: #242730;
       --text: #f5f5f5;
       --text-muted: #b7b7b7;
       --border: rgba(255, 255, 255, 0.12);
@@ -564,8 +564,8 @@ def css_from_existing() -> str:
       --shadow: 0 24px 60px rgba(0, 0, 0, 0.52);
       --shadow-soft: 0 14px 34px rgba(0, 0, 0, 0.38);
       --chart-bg: #f8fafc;
-      --bar-track: #222222;
-      --body-end: #050505;
+      --bar-track: #2c303a;
+      --body-end: #101114;
       --summary-text: #d4d4d4;
       color-scheme: dark;
     }
@@ -588,7 +588,7 @@ def css_from_existing() -> str:
       text-rendering: optimizeLegibility;
     }
     html[data-theme="dark"] body {
-      background: linear-gradient(180deg, #050505 0%, #080808 48%, #050505 100%);
+      background: linear-gradient(180deg, #101114 0%, #14161b 48%, #101114 100%);
     }
     img, svg, canvas, video { display: block; max-width: 100%; height: auto; }
     p, li, span, div, a, h1, h2, h3, h4 { overflow-wrap: anywhere; word-break: keep-all; }
