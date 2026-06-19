@@ -605,8 +605,9 @@ def css_from_existing() -> str:
     .skeleton-line.long { width: 88%; }
     @keyframes skeleton-shimmer { 0% { background-position: 120% 0; } 100% { background-position: -120% 0; } }
 
-    body.motion-ready .reveal-target { opacity: 0; transform: translate3d(0, 14px, 0); }
-    body.motion-ready .reveal-target.is-visible { opacity: 1; transform: translate3d(0, 0, 0); transition: opacity .46s cubic-bezier(.22, 1, .36, 1), transform .46s cubic-bezier(.22, 1, .36, 1); transition-delay: var(--reveal-delay, 0ms); }
+    body.motion-ready .reveal-target:not(.is-revealed) { opacity: 0; transform: translate3d(0, 14px, 0); }
+    body.motion-ready .reveal-target.is-visible:not(.is-revealed) { opacity: 1; transform: translate3d(0, 0, 0); transition: opacity .46s cubic-bezier(.22, 1, .36, 1), transform .46s cubic-bezier(.22, 1, .36, 1); transition-delay: var(--reveal-delay, 0ms); }
+    body.motion-ready .is-revealed { opacity: 1; transform: none; transition-delay: 0ms; }
     .num-animate { font-variant-numeric: tabular-nums; }
 
     .topbar { display: flex; justify-content: flex-end; margin: 4px 0 12px; }
@@ -821,7 +822,7 @@ def css_from_existing() -> str:
     }
     @media (prefers-reduced-motion: reduce) {
       *, *::before, *::after { animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; scroll-behavior: auto !important; transition-duration: 0.01ms !important; }
-      body.motion-ready .reveal-target { opacity: 1 !important; transform: none !important; }
+      body.motion-ready .reveal-target, body.motion-ready .is-revealed { opacity: 1 !important; transform: none !important; }
       .skeleton-line { animation: none !important; }
     }
   """
@@ -1365,22 +1366,42 @@ def render_html(rows: list[PriceRow], news: dict, macro: dict, valuation: dict, 
       const prepareReveal = () => {{
         const targets = [...document.querySelectorAll('.hero-card, .section, .stock-card, .metric-card, .factor-card, .news-card, .company-card, .chart-card, .cycle-point, .trend-card, .check-item')];
         if (reduceMotion) {{
-          targets.forEach((el) => el.classList.add('is-visible'));
+          targets.forEach((el) => {{
+            el.dataset.revealed = 'true';
+            el.classList.add('is-visible', 'is-revealed');
+          }});
           return;
         }}
         body.classList.add('motion-ready');
         targets.forEach((el, index) => {{
+          if (el.dataset.revealed === 'true' || el.classList.contains('is-revealed')) return;
           el.classList.add('reveal-target');
           el.style.setProperty('--reveal-delay', `${{Math.min(index * 48, 360)}}ms`);
         }});
         const observer = new IntersectionObserver((entries, io) => {{
           entries.forEach((entry) => {{
+            const target = entry.target;
+            if (target.dataset.revealed === 'true' || target.classList.contains('is-revealed')) {{
+              io.unobserve(target);
+              return;
+            }}
             if (!entry.isIntersecting) return;
-            entry.target.classList.add('is-visible');
-            io.unobserve(entry.target);
+            target.dataset.revealed = 'true';
+            target.classList.add('is-visible');
+            io.unobserve(target);
+            const settle = () => {{
+              target.classList.add('is-revealed');
+              target.classList.remove('reveal-target', 'is-visible');
+              target.style.removeProperty('--reveal-delay');
+            }};
+            target.addEventListener('transitionend', settle, {{ once: true }});
+            window.setTimeout(settle, 700);
           }});
         }}, {{ threshold: 0.12, rootMargin: '0px 0px -8% 0px' }});
-        targets.forEach((el) => observer.observe(el));
+        targets.forEach((el) => {{
+          if (el.dataset.revealed === 'true' || el.classList.contains('is-revealed')) return;
+          observer.observe(el);
+        }});
       }};
 
       const animateNumbers = () => {{
@@ -1393,10 +1414,16 @@ def render_html(rows: list[PriceRow], news: dict, macro: dict, valuation: dict, 
           const finalText = el.dataset.finalText || el.textContent.trim();
           el.dataset.finalText = finalText;
           const match = finalText.match(numberPattern);
-          if (!match) return;
+          if (!match) {{
+            el.dataset.counted = 'true';
+            return;
+          }}
           const raw = match[0];
           const finalValue = Number(raw.replace(/,/g, ''));
-          if (!Number.isFinite(finalValue)) return;
+          if (!Number.isFinite(finalValue)) {{
+            el.dataset.counted = 'true';
+            return;
+          }}
           const decimals = raw.includes('.') ? raw.split('.')[1].length : 0;
           const startValue = Math.abs(finalValue) < 1 ? 0 : finalValue * 0.97;
           const duration = 720;
@@ -1413,18 +1440,29 @@ def render_html(rows: list[PriceRow], news: dict, macro: dict, valuation: dict, 
             const current = startValue + (finalValue - startValue) * eased;
             el.textContent = finalText.replace(raw, formatValue(current));
             if (progress < 1) requestAnimationFrame(tick);
-            else el.textContent = finalText;
+            else {{
+              el.textContent = finalText;
+              el.dataset.counted = 'true';
+            }}
           }};
           requestAnimationFrame(tick);
         }};
         const observer = new IntersectionObserver((entries, io) => {{
           entries.forEach((entry) => {{
+            const target = entry.target;
+            if (target.dataset.counted === 'true') {{
+              io.unobserve(target);
+              return;
+            }}
             if (!entry.isIntersecting) return;
-            run(entry.target);
-            io.unobserve(entry.target);
+            run(target);
+            io.unobserve(target);
           }});
         }}, {{ threshold: 0.35 }});
-        nodes.forEach((el) => observer.observe(el));
+        nodes.forEach((el) => {{
+          if (el.dataset.counted === 'true') return;
+          observer.observe(el);
+        }});
       }};
 
       setTheme(saved || preferred);

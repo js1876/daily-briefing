@@ -130,6 +130,8 @@ def test_report_css_is_mobile_first_card_dashboard():
     assert "color-scheme: dark" in css
     assert "IntersectionObserver" not in css
     assert "reveal-target" in css
+    assert "is-revealed" in css
+    assert "reveal-target:not(.is-revealed)" in css
     assert "skeleton-shimmer" in css
     assert "transition: all" not in css
     assert "position: sticky" not in css
@@ -167,6 +169,10 @@ def test_rendered_html_uses_cards_instead_of_price_table():
     assert '가격 기준' not in rendered
     assert 'skeleton-screen' in rendered
     assert 'IntersectionObserver' in rendered
+    assert 'dataset.revealed' in rendered
+    assert 'is-revealed' in rendered
+    assert "classList.remove('reveal-target', 'is-visible')" in rendered
     assert 'num-animate' in rendered
+    assert 'dataset.counted' in rendered
     assert 'requestAnimationFrame' in rendered
     assert 'prefers-reduced-motion: reduce' in rendered
