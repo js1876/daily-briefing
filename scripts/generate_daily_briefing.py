@@ -547,26 +547,26 @@ def css_from_existing() -> str:
     }
 
     html[data-theme="dark"] {
-      --bg: #07111f;
-      --bg2: #111827;
-      --surface: rgba(17, 28, 47, 0.78);
-      --surface-elevated: #111c2f;
-      --surface-muted: #17243a;
-      --text: #edf4ff;
-      --text-muted: #a7b4c8;
-      --border: rgba(148, 163, 184, 0.20);
+      --bg: #050505;
+      --bg2: #080808;
+      --surface: rgba(17, 17, 17, 0.88);
+      --surface-elevated: #111111;
+      --surface-muted: #181818;
+      --text: #f5f5f5;
+      --text-muted: #b7b7b7;
+      --border: rgba(255, 255, 255, 0.12);
       --accent: #7dd3fc;
       --accent-strong: #38bdf8;
-      --accent-soft: rgba(125, 211, 252, 0.15);
+      --accent-soft: rgba(125, 211, 252, 0.12);
       --up: #ff7a70;
       --down: #60a5fa;
-      --neutral: #94a3b8;
-      --shadow: 0 24px 60px rgba(0, 0, 0, 0.36);
-      --shadow-soft: 0 14px 34px rgba(0, 0, 0, 0.24);
+      --neutral: #a3a3a3;
+      --shadow: 0 24px 60px rgba(0, 0, 0, 0.52);
+      --shadow-soft: 0 14px 34px rgba(0, 0, 0, 0.38);
       --chart-bg: #f8fafc;
-      --bar-track: #26364f;
-      --body-end: #09111f;
-      --summary-text: #cbd5e1;
+      --bar-track: #222222;
+      --body-end: #050505;
+      --summary-text: #d4d4d4;
       color-scheme: dark;
     }
 
@@ -587,6 +587,9 @@ def css_from_existing() -> str:
       -webkit-font-smoothing: antialiased;
       text-rendering: optimizeLegibility;
     }
+    html[data-theme="dark"] body {
+      background: linear-gradient(180deg, #050505 0%, #080808 48%, #050505 100%);
+    }
     img, svg, canvas, video { display: block; max-width: 100%; height: auto; }
     p, li, span, div, a, h1, h2, h3, h4 { overflow-wrap: anywhere; word-break: keep-all; }
     a { color: var(--accent-strong); text-decoration: none; transition: color .22s ease, opacity .22s ease; }
@@ -605,9 +608,6 @@ def css_from_existing() -> str:
     .skeleton-line.long { width: 88%; }
     @keyframes skeleton-shimmer { 0% { background-position: 120% 0; } 100% { background-position: -120% 0; } }
 
-    body.motion-ready .reveal-target:not(.is-revealed) { opacity: 0; transform: translate3d(0, 14px, 0); }
-    body.motion-ready .reveal-target.is-visible:not(.is-revealed) { opacity: 1; transform: translate3d(0, 0, 0); transition: opacity .46s cubic-bezier(.22, 1, .36, 1), transform .46s cubic-bezier(.22, 1, .36, 1); transition-delay: var(--reveal-delay, 0ms); }
-    body.motion-ready .is-revealed { opacity: 1; transform: none; transition-delay: 0ms; }
     .num-animate { font-variant-numeric: tabular-nums; }
 
     .topbar { display: flex; justify-content: flex-end; margin: 4px 0 12px; }
@@ -822,7 +822,6 @@ def css_from_existing() -> str:
     }
     @media (prefers-reduced-motion: reduce) {
       *, *::before, *::after { animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; scroll-behavior: auto !important; transition-duration: 0.01ms !important; }
-      body.motion-ready .reveal-target, body.motion-ready .is-revealed { opacity: 1 !important; transform: none !important; }
       .skeleton-line { animation: none !important; }
     }
   """
@@ -1363,47 +1362,6 @@ def render_html(rows: list[PriceRow], news: dict, macro: dict, valuation: dict, 
         }}
       }};
 
-      const prepareReveal = () => {{
-        const targets = [...document.querySelectorAll('.hero-card, .section, .stock-card, .metric-card, .factor-card, .news-card, .company-card, .chart-card, .cycle-point, .trend-card, .check-item')];
-        if (reduceMotion) {{
-          targets.forEach((el) => {{
-            el.dataset.revealed = 'true';
-            el.classList.add('is-visible', 'is-revealed');
-          }});
-          return;
-        }}
-        body.classList.add('motion-ready');
-        targets.forEach((el, index) => {{
-          if (el.dataset.revealed === 'true' || el.classList.contains('is-revealed')) return;
-          el.classList.add('reveal-target');
-          el.style.setProperty('--reveal-delay', `${{Math.min(index * 48, 360)}}ms`);
-        }});
-        const observer = new IntersectionObserver((entries, io) => {{
-          entries.forEach((entry) => {{
-            const target = entry.target;
-            if (target.dataset.revealed === 'true' || target.classList.contains('is-revealed')) {{
-              io.unobserve(target);
-              return;
-            }}
-            if (!entry.isIntersecting) return;
-            target.dataset.revealed = 'true';
-            target.classList.add('is-visible');
-            io.unobserve(target);
-            const settle = () => {{
-              target.classList.add('is-revealed');
-              target.classList.remove('reveal-target', 'is-visible');
-              target.style.removeProperty('--reveal-delay');
-            }};
-            target.addEventListener('transitionend', settle, {{ once: true }});
-            window.setTimeout(settle, 700);
-          }});
-        }}, {{ threshold: 0.12, rootMargin: '0px 0px -8% 0px' }});
-        targets.forEach((el) => {{
-          if (el.dataset.revealed === 'true' || el.classList.contains('is-revealed')) return;
-          observer.observe(el);
-        }});
-      }};
-
       const animateNumbers = () => {{
         if (reduceMotion) return;
         const formatter = new Intl.NumberFormat('ko-KR');
@@ -1468,7 +1426,6 @@ def render_html(rows: list[PriceRow], news: dict, macro: dict, valuation: dict, 
       setTheme(saved || preferred);
       button?.addEventListener('click', () => setTheme(root.dataset.theme === 'dark' ? 'light' : 'dark'));
       window.addEventListener('DOMContentLoaded', () => {{
-        prepareReveal();
         animateNumbers();
         requestAnimationFrame(() => {{
           body.classList.remove('is-loading');
