@@ -272,6 +272,18 @@ def sanitize_cycle_report_html(value: str) -> str:
     return re.sub(r"<\s*(/?)\s*([a-zA-Z0-9]+)(?:\s+[^>]*)?>", clean_tag, value).strip()
 
 
+def safe_href(value: str) -> str:
+    """Return an escaped http(s) URL for anchors, or '#' for unsafe values."""
+    raw = str(value or "").strip()
+    try:
+        parsed = urllib.parse.urlparse(raw)
+    except Exception:
+        return "#"
+    if parsed.scheme not in {"http", "https"} or not parsed.netloc:
+        return "#"
+    return html.escape(raw, quote=True)
+
+
 def action_items_html(items: list[str]) -> str:
     return "\n".join(f"        <li>{html.escape(item)}</li>" for item in items if item.strip())
 
@@ -840,7 +852,7 @@ def news_article_html(name: str, items: list[dict]) -> str:
             f"""
             <li>
               <span class="source">{html.escape(item['time'])} | {html.escape(item['source'])}</span>
-              <a href="{html.escape(item['link'])}">{html.escape(item['title'])}</a>
+              <a href="{safe_href(item['link'])}">{html.escape(item['title'])}</a>
             </li>"""
         )
     return f"""
@@ -1016,7 +1028,7 @@ def news_timeline_html(rows: list[PriceRow], news: dict) -> str:
         cards.append(f"""
         <article class="news-card">
           <div class="news-meta">{html.escape(item.get('time',''))} · {html.escape(item.get('source',''))} · {html.escape(item.get('stock',''))}</div>
-          <a class="news-title" href="{html.escape(item.get('link',''))}">{html.escape(item.get('title',''))}</a>
+          <a class="news-title" href="{safe_href(item.get('link',''))}">{html.escape(item.get('title',''))}</a>
         </article>""")
     return "\n".join(cards)
 

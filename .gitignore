@@ -1,6 +1,8 @@
 config/discord_webhook_url.txt
 logs/*
 public/latest_bundle.html
+backup-*/
+tmp_research*.py
 __pycache__/
 *.pyc
 .env

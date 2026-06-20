@@ -49,6 +49,14 @@ def test_sanitize_report_html_removes_script():
     assert "본문" in html
 
 
+def test_safe_href_allows_only_http_urls():
+    assert gdb.safe_href("https://example.com/news?a=1&b=2") == "https://example.com/news?a=1&amp;b=2"
+    assert gdb.safe_href("http://example.com") == "http://example.com"
+    assert gdb.safe_href("javascript:alert(1)") == "#"
+    assert gdb.safe_href("data:text/html;base64,xxx") == "#"
+    assert gdb.safe_href("//example.com/path") == "#"
+
+
 def test_load_cycle_analysis_uses_market_based_action_items(tmp_path):
     analysis_file = tmp_path / "cycle_analysis.json"
     analysis_file.write_text(
