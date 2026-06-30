@@ -118,6 +118,29 @@ def krx_date(dt: datetime) -> str:
 
 
 def fetch_price_row(ticker: str, name: str, today: datetime) -> PriceRow:
+    def parse_int(value: str) -> int:
+        return int(str(value).replace(",", "").replace("+", "").strip())
+
+    # Prefer Naver's mobile finance endpoint near/after the Korean close. It
+    # updates promptly after 15:30 KST and avoids delayed/fallback Yahoo prices.
+    try:
+        url = f"https://m.stock.naver.com/api/stock/{ticker}/price?pageSize=5&page=1"
+        req = urllib.request.Request(url, headers={"User-Agent": "Mozilla/5.0"})
+        rows = json.loads(urllib.request.urlopen(req, timeout=10).read().decode("utf-8"))
+        if isinstance(rows, list) and len(rows) >= 2:
+            rows = list(reversed(rows[:5]))
+            latest = rows[-1]
+            close = parse_int(latest["closePrice"])
+            change = parse_int(latest.get("compareToPreviousClosePrice", "0"))
+            prev_close = close - change
+            change_pct = float(str(latest.get("fluctuationsRatio", "0")).replace(",", ""))
+            basis_date = datetime.strptime(latest["localTradedAt"], "%Y-%m-%d").replace(tzinfo=KST)
+            closes = [parse_int(row["closePrice"]) for row in rows[-4:]]
+            dates = [f"{int(row['localTradedAt'][5:7])}/{int(row['localTradedAt'][8:10])}" for row in rows[-4:]]
+            return PriceRow(ticker, name, close, prev_close, change, change_pct, basis_date, closes, dates)
+    except Exception:
+        pass
+
     start = krx_date(today - timedelta(days=35))
     end = krx_date(today)
     df = stock.get_market_ohlcv_by_date(start, end, ticker)
