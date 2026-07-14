@@ -61,13 +61,12 @@ DEFAULT_CYCLE_ANALYSIS = {
         "신규 매수·매도 판단은 장 시작 후 가격 갭과 거래대금 확인 뒤 진행합니다.",
         "반도체 대형주는 사이클 모멘텀이 유효하지만, 추격 매수보다는 눌림·수급 완화 확인이 우선입니다.",
         "SK하이닉스와 TIGER 반도체TOP10은 HBM·반도체 업황 뉴스가 가격 반등으로 이어지는지 확인합니다.",
-        "KODEX 200타겟위클리커버드콜은 분배·옵션 프리미엄 목적의 보유 전략 점검에 집중합니다.",
+        "보유 종목은 반도체 업황 뉴스가 실제 가격 반등과 수급 회복으로 이어지는지 확인합니다.",
     ],
 }
 
 DOMESTIC_STOCKS = [
     ("396500", "TIGER 반도체TOP10", "TIGER 반도체TOP10 396500"),
-    ("498400", "KODEX 200타겟위클리커버드콜", "KODEX 200타겟위클리커버드콜 498400"),
     ("005930", "삼성전자", "삼성전자 005930"),
     ("000660", "SK하이닉스", "SK하이닉스 000660"),
 ]
@@ -411,9 +410,13 @@ def save_price_trends(rows: list[PriceRow], out: Path) -> None:
     fig.patch.set_facecolor("white")
     axes = axes.ravel()
 
-    ordered = sorted(rows, key=lambda row: ["삼성전자", "KODEX 200타겟위클리커버드콜", "SK하이닉스", "TIGER 반도체TOP10"].index(row.name))
+    display_order = ["삼성전자", "SK하이닉스", "TIGER 반도체TOP10"]
+    ordered = sorted(rows, key=lambda row: display_order.index(row.name))
+    for ax in axes[len(ordered):]:
+        ax.set_visible(False)
+
     for ax, row in zip(axes, ordered):
-        label = row.name.replace("KODEX 200타겟위클리커버드콜", "KODEX 커버드콜")
+        label = row.name
         color = UP if row.change_pct >= 0 else DOWN
         ax.plot(row.dates, row.closes, color=color, linewidth=2.8, marker="o", markersize=6)
         ax.fill_between(row.dates, row.closes, min(row.closes), color=color, alpha=0.08)
