@@ -343,10 +343,11 @@ def load_cycle_analysis(today: datetime, path: Path = CYCLE_ANALYSIS_FILE) -> di
 def write_summary_json(rows: list[PriceRow], macro: dict, today: datetime, out: Path, cycle_analysis: dict | None = None) -> None:
     out.parent.mkdir(parents=True, exist_ok=True)
     cycle_analysis = cycle_analysis or DEFAULT_CYCLE_ANALYSIS
+    cache_key = today.strftime("%Y%m%d%H%M")
     payload = {
         "date": today.strftime("%Y-%m-%d"),
-        "site_url": "https://js1876.github.io/daily-briefing/public/",
-        "latest_url": "https://js1876.github.io/daily-briefing/public/latest.html",
+        "site_url": f"https://js1876.github.io/daily-briefing/public/?v={cache_key}",
+        "latest_url": f"https://js1876.github.io/daily-briefing/public/latest.html?v={cache_key}",
         "cycle_summary": html.unescape(cycle_analysis["cycle_summary"]),
         "cycle_headline": html.unescape(cycle_analysis["headline"]),
         "action_items": [html.unescape(item) for item in cycle_analysis.get("action_items", [])],
