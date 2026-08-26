@@ -1275,7 +1275,7 @@ def render_html(rows: list[PriceRow], news: dict, macro: dict, valuation: dict, 
             <div class="eyebrow">DAILY SEMICONDUCTOR BRIEFING</div>
             <h1>일일 포트폴리오 브리핑</h1>
             <p class="meta">작성일: {today_s} KST · 가격 확인: {checked_at} KST · 표시 가격: 조회 시점 최신가</p>
-            <p class="meta live-market-status" id="live-market-status" data-live-feed="https://js1876.github.io/daily-briefing/public/market-live.json" data-live-stream="https://saturday-hayes-apollo-charge.trycloudflare.com/api/v1/live-stream">실시간 체결 연결 준비 중</p>
+            <p class="meta live-market-status" id="live-market-status" data-live-feed="https://js1876.github.io/daily-briefing/public/market-live.json" data-live-stream="https://expiration-infectious-boulevard-veteran.trycloudflare.com/api/v1/live-stream">실시간 체결 연결 준비 중</p>
             <div class="badge-row" aria-label="오늘 요약 지표">
               <span class="badge up">상승 {up_count}</span>
               <span class="badge down">하락 {down_count}</span>
