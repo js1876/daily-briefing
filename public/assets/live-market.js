@@ -103,7 +103,7 @@
     const time = Number.isNaN(generated.getTime())
       ? '시각 확인 중'
       : generated.toLocaleString('ko-KR', { timeZone: 'Asia/Seoul', month: 'numeric', day: 'numeric', hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false });
-    status.textContent = `실시간 시세 · 토스증권 Open API · ${time} KST`;
+    status.textContent = `${payload.streaming ? '실시간 체결 수신 중' : '실시간 시세'} · 토스증권 Open API · ${time} KST`;
     status.dataset.liveState = 'ok';
   }
 
