@@ -666,6 +666,17 @@ def css_from_existing() -> str:
     .main-column, .side-column { display: grid; gap: var(--space); min-width: 0; }
     .side-column { align-content: start; }
 
+    /* The live price canvas leads the page; briefing detail deliberately follows it. */
+    .market-stage { display:grid; gap:18px; margin-bottom:var(--space); padding:clamp(18px, 3vw, 30px); background:var(--surface); border:1px solid var(--border); border-radius:var(--radius-xl); box-shadow:var(--shadow); backdrop-filter:blur(22px); -webkit-backdrop-filter:blur(22px); }
+    .market-stage-head { display:flex; align-items:flex-end; justify-content:space-between; gap:18px; }
+    .market-stage-title { display:grid; gap:6px; }
+    .market-stage-title h1 { font-size:clamp(28px, 5vw, 52px); }
+    .market-stage-status { display:grid; justify-items:end; gap:7px; text-align:right; }
+    .market-stage-status .live-market-status { margin:0; }
+    .briefing-hero { min-height:auto; padding:clamp(20px, 3vw, 30px); }
+    .briefing-hero .hero-content { gap:9px; }
+    .briefing-hero h1 { font-size:clamp(28px, 4vw, 42px); }
+
     .hero-card, .section, .side-card {
       background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-xl); box-shadow: var(--shadow);
       backdrop-filter: blur(22px); -webkit-backdrop-filter: blur(22px);
@@ -745,15 +756,20 @@ def css_from_existing() -> str:
     .change-row strong { text-align:right; font-size:13px; color:var(--up); }
     .change-row.down strong { color:var(--down); }
     .native-trend-grid { display:grid; grid-template-columns:repeat(2, minmax(0, 1fr)); gap:16px; }
-    .trend-card { min-height:330px; border:1px solid var(--border); border-radius:20px; padding:18px; background:linear-gradient(180deg, var(--surface-muted), color-mix(in srgb, var(--surface-elevated) 84%, transparent)); transition: transform .22s cubic-bezier(.22,1,.36,1), box-shadow .22s ease, border-color .22s ease; }
+    .market-trend-chart { gap:18px; padding:0; background:transparent; border:0; box-shadow:none; }
+    .market-trend-chart .chart-title-row { padding:0 2px; }
+    .trend-card { min-height:400px; border:1px solid var(--border); border-radius:22px; padding:clamp(18px, 2.3vw, 26px); background:linear-gradient(180deg, var(--surface-muted), color-mix(in srgb, var(--surface-elevated) 84%, transparent)); transition: transform .22s cubic-bezier(.22,1,.36,1), box-shadow .22s ease, border-color .22s ease; }
+    .market-trend-chart .trend-card { min-height:clamp(390px, 34vw, 510px); }
+    .market-trend-chart .trend-card:last-child:nth-child(odd) { grid-column:1 / -1; }
     .trend-head, .trend-value, .trend-dates { display:flex; justify-content:space-between; align-items:center; gap:8px; }
-    .trend-head strong { font-size:14px; }
+    .trend-head strong { font-size:15px; }
     .trend-head span, .trend-dates { color:var(--text-muted); font-size:11px; }
-    .trend-value { margin-top:7px; }
-    .trend-value b { font-size:18px; letter-spacing:-.03em; }
+    .trend-value { margin-top:9px; }
+    .trend-value b { font-size:clamp(22px, 2vw, 30px); letter-spacing:-.04em; }
     .trend-value em { font-style:normal; font-weight:900; color:var(--up); }
     .trend-card.down .trend-value em { color:var(--down); }
-    .trend-svg { width:100%; height:clamp(190px, 20vw, 250px); margin:14px 0 4px; }
+    .trend-svg { width:100%; height:clamp(245px, 26vw, 370px); margin:18px 0 5px; }
+    .market-trend-chart .trend-svg { height:clamp(270px, 27vw, 390px); }
     .trend-svg polygon { fill: color-mix(in srgb, var(--up) 15%, transparent); }
     .trend-card.down .trend-svg polygon { fill: color-mix(in srgb, var(--down) 15%, transparent); }
     .trend-svg polyline { fill:none; stroke:var(--up); stroke-width:4; stroke-linecap:round; stroke-linejoin:round; }
@@ -852,9 +868,18 @@ def css_from_existing() -> str:
       .dashboard-shell { grid-template-columns: minmax(0, 2fr) minmax(320px, .82fr); }
       .side-column { align-self: start; padding-right: 2px; }
       .hero-card { min-height: 360px; display: flex; align-items: end; }
+      .briefing-hero { min-height:auto; display:block; }
       .side-column .section { padding: 20px; border-radius: 26px; }
       .side-column h2 { font-size: 22px; }
       .stock-grid { grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); }
+    }
+    @media (max-width: 720px) {
+      .market-stage { padding:18px; gap:16px; }
+      .market-stage-head { display:grid; align-items:start; }
+      .market-stage-status { justify-items:start; text-align:left; }
+      .native-trend-grid { grid-template-columns:1fr; }
+      .market-trend-chart .trend-card { min-height:360px; }
+      .market-trend-chart .trend-svg { height:250px; }
     }
     @media (max-width: 520px) {
       main { width: min(100% - 24px, 100%); }
@@ -1160,10 +1185,9 @@ def inline_price_trends_html(rows: list[PriceRow]) -> str:
             <div class="trend-dates" data-live-trend-dates="{row.ticker}">{tick_labels}</div>
           </article>""")
     return f"""
-      <figure class="chart-card native-chart-card">
-        <div class="chart-title-row"><h3>종목별 실시간 120분 가격 흐름</h3><span>틱 반영 · 1분 기준</span></div>
+      <figure class="chart-card native-chart-card market-trend-chart">
+        <div class="chart-title-row"><h3>실시간 가격 흐름</h3><span>120분 · 틱 반영</span></div>
         <div class="native-trend-grid">{''.join(cards)}</div>
-        <figcaption>PNG 대신 각 카드 안에서 SVG 선 그래프를 직접 그립니다.</figcaption>
       </figure>"""
 
 
@@ -1268,14 +1292,28 @@ def render_html(rows: list[PriceRow], news: dict, macro: dict, valuation: dict, 
       </button>
     </div>
 
+    <section class="market-stage" aria-labelledby="live-market-title">
+      <div class="market-stage-head">
+        <div class="market-stage-title">
+          <div class="eyebrow">LIVE MARKET CANVAS</div>
+          <h1 id="live-market-title">오늘의 가격 흐름</h1>
+          <p class="meta">보유 종목의 120분 실시간 흐름을 먼저 확인하세요.</p>
+        </div>
+        <div class="market-stage-status">
+          <p class="meta live-market-status" id="live-market-status" data-live-feed="https://js1876.github.io/daily-briefing/public/market-live.json" data-live-stream="https://expiration-infectious-boulevard-veteran.trycloudflare.com/api/v1/live-stream">실시간 체결 연결 준비 중</p>
+          <span class="badge neutral">토스증권 Open API</span>
+        </div>
+      </div>
+      {trend_chart.strip()}
+    </section>
+
     <div class="dashboard-shell">
       <div class="main-column">
-        <header class="hero-card">
+        <header class="hero-card briefing-hero">
           <div class="hero-content">
             <div class="eyebrow">DAILY SEMICONDUCTOR BRIEFING</div>
             <h1>일일 포트폴리오 브리핑</h1>
             <p class="meta">작성일: {today_s} KST · 가격 확인: {checked_at} KST · 표시 가격: 조회 시점 최신가</p>
-            <p class="meta live-market-status" id="live-market-status" data-live-feed="https://js1876.github.io/daily-briefing/public/market-live.json" data-live-stream="https://expiration-infectious-boulevard-veteran.trycloudflare.com/api/v1/live-stream">실시간 체결 연결 준비 중</p>
             <div class="badge-row" aria-label="오늘 요약 지표">
               <span class="badge up">상승 {up_count}</span>
               <span class="badge down">하락 {down_count}</span>
@@ -1300,13 +1338,12 @@ def render_html(rows: list[PriceRow], news: dict, macro: dict, valuation: dict, 
 
         <section class="section" aria-labelledby="visual-title">
           <div class="section-head">
-            <div class="section-kicker">Visual</div>
-            <h2 id="visual-title">시각화 대시보드</h2>
-            <p class="meta section-subtitle">PNG 이미지를 불러오지 않고, HTML/CSS/SVG가 현재 UI 테마에 맞춰 직접 그립니다.</p>
+            <div class="section-kicker">Snapshot</div>
+            <h2 id="visual-title">오늘의 변동 폭</h2>
+            <p class="meta section-subtitle">실시간 그래프 아래에서 등락폭을 짧게 비교합니다.</p>
           </div>
           <div class="chart-grid">
             {change_chart}
-            {trend_chart}
           </div>
         </section>
 

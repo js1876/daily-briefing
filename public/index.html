@@ -123,6 +123,17 @@
     .main-column, .side-column { display: grid; gap: var(--space); min-width: 0; }
     .side-column { align-content: start; }
 
+    /* The live price canvas leads the page; briefing detail deliberately follows it. */
+    .market-stage { display:grid; gap:18px; margin-bottom:var(--space); padding:clamp(18px, 3vw, 30px); background:var(--surface); border:1px solid var(--border); border-radius:var(--radius-xl); box-shadow:var(--shadow); backdrop-filter:blur(22px); -webkit-backdrop-filter:blur(22px); }
+    .market-stage-head { display:flex; align-items:flex-end; justify-content:space-between; gap:18px; }
+    .market-stage-title { display:grid; gap:6px; }
+    .market-stage-title h1 { font-size:clamp(28px, 5vw, 52px); }
+    .market-stage-status { display:grid; justify-items:end; gap:7px; text-align:right; }
+    .market-stage-status .live-market-status { margin:0; }
+    .briefing-hero { min-height:auto; padding:clamp(20px, 3vw, 30px); }
+    .briefing-hero .hero-content { gap:9px; }
+    .briefing-hero h1 { font-size:clamp(28px, 4vw, 42px); }
+
     .hero-card, .section, .side-card {
       background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-xl); box-shadow: var(--shadow);
       backdrop-filter: blur(22px); -webkit-backdrop-filter: blur(22px);
@@ -202,15 +213,20 @@
     .change-row strong { text-align:right; font-size:13px; color:var(--up); }
     .change-row.down strong { color:var(--down); }
     .native-trend-grid { display:grid; grid-template-columns:repeat(2, minmax(0, 1fr)); gap:16px; }
-    .trend-card { min-height:330px; border:1px solid var(--border); border-radius:20px; padding:18px; background:linear-gradient(180deg, var(--surface-muted), color-mix(in srgb, var(--surface-elevated) 84%, transparent)); transition: transform .22s cubic-bezier(.22,1,.36,1), box-shadow .22s ease, border-color .22s ease; }
+    .market-trend-chart { gap:18px; padding:0; background:transparent; border:0; box-shadow:none; }
+    .market-trend-chart .chart-title-row { padding:0 2px; }
+    .trend-card { min-height:400px; border:1px solid var(--border); border-radius:22px; padding:clamp(18px, 2.3vw, 26px); background:linear-gradient(180deg, var(--surface-muted), color-mix(in srgb, var(--surface-elevated) 84%, transparent)); transition: transform .22s cubic-bezier(.22,1,.36,1), box-shadow .22s ease, border-color .22s ease; }
+    .market-trend-chart .trend-card { min-height:clamp(390px, 34vw, 510px); }
+    .market-trend-chart .trend-card:last-child:nth-child(odd) { grid-column:1 / -1; }
     .trend-head, .trend-value, .trend-dates { display:flex; justify-content:space-between; align-items:center; gap:8px; }
-    .trend-head strong { font-size:14px; }
+    .trend-head strong { font-size:15px; }
     .trend-head span, .trend-dates { color:var(--text-muted); font-size:11px; }
-    .trend-value { margin-top:7px; }
-    .trend-value b { font-size:18px; letter-spacing:-.03em; }
+    .trend-value { margin-top:9px; }
+    .trend-value b { font-size:clamp(22px, 2vw, 30px); letter-spacing:-.04em; }
     .trend-value em { font-style:normal; font-weight:900; color:var(--up); }
     .trend-card.down .trend-value em { color:var(--down); }
-    .trend-svg { width:100%; height:clamp(190px, 20vw, 250px); margin:14px 0 4px; }
+    .trend-svg { width:100%; height:clamp(245px, 26vw, 370px); margin:18px 0 5px; }
+    .market-trend-chart .trend-svg { height:clamp(270px, 27vw, 390px); }
     .trend-svg polygon { fill: color-mix(in srgb, var(--up) 15%, transparent); }
     .trend-card.down .trend-svg polygon { fill: color-mix(in srgb, var(--down) 15%, transparent); }
     .trend-svg polyline { fill:none; stroke:var(--up); stroke-width:4; stroke-linecap:round; stroke-linejoin:round; }
@@ -309,9 +325,18 @@
       .dashboard-shell { grid-template-columns: minmax(0, 2fr) minmax(320px, .82fr); }
       .side-column { align-self: start; padding-right: 2px; }
       .hero-card { min-height: 360px; display: flex; align-items: end; }
+      .briefing-hero { min-height:auto; display:block; }
       .side-column .section { padding: 20px; border-radius: 26px; }
       .side-column h2 { font-size: 22px; }
       .stock-grid { grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); }
+    }
+    @media (max-width: 720px) {
+      .market-stage { padding:18px; gap:16px; }
+      .market-stage-head { display:grid; align-items:start; }
+      .market-stage-status { justify-items:start; text-align:left; }
+      .native-trend-grid { grid-template-columns:1fr; }
+      .market-trend-chart .trend-card { min-height:360px; }
+      .market-trend-chart .trend-svg { height:250px; }
     }
     @media (max-width: 520px) {
       main { width: min(100% - 24px, 100%); }
@@ -346,18 +371,65 @@
       </button>
     </div>
 
+    <section class="market-stage" aria-labelledby="live-market-title">
+      <div class="market-stage-head">
+        <div class="market-stage-title">
+          <div class="eyebrow">LIVE MARKET CANVAS</div>
+          <h1 id="live-market-title">오늘의 가격 흐름</h1>
+          <p class="meta">보유 종목의 120분 실시간 흐름을 먼저 확인하세요.</p>
+        </div>
+        <div class="market-stage-status">
+          <p class="meta live-market-status" id="live-market-status" data-live-feed="https://js1876.github.io/daily-briefing/public/market-live.json" data-live-stream="https://expiration-infectious-boulevard-veteran.trycloudflare.com/api/v1/live-stream">실시간 체결 연결 준비 중</p>
+          <span class="badge neutral">토스증권 Open API</span>
+        </div>
+      </div>
+      <figure class="chart-card native-chart-card market-trend-chart">
+        <div class="chart-title-row"><h3>실시간 가격 흐름</h3><span>120분 · 틱 반영</span></div>
+        <div class="native-trend-grid">
+          <article class="trend-card up" data-live-trend-card="005930">
+            <div class="trend-head"><strong>삼성전자</strong><span>005930</span></div>
+            <div class="trend-value"><b class="num-animate" data-live-trend-price="005930">263,250원</b><em class="num-animate" data-live-trend-change="005930">+2.43%</em></div>
+            <svg class="trend-svg" data-live-trend="005930" viewBox="0 0 320 128" role="img" aria-label="삼성전자 최근 가격 흐름">
+              <polygon points="18.0,102.0 18.0,14.0 114.0,102.0 210.0,102.0 306.0,79.6 306.0,102.0" />
+              <polyline points="18.0,14.0 114.0,102.0 210.0,102.0 306.0,79.6" />
+              <circle cx="18.0" cy="14.0" r="4.4" /><circle cx="114.0" cy="102.0" r="4.4" /><circle cx="210.0" cy="102.0" r="4.4" /><circle cx="306.0" cy="79.6" r="4.4" />
+            </svg>
+            <div class="trend-dates" data-live-trend-dates="005930"><span>8/21</span><span>8/24</span><span>8/25</span><span>8/26</span></div>
+          </article>
+          <article class="trend-card up" data-live-trend-card="000660">
+            <div class="trend-head"><strong>SK하이닉스</strong><span>000660</span></div>
+            <div class="trend-value"><b class="num-animate" data-live-trend-price="000660">1.71백만원</b><em class="num-animate" data-live-trend-change="000660">+1.73%</em></div>
+            <svg class="trend-svg" data-live-trend="000660" viewBox="0 0 320 128" role="img" aria-label="SK하이닉스 최근 가격 흐름">
+              <polygon points="18.0,102.0 18.0,14.0 114.0,102.0 210.0,91.6 306.0,48.3 306.0,102.0" />
+              <polyline points="18.0,14.0 114.0,102.0 210.0,91.6 306.0,48.3" />
+              <circle cx="18.0" cy="14.0" r="4.4" /><circle cx="114.0" cy="102.0" r="4.4" /><circle cx="210.0" cy="91.6" r="4.4" /><circle cx="306.0" cy="48.3" r="4.4" />
+            </svg>
+            <div class="trend-dates" data-live-trend-dates="000660"><span>8/21</span><span>8/24</span><span>8/25</span><span>8/26</span></div>
+          </article>
+          <article class="trend-card up" data-live-trend-card="396500">
+            <div class="trend-head"><strong>TIGER 반도체TOP10</strong><span>396500</span></div>
+            <div class="trend-value"><b class="num-animate" data-live-trend-price="396500">35,385원</b><em class="num-animate" data-live-trend-change="396500">+0.80%</em></div>
+            <svg class="trend-svg" data-live-trend="396500" viewBox="0 0 320 128" role="img" aria-label="TIGER 반도체TOP10 최근 가격 흐름">
+              <polygon points="18.0,102.0 18.0,14.0 114.0,102.0 210.0,81.9 306.0,67.9 306.0,102.0" />
+              <polyline points="18.0,14.0 114.0,102.0 210.0,81.9 306.0,67.9" />
+              <circle cx="18.0" cy="14.0" r="4.4" /><circle cx="114.0" cy="102.0" r="4.4" /><circle cx="210.0" cy="81.9" r="4.4" /><circle cx="306.0" cy="67.9" r="4.4" />
+            </svg>
+            <div class="trend-dates" data-live-trend-dates="396500"><span>8/21</span><span>8/24</span><span>8/25</span><span>8/26</span></div>
+          </article></div>
+      </figure>
+    </section>
+
     <div class="dashboard-shell">
       <div class="main-column">
-        <header class="hero-card">
+        <header class="hero-card briefing-hero">
           <div class="hero-content">
             <div class="eyebrow">DAILY SEMICONDUCTOR BRIEFING</div>
             <h1>일일 포트폴리오 브리핑</h1>
-            <p class="meta">작성일: 2026-08-26 KST · 가격 확인: 2026-08-26 14:29 KST · 표시 가격: 조회 시점 최신가</p>
-            <p class="meta live-market-status" id="live-market-status" data-live-feed="https://js1876.github.io/daily-briefing/public/market-live.json" data-live-stream="https://expiration-infectious-boulevard-veteran.trycloudflare.com/api/v1/live-stream">실시간 체결 연결 준비 중</p>
+            <p class="meta">작성일: 2026-08-26 KST · 가격 확인: 2026-08-26 14:39 KST · 표시 가격: 조회 시점 최신가</p>
             <div class="badge-row" aria-label="오늘 요약 지표">
               <span class="badge up">상승 3</span>
               <span class="badge down">하락 0</span>
-              <span class="badge up">최대 변동 삼성전자 +1.75%</span>
+              <span class="badge up">최대 변동 삼성전자 +2.43%</span>
               <span class="badge neutral">반도체 사이클 점검</span>
             </div>
             <p class="hero-summary"><strong>반도체 사이클 호황 검증 구간</strong></p>
@@ -376,8 +448,8 @@
         </article>
         <article class="metric-card">
           <div class="card-label">최대 변동</div>
-          <div class="metric-value up num-animate">+1.75%</div>
-          <p class="muted">삼성전자 · 상승 삼성전자 +1.75% / 하락 TIGER 반도체TOP10 +0.48%</p>
+          <div class="metric-value up num-animate">+2.43%</div>
+          <p class="muted">삼성전자 · 상승 삼성전자 +2.43% / 하락 TIGER 반도체TOP10 +0.80%</p>
         </article>
       </div>
           </div>
@@ -397,8 +469,8 @@
               <div class="ticker">396500</div>
             </div>
             <div class="price-box">
-              <div class="price num-animate" data-live-price="396500">35,275원</div>
-              <div class="change-line up" data-live-change="396500">+170원 · +0.48%</div>
+              <div class="price num-animate" data-live-price="396500">35,385원</div>
+              <div class="change-line up" data-live-change="396500">+280원 · +0.80%</div>
             </div>
           </div>
           <div class="tag-row"><span class="tag up">반도체 ETF</span><span class="tag up">대형주</span><span class="tag up">분산</span><span class="tag up">상승</span></div>
@@ -412,8 +484,8 @@
               <div class="ticker">005930</div>
             </div>
             <div class="price-box">
-              <div class="price num-animate" data-live-price="005930">261,500원</div>
-              <div class="change-line up" data-live-change="005930">+4,500원 · +1.75%</div>
+              <div class="price num-animate" data-live-price="005930">263,250원</div>
+              <div class="change-line up" data-live-change="005930">+6,250원 · +2.43%</div>
             </div>
           </div>
           <div class="tag-row"><span class="tag up">HBM 추격</span><span class="tag up">NAND</span><span class="tag up">파운드리</span><span class="tag up">상승</span></div>
@@ -427,8 +499,8 @@
               <div class="ticker">000660</div>
             </div>
             <div class="price-box">
-              <div class="price num-animate" data-live-price="000660">1,698,000원</div>
-              <div class="change-line up" data-live-change="000660">+20,000원 · +1.19%</div>
+              <div class="price num-animate" data-live-price="000660">1,707,000원</div>
+              <div class="change-line up" data-live-change="000660">+29,000원 · +1.73%</div>
             </div>
           </div>
           <div class="tag-row"><span class="tag up">HBM 순도</span><span class="tag up">AI 서버</span><span class="tag up">DRAM</span><span class="tag up">상승</span></div>
@@ -439,9 +511,9 @@
 
         <section class="section" aria-labelledby="visual-title">
           <div class="section-head">
-            <div class="section-kicker">Visual</div>
-            <h2 id="visual-title">시각화 대시보드</h2>
-            <p class="meta section-subtitle">PNG 이미지를 불러오지 않고, HTML/CSS/SVG가 현재 UI 테마에 맞춰 직접 그립니다.</p>
+            <div class="section-kicker">Snapshot</div>
+            <h2 id="visual-title">오늘의 변동 폭</h2>
+            <p class="meta section-subtitle">실시간 그래프 아래에서 등락폭을 짧게 비교합니다.</p>
           </div>
           <div class="chart-grid">
             
@@ -451,57 +523,21 @@
           
           <div class="change-row up" data-live-change-row="396500">
             <div class="change-label">TIGER 반도체TOP10</div>
-            <div class="change-track" aria-hidden="true"><span data-live-change-bar="396500" style="width:27.4%"></span></div>
-            <strong class="num-animate" data-live-change-pct="396500">+0.48%</strong>
+            <div class="change-track" aria-hidden="true"><span data-live-change-bar="396500" style="width:32.9%"></span></div>
+            <strong class="num-animate" data-live-change-pct="396500">+0.80%</strong>
           </div>
           <div class="change-row up" data-live-change-row="000660">
             <div class="change-label">SK하이닉스</div>
-            <div class="change-track" aria-hidden="true"><span data-live-change-bar="000660" style="width:68.0%"></span></div>
-            <strong class="num-animate" data-live-change-pct="000660">+1.19%</strong>
+            <div class="change-track" aria-hidden="true"><span data-live-change-bar="000660" style="width:71.2%"></span></div>
+            <strong class="num-animate" data-live-change-pct="000660">+1.73%</strong>
           </div>
           <div class="change-row up" data-live-change-row="005930">
             <div class="change-label">삼성전자</div>
             <div class="change-track" aria-hidden="true"><span data-live-change-bar="005930" style="width:100.0%"></span></div>
-            <strong class="num-animate" data-live-change-pct="005930">+1.75%</strong>
+            <strong class="num-animate" data-live-change-pct="005930">+2.43%</strong>
           </div>
         </div>
         <figcaption>이미지 없이 HTML/CSS 막대로 직접 렌더링한 변동률 차트입니다.</figcaption>
-      </figure>
-            
-      <figure class="chart-card native-chart-card">
-        <div class="chart-title-row"><h3>종목별 실시간 120분 가격 흐름</h3><span>틱 반영 · 1분 기준</span></div>
-        <div class="native-trend-grid">
-          <article class="trend-card up" data-live-trend-card="005930">
-            <div class="trend-head"><strong>삼성전자</strong><span>005930</span></div>
-            <div class="trend-value"><b class="num-animate" data-live-trend-price="005930">261,500원</b><em class="num-animate" data-live-trend-change="005930">+1.75%</em></div>
-            <svg class="trend-svg" data-live-trend="005930" viewBox="0 0 320 128" role="img" aria-label="삼성전자 최근 가격 흐름">
-              <polygon points="18.0,102.0 18.0,14.0 114.0,102.0 210.0,102.0 306.0,85.8 306.0,102.0" />
-              <polyline points="18.0,14.0 114.0,102.0 210.0,102.0 306.0,85.8" />
-              <circle cx="18.0" cy="14.0" r="4.4" /><circle cx="114.0" cy="102.0" r="4.4" /><circle cx="210.0" cy="102.0" r="4.4" /><circle cx="306.0" cy="85.8" r="4.4" />
-            </svg>
-            <div class="trend-dates" data-live-trend-dates="005930"><span>8/21</span><span>8/24</span><span>8/25</span><span>8/26</span></div>
-          </article>
-          <article class="trend-card up" data-live-trend-card="000660">
-            <div class="trend-head"><strong>SK하이닉스</strong><span>000660</span></div>
-            <div class="trend-value"><b class="num-animate" data-live-trend-price="000660">1.70백만원</b><em class="num-animate" data-live-trend-change="000660">+1.19%</em></div>
-            <svg class="trend-svg" data-live-trend="000660" viewBox="0 0 320 128" role="img" aria-label="SK하이닉스 최근 가격 흐름">
-              <polygon points="18.0,102.0 18.0,14.0 114.0,102.0 210.0,91.6 306.0,61.7 306.0,102.0" />
-              <polyline points="18.0,14.0 114.0,102.0 210.0,91.6 306.0,61.7" />
-              <circle cx="18.0" cy="14.0" r="4.4" /><circle cx="114.0" cy="102.0" r="4.4" /><circle cx="210.0" cy="91.6" r="4.4" /><circle cx="306.0" cy="61.7" r="4.4" />
-            </svg>
-            <div class="trend-dates" data-live-trend-dates="000660"><span>8/21</span><span>8/24</span><span>8/25</span><span>8/26</span></div>
-          </article>
-          <article class="trend-card up" data-live-trend-card="396500">
-            <div class="trend-head"><strong>TIGER 반도체TOP10</strong><span>396500</span></div>
-            <div class="trend-value"><b class="num-animate" data-live-trend-price="396500">35,275원</b><em class="num-animate" data-live-trend-change="396500">+0.48%</em></div>
-            <svg class="trend-svg" data-live-trend="396500" viewBox="0 0 320 128" role="img" aria-label="TIGER 반도체TOP10 최근 가격 흐름">
-              <polygon points="18.0,102.0 18.0,14.0 114.0,102.0 210.0,81.9 306.0,73.4 306.0,102.0" />
-              <polyline points="18.0,14.0 114.0,102.0 210.0,81.9 306.0,73.4" />
-              <circle cx="18.0" cy="14.0" r="4.4" /><circle cx="114.0" cy="102.0" r="4.4" /><circle cx="210.0" cy="81.9" r="4.4" /><circle cx="306.0" cy="73.4" r="4.4" />
-            </svg>
-            <div class="trend-dates" data-live-trend-dates="396500"><span>8/21</span><span>8/24</span><span>8/25</span><span>8/26</span></div>
-          </article></div>
-        <figcaption>PNG 대신 각 카드 안에서 SVG 선 그래프를 직접 그립니다.</figcaption>
       </figure>
           </div>
         </section>
@@ -571,7 +607,7 @@
           <details class="detail-pack company-detail">
             <summary>오늘의 해석 자세히 보기</summary>
             <div class="split-list">
-              <div><strong>오늘의 해석</strong>오늘 변동률은 +1.75%입니다. 시총 약 1729조원, Forward PE 3.84 기준으로 추세 지속성을 점검합니다.</div>
+              <div><strong>오늘의 해석</strong>오늘 변동률은 +2.43%입니다. 시총 약 1720조원, Forward PE 3.82 기준으로 추세 지속성을 점검합니다.</div>
             </div>
           </details>
         </article>
@@ -589,7 +625,7 @@
           <details class="detail-pack company-detail">
             <summary>오늘의 해석 자세히 보기</summary>
             <div class="split-list">
-              <div><strong>오늘의 해석</strong>오늘 변동률은 +1.19%입니다. 시총 약 1215조원, Forward PE 3.69 기준으로 추세 지속성을 점검합니다.</div>
+              <div><strong>오늘의 해석</strong>오늘 변동률은 +1.73%입니다. 시총 약 1210조원, Forward PE 3.68 기준으로 추세 지속성을 점검합니다.</div>
             </div>
           </details>
         </article>
@@ -606,20 +642,20 @@
           <div class="mini-bars">
         <div class="mini-bar-row">
           <strong>삼성전자</strong>
-          <span class="up num-animate">▲ +1.75%</span>
+          <span class="up num-animate">▲ +2.43%</span>
           <div class="bar-track"><div class="bar-fill up-bg" style="width: 100%"></div></div>
         </div>
 
         <div class="mini-bar-row">
           <strong>SK하이닉스</strong>
-          <span class="up num-animate">▲ +1.19%</span>
-          <div class="bar-track"><div class="bar-fill up-bg" style="width: 68%"></div></div>
+          <span class="up num-animate">▲ +1.73%</span>
+          <div class="bar-track"><div class="bar-fill up-bg" style="width: 71%"></div></div>
         </div>
 
         <div class="mini-bar-row">
           <strong>TIGER 반도체TOP10</strong>
-          <span class="up num-animate">▲ +0.48%</span>
-          <div class="bar-track"><div class="bar-fill up-bg" style="width: 27%"></div></div>
+          <span class="up num-animate">▲ +0.80%</span>
+          <div class="bar-track"><div class="bar-fill up-bg" style="width: 33%"></div></div>
         </div>
           </div>
         </section>
@@ -632,16 +668,16 @@
           <div class="factor-grid">
         <article class="factor-card macro-factor-card up" data-live-macro="USD_KRW">
           <div class="factor-head"><div class="card-label">원/달러</div><span class="live-dot" aria-hidden="true"></span></div>
-          <div class="factor-value num-animate" data-live-macro-value="USD_KRW">1384.78원</div>
-          <div class="change-line up num-animate" data-live-macro-change="USD_KRW">+0.29%</div>
+          <div class="factor-value num-animate" data-live-macro-value="USD_KRW">1385.38원</div>
+          <div class="change-line up num-animate" data-live-macro-change="USD_KRW">+0.33%</div>
           <p class="factor-copy">외국인 수급과 반도체 대형주 투자심리에 직접 영향을 줍니다.</p>
           <div class="factor-asof" data-live-macro-asof="USD_KRW">라이브 연결 준비 중</div>
         </article>
 
         <article class="factor-card macro-factor-card up" data-live-macro="KOSPI">
           <div class="factor-head"><div class="card-label">KOSPI</div><span class="live-dot" aria-hidden="true"></span></div>
-          <div class="factor-value num-animate" data-live-macro-value="KOSPI">6839.66</div>
-          <div class="change-line up num-animate" data-live-macro-change="KOSPI">+1.44%</div>
+          <div class="factor-value num-animate" data-live-macro-value="KOSPI">6821.56</div>
+          <div class="change-line up num-animate" data-live-macro-change="KOSPI">+1.17%</div>
           <p class="factor-copy">국내 대형주 수급과 위험자산 선호를 보여줍니다.</p>
           <div class="factor-asof" data-live-macro-asof="KOSPI">라이브 연결 준비 중</div>
         </article>
@@ -723,7 +759,7 @@
     </div>
   </main>
 
-  <script src="https://js1876.github.io/daily-briefing/public/assets/live-market.js?v=2026-08-261429" defer></script>
+  <script src="https://js1876.github.io/daily-briefing/public/assets/live-market.js?v=2026-08-261439" defer></script>
   <script>
     (() => {
       const root = document.documentElement;
