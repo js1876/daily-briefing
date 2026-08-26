@@ -3,6 +3,8 @@ logs/*
 public/latest_bundle.html
 backup-*/
 tmp_research*.py
+tmp_*.py
+make_*.py
 __pycache__/
 *.pyc
 .env
