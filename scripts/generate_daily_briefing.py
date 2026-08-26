@@ -955,15 +955,15 @@ def stock_cards_html(rows: list[PriceRow]) -> str:
         direction = "up" if row.change_pct >= 0 else "down"
         tags = "".join(f'<span class="tag {direction}">{html.escape(tag)}</span>' for tag in stock_tags(row))
         cards.append(f"""
-        <article class="stock-card">
+        <article class="stock-card" data-live-card="{row.ticker}">
           <div class="stock-top">
             <div>
               <h3 class="stock-name">{html.escape(row.name)}</h3>
               <div class="ticker">{row.ticker}</div>
             </div>
             <div class="price-box">
-              <div class="price num-animate">{money_krw(row.close)}</div>
-              <div class="change-line {direction}">{signed_money(row.change)} · {signed_pct(row.change_pct)}</div>
+              <div class="price num-animate" data-live-price="{row.ticker}">{money_krw(row.close)}</div>
+              <div class="change-line {direction}" data-live-change="{row.ticker}">{signed_money(row.change)} · {signed_pct(row.change_pct)}</div>
             </div>
           </div>
           <div class="tag-row">{tags}</div>
@@ -1102,10 +1102,10 @@ def inline_change_chart_html(rows: list[PriceRow]) -> str:
         direction = "up" if row.change_pct >= 0 else "down"
         width = min(abs(row.change_pct) / max_abs * 100, 100)
         items.append(f"""
-          <div class="change-row {direction}">
+          <div class="change-row {direction}" data-live-change-row="{row.ticker}">
             <div class="change-label">{label}</div>
-            <div class="change-track" aria-hidden="true"><span style="width:{width:.1f}%"></span></div>
-            <strong class="num-animate">{signed_pct(row.change_pct)}</strong>
+            <div class="change-track" aria-hidden="true"><span data-live-change-bar="{row.ticker}" style="width:{width:.1f}%"></span></div>
+            <strong class="num-animate" data-live-change-pct="{row.ticker}">{signed_pct(row.change_pct)}</strong>
           </div>""")
     basis = html.escape(rows[0].basis_date.strftime("%Y-%m-%d"))
     return f"""
@@ -1141,15 +1141,15 @@ def inline_price_trends_html(rows: list[PriceRow]) -> str:
         tick_labels = "".join(f'<span>{html.escape(str(d))}</span>' for d in dates)
         circles = "".join(f'<circle cx="{x:.1f}" cy="{y:.1f}" r="4.4" />' for x, y in points)
         cards.append(f"""
-          <article class="trend-card {direction}">
+          <article class="trend-card {direction}" data-live-trend-card="{row.ticker}">
             <div class="trend-head"><strong>{label}</strong><span>{row.ticker}</span></div>
-            <div class="trend-value"><b class="num-animate">{format_krw_short(row.close)}</b><em class="num-animate">{signed_pct(row.change_pct)}</em></div>
-            <svg class="trend-svg" viewBox="0 0 {w} {h}" role="img" aria-label="{label} 최근 가격 흐름">
+            <div class="trend-value"><b class="num-animate" data-live-trend-price="{row.ticker}">{format_krw_short(row.close)}</b><em class="num-animate" data-live-trend-change="{row.ticker}">{signed_pct(row.change_pct)}</em></div>
+            <svg class="trend-svg" data-live-trend="{row.ticker}" viewBox="0 0 {w} {h}" role="img" aria-label="{label} 최근 가격 흐름">
               <polygon points="{_svg_polyline(area)}" />
               <polyline points="{_svg_polyline(points)}" />
               {circles}
             </svg>
-            <div class="trend-dates">{tick_labels}</div>
+            <div class="trend-dates" data-live-trend-dates="{row.ticker}">{tick_labels}</div>
           </article>""")
     return f"""
       <figure class="chart-card native-chart-card">
@@ -1267,6 +1267,7 @@ def render_html(rows: list[PriceRow], news: dict, macro: dict, valuation: dict, 
             <div class="eyebrow">DAILY SEMICONDUCTOR BRIEFING</div>
             <h1>일일 포트폴리오 브리핑</h1>
             <p class="meta">작성일: {today_s} KST · 가격 확인: {checked_at} KST · 표시 가격: 조회 시점 최신가</p>
+            <p class="meta live-market-status" id="live-market-status" data-live-feed="https://js1876.github.io/daily-briefing/public/market-live.json">실시간 시세 연결 준비 중</p>
             <div class="badge-row" aria-label="오늘 요약 지표">
               <span class="badge up">상승 {up_count}</span>
               <span class="badge down">하락 {down_count}</span>
@@ -1381,6 +1382,7 @@ def render_html(rows: list[PriceRow], news: dict, macro: dict, valuation: dict, 
     </div>
   </main>
 
+  <script src="https://js1876.github.io/daily-briefing/public/assets/live-market.js" defer></script>
   <script>
     (() => {{
       const root = document.documentElement;

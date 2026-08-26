@@ -8,7 +8,8 @@ ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "scripts"))
 
 from market_data.config import TossConfigError, TossMarketConfig
-from market_data.toss_client import TossMarketClient, TossMarketError
+from market_data.live_feed import LIVE_INSTRUMENTS, build_live_feed
+from market_data.toss_client import Candle, Quote, TossMarketClient, TossMarketError
 
 
 class FakeResponse:
@@ -107,3 +108,37 @@ def test_market_error_masks_credentials_on_http_failure():
 def test_client_has_no_account_or_order_methods():
     forbidden = {"get_account", "get_balance", "get_holdings", "place_order", "cancel_order"}
     assert not (forbidden & set(dir(TossMarketClient)))
+
+
+class FakeLiveClient:
+    def get_quotes(self, symbols):
+        return [Quote(symbol=symbol, last_price=Decimal("110"), currency="KRW", timestamp="2026-08-26T09:01:00+09:00") for symbol in symbols]
+
+    def get_candles(self, symbol, interval, count):
+        base = Decimal("100") if interval == "1d" else Decimal("105")
+        return [
+            Candle(
+                timestamp=f"2026-08-26T09:{index:02d}:00+09:00",
+                open_price=base + index,
+                high_price=base + index,
+                low_price=base + index,
+                close_price=base + index,
+                volume=Decimal("1000"),
+                currency="KRW",
+            )
+            for index in range(count, 0, -1)
+        ]
+
+
+def test_live_feed_is_public_json_with_intraday_chart_data():
+    payload = build_live_feed(FakeLiveClient())
+
+    assert payload["source"] == "Toss Securities Open API"
+    assert len(payload["instruments"]) == len(LIVE_INSTRUMENTS)
+    first = payload["instruments"][0]
+    assert first["symbol"] == "005930"
+    assert first["change"] == 6.0
+    assert first["changePct"] == 5.7692
+    assert first["chartInterval"] == "1m"
+    assert len(first["chart"]) == 120
+    assert "client_secret" not in str(payload).lower()

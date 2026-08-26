@@ -119,12 +119,14 @@ class TossMarketClient:
             for item in result
         ]
 
-    def get_daily_candles(self, symbol: str, count: int = 5) -> list[Candle]:
+    def get_candles(self, symbol: str, interval: str = "1d", count: int = 5) -> list[Candle]:
+        if interval not in {"1m", "1d"}:
+            raise ValueError("interval은 1m 또는 1d여야 합니다.")
         if not 1 <= count <= 200:
             raise ValueError("count는 1~200 범위여야 합니다.")
         result = self._request(
             "/api/v1/candles",
-            {"symbol": symbol, "interval": "1d", "count": count, "adjusted": "true"},
+            {"symbol": symbol, "interval": interval, "count": count, "adjusted": "true"},
         )
         return [
             Candle(
@@ -138,6 +140,9 @@ class TossMarketClient:
             )
             for item in result["candles"]
         ]
+
+    def get_daily_candles(self, symbol: str, count: int = 5) -> list[Candle]:
+        return self.get_candles(symbol, interval="1d", count=count)
 
     def get_market_indicators(self, symbols: list[str]) -> list[MarketIndicator]:
         clean = [symbol.strip() for symbol in symbols if symbol.strip()]

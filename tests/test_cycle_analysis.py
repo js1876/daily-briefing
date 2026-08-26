@@ -179,6 +179,11 @@ def test_rendered_html_uses_cards_instead_of_price_table():
     assert '가격 기준:' not in rendered
     assert '가격 기준' not in rendered
     assert 'skeleton-screen' in rendered
+    assert 'data-live-price="005930"' in rendered
+    assert 'data-live-change="005930"' in rendered
+    assert 'data-live-trend="005930"' in rendered
+    assert 'data-live-feed="https://js1876.github.io/daily-briefing/public/market-live.json"' in rendered
+    assert 'live-market.js' in rendered
     assert 'IntersectionObserver' in rendered  # count-up observer remains
     assert 'dataset.revealed' not in rendered
     assert 'reveal-target' not in rendered
