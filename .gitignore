@@ -1,6 +1,7 @@
 config/discord_webhook_url.txt
 config/toss_market.toml
 logs/toss_market/
+.hermes/
 logs/*
 public/latest_bundle.html
 backup-*/
