@@ -1382,7 +1382,7 @@ def render_html(rows: list[PriceRow], news: dict, macro: dict, valuation: dict, 
     </div>
   </main>
 
-  <script src="https://js1876.github.io/daily-briefing/public/assets/live-market.js" defer></script>
+  <script src="https://js1876.github.io/daily-briefing/public/assets/live-market.js?v={checked_at.replace(' ', '').replace(':', '')}" defer></script>
   <script>
     (() => {{
       const root = document.documentElement;
