@@ -162,6 +162,28 @@ class TossMarketClient:
             for item in result
         ]
 
+    def get_market_indicator_candles(self, symbol: str, interval: str = "1d", count: int = 2) -> list[Candle]:
+        if interval not in {"1m", "1d"}:
+            raise ValueError("interval은 1m 또는 1d여야 합니다.")
+        if not 1 <= count <= 200:
+            raise ValueError("count는 1~200 범위여야 합니다.")
+        result = self._request(
+            f"/api/v1/market-indicators/{symbol}/candles",
+            {"interval": interval, "count": count},
+        )
+        return [
+            Candle(
+                timestamp=str(item["timestamp"]),
+                open_price=self._decimal(item["openPrice"], "openPrice"),
+                high_price=self._decimal(item["highPrice"], "highPrice"),
+                low_price=self._decimal(item["lowPrice"], "lowPrice"),
+                close_price=self._decimal(item["closePrice"], "closePrice"),
+                volume=self._decimal(item["volume"], "volume"),
+                currency="",
+            )
+            for item in result["candles"]
+        ]
+
     def get_exchange_rate(self, base_currency: str = "KRW", quote_currency: str = "USD") -> dict[str, Any]:
         return self._request(
             "/api/v1/exchange-rate",

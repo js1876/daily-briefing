@@ -27,28 +27,84 @@ KST = ZoneInfo("Asia/Seoul")
 WS_URL = "wss://openapi-ws.tossinvest.com/ws/v1"
 ALLOWED_ORIGIN = "https://js1876.github.io"
 MAX_CLIENTS = 20
+MACRO_INDICATORS = {"KOSPI": ("KOSPI", ""), "KOSDAQ": ("KOSDAQ", "")}
 
 
 def now_iso() -> str:
     return datetime.now(KST).isoformat()
 
 
+def build_macro_payload(client: TossMarketClient) -> dict[str, Any]:
+    """Make a public macro snapshot; only public market endpoints are used."""
+    prices = {item.symbol: float(item.last_price) for item in client.get_market_indicators(list(MACRO_INDICATORS))}
+    items: list[dict[str, Any]] = []
+    for symbol, (label, unit) in MACRO_INDICATORS.items():
+        candles = client.get_market_indicator_candles(symbol, interval="1d", count=2)
+        latest = prices.get(symbol, float(candles[0].close_price) if candles else 0.0)
+        previous = float(candles[1].close_price) if len(candles) > 1 else latest
+        change_pct = round(((latest - previous) / previous * 100) if previous else 0.0, 4)
+        items.append({"id": symbol, "label": label, "value": latest, "unit": unit, "previousClose": previous, "changePct": change_pct, "asOf": now_iso(), "live": True})
+    fx = client.get_exchange_rate("KRW", "USD")
+    krw_per_usd = round(1 / float(fx["midRate"])) if float(fx["midRate"]) else 0.0
+    items.append({"id": "USD_KRW", "label": "원/달러", "value": krw_per_usd, "unit": "원", "previousClose": None, "changePct": None, "asOf": fx.get("validFrom") or now_iso(), "live": True})
+    bond = client.get_market_indicator_candles("KR_BOND_10Y", interval="1d", count=2)
+    if bond:
+        value = float(bond[0].close_price)
+        previous = float(bond[1].close_price) if len(bond) > 1 else value
+        items.append({"id": "KR_BOND_10Y", "label": "국고채 10년", "value": value, "unit": "%", "previousClose": previous, "changePct": round(((value - previous) / previous * 100) if previous else 0.0, 4), "asOf": bond[0].timestamp, "live": False})
+    return {"generatedAt": now_iso(), "refreshSeconds": 5, "items": items}
+
+
+def refresh_macro_payload(client: TossMarketClient, existing: dict[str, Any]) -> dict[str, Any]:
+    """Refresh tick-like macro values without reloading slow daily reference data."""
+    payload = deepcopy(existing)
+    by_id = {item.get("id"): item for item in payload.get("items", []) if isinstance(item, dict)}
+    prices = {item.symbol: float(item.last_price) for item in client.get_market_indicators(list(MACRO_INDICATORS))}
+    for symbol, price in prices.items():
+        item = by_id.get(symbol)
+        if not item:
+            continue
+        previous = float(item.get("previousClose") or price)
+        item.update({"value": price, "changePct": round(((price - previous) / previous * 100) if previous else 0.0, 4), "asOf": now_iso(), "live": True})
+    fx_item = by_id.get("USD_KRW")
+    if fx_item:
+        fx = client.get_exchange_rate("KRW", "USD")
+        rate = float(fx["midRate"])
+        fx_item.update({"value": round(1 / rate) if rate else 0.0, "asOf": fx.get("validFrom") or now_iso(), "live": True})
+    payload["generatedAt"] = now_iso()
+    return payload
+
+
 class LiveMarketState:
     def __init__(self, client: TossMarketClient) -> None:
         self.client = client
         self.payload: dict[str, Any] = {"instruments": []}
+        self.macro: dict[str, Any] = {"items": []}
         self.clients: set[asyncio.Queue[dict[str, Any]]] = set()
         self.sequence = 0
         self.lock = asyncio.Lock()
 
     async def bootstrap(self) -> None:
         self.payload = await asyncio.to_thread(build_live_feed, self.client)
+        self.macro = await asyncio.to_thread(build_macro_payload, self.client)
         self.payload["streaming"] = True
         self.payload["refreshHintSeconds"] = 1
 
     async def snapshot(self) -> dict[str, Any]:
         async with self.lock:
-            return deepcopy(self.payload)
+            snapshot = deepcopy(self.payload)
+            snapshot["macro"] = deepcopy(self.macro)
+            return snapshot
+
+    async def update_macro(self) -> None:
+        updated = await asyncio.to_thread(refresh_macro_payload, self.client, self.macro)
+        async with self.lock:
+            self.macro = updated
+            self.sequence += 1
+            event = {"type": "macro", "sequence": self.sequence, "payload": deepcopy(updated)}
+            for queue in tuple(self.clients):
+                if not queue.full():
+                    queue.put_nowait(event)
 
     async def update_trade(self, frame: dict[str, Any]) -> None:
         topic = str(frame.get("topic", ""))
@@ -143,6 +199,19 @@ async def run_toss_stream(state: LiveMarketState) -> None:
             # Do not log headers, tokens, or upstream body contents.
             await asyncio.sleep(delay + random.uniform(0, 0.35))
             delay = min(delay * 2, 30)
+
+
+async def run_macro_refresh(state: LiveMarketState) -> None:
+    """Keep KOSPI/KOSDAQ and KRW/USD cards fresh without per-browser API polling."""
+    while True:
+        await asyncio.sleep(5)
+        try:
+            await state.update_macro()
+        except asyncio.CancelledError:
+            raise
+        except Exception:
+            # The last confirmed macro snapshot remains visible on provider failure.
+            continue
 
 
 async def send_keepalive(ws: Any) -> None:
@@ -266,12 +335,14 @@ async def main(port: int, config_path: Path) -> None:
     await state.bootstrap()
     server = await asyncio.start_server(lambda reader, writer: handle_http(state, reader, writer), "127.0.0.1", port, limit=8192)
     stream = asyncio.create_task(run_toss_stream(state))
+    macro_refresh = asyncio.create_task(run_macro_refresh(state))
     try:
         async with server:
             await server.serve_forever()
     finally:
         stream.cancel()
-        await asyncio.gather(stream, return_exceptions=True)
+        macro_refresh.cancel()
+        await asyncio.gather(stream, macro_refresh, return_exceptions=True)
 
 
 if __name__ == "__main__":

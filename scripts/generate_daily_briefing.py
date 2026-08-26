@@ -744,8 +744,8 @@ def css_from_existing() -> str:
     .change-row.down .change-track span { background:var(--down); box-shadow:0 5px 16px color-mix(in srgb, var(--down) 22%, transparent); }
     .change-row strong { text-align:right; font-size:13px; color:var(--up); }
     .change-row.down strong { color:var(--down); }
-    .native-trend-grid { display:grid; grid-template-columns:repeat(2, minmax(0, 1fr)); gap:12px; }
-    .trend-card { border:1px solid var(--border); border-radius:20px; padding:14px; background:linear-gradient(180deg, var(--surface-muted), color-mix(in srgb, var(--surface-elevated) 84%, transparent)); transition: transform .22s cubic-bezier(.22,1,.36,1), box-shadow .22s ease, border-color .22s ease; }
+    .native-trend-grid { display:grid; grid-template-columns:repeat(2, minmax(0, 1fr)); gap:16px; }
+    .trend-card { min-height:330px; border:1px solid var(--border); border-radius:20px; padding:18px; background:linear-gradient(180deg, var(--surface-muted), color-mix(in srgb, var(--surface-elevated) 84%, transparent)); transition: transform .22s cubic-bezier(.22,1,.36,1), box-shadow .22s ease, border-color .22s ease; }
     .trend-head, .trend-value, .trend-dates { display:flex; justify-content:space-between; align-items:center; gap:8px; }
     .trend-head strong { font-size:14px; }
     .trend-head span, .trend-dates { color:var(--text-muted); font-size:11px; }
@@ -753,7 +753,7 @@ def css_from_existing() -> str:
     .trend-value b { font-size:18px; letter-spacing:-.03em; }
     .trend-value em { font-style:normal; font-weight:900; color:var(--up); }
     .trend-card.down .trend-value em { color:var(--down); }
-    .trend-svg { width:100%; height:auto; margin:10px 0 2px; }
+    .trend-svg { width:100%; height:clamp(190px, 20vw, 250px); margin:14px 0 4px; }
     .trend-svg polygon { fill: color-mix(in srgb, var(--up) 15%, transparent); }
     .trend-card.down .trend-svg polygon { fill: color-mix(in srgb, var(--down) 15%, transparent); }
     .trend-svg polyline { fill:none; stroke:var(--up); stroke-width:4; stroke-linecap:round; stroke-linejoin:round; }
@@ -813,6 +813,13 @@ def css_from_existing() -> str:
     .checkpoint-row { display: flex; flex-wrap: wrap; gap: 8px; }
 
     .factor-card { display: grid; gap: 8px; }
+    .factor-head, .macro-section-head { display:flex; align-items:flex-start; justify-content:space-between; gap:10px; }
+    .macro-section-head { flex-direction:row; }
+    .macro-live-status, .factor-asof { color:var(--text-muted); font-size:11px; font-weight:800; font-variant-numeric:tabular-nums; }
+    .macro-live-status { display:inline-flex; white-space:nowrap; border:1px solid var(--border); border-radius:999px; padding:5px 8px; background:var(--surface-muted); }
+    .live-dot { width:7px; height:7px; border-radius:999px; background:#16a34a; box-shadow:0 0 0 4px rgba(22,163,74,.12); animation: live-pulse 1.8s ease-in-out infinite; }
+    @keyframes live-pulse { 50% { transform:scale(.76); opacity:.62; } }
+    .macro-factor-card { min-height:164px; align-content:start; }
     .factor-value { font-size: clamp(22px, 5vw, 30px); font-weight: 950; letter-spacing: -.045em; line-height: 1.05; }
 
     .news-timeline { display: grid; gap: 10px; }
@@ -987,23 +994,24 @@ def text_bars_html(rows: list[PriceRow]) -> str:
 
 
 def macro_factor_html(macro: dict) -> str:
-    labels = {
-        "원/달러": ("환율", "원", "외국인 수급과 반도체 대형주 투자심리에 직접 영향을 줍니다."),
-        "미국 10년물": ("미국 10년물", "%", "성장주·AI 반도체 밸류에이션 할인율을 좌우합니다."),
-        "WTI": ("유가", "달러", "비용 부담과 인플레이션 기대를 통해 금리 경로에 영향을 줍니다."),
-        "KOSPI": ("KOSPI", "", "국내 위험자산 선호와 대형주 수급 배경을 보여줍니다."),
-    }
+    specs = [
+        ("USD_KRW", "원/달러", "원/달러", "원", "외국인 수급과 반도체 대형주 투자심리에 직접 영향을 줍니다."),
+        ("KOSPI", "KOSPI", "KOSPI", "", "국내 대형주 수급과 위험자산 선호를 보여줍니다."),
+        ("KOSDAQ", "KOSDAQ", "KOSDAQ", "", "성장주·중소형주 위험 선호를 확인합니다."),
+        ("KR_BOND_10Y", "미국 10년물", "국고채 10년", "%", "장기금리는 성장주·AI 반도체의 할인율을 좌우합니다."),
+    ]
     cards = []
-    for key, (title, suffix, copy) in labels.items():
-        data = macro.get(key, {})
+    for live_id, fallback_key, title, suffix, copy in specs:
+        data = macro.get(fallback_key, {})
         change = data.get("change_pct")
         direction = "up" if (change or 0) >= 0 else "down"
         cards.append(f"""
-        <article class="factor-card">
-          <div class="card-label">{html.escape(title)}</div>
-          <div class="factor-value num-animate">{metric_text(data.get('value'), suffix)}</div>
-          <div class="change-line {direction} num-animate">{metric_text_signed(change, '%')}</div>
+        <article class="factor-card macro-factor-card {direction}" data-live-macro="{live_id}">
+          <div class="factor-head"><div class="card-label">{html.escape(title)}</div><span class="live-dot" aria-hidden="true"></span></div>
+          <div class="factor-value num-animate" data-live-macro-value="{live_id}">{metric_text(data.get('value'), suffix)}</div>
+          <div class="change-line {direction} num-animate" data-live-macro-change="{live_id}">{metric_text_signed(change, '%')}</div>
           <p class="factor-copy">{html.escape(copy)}</p>
+          <div class="factor-asof" data-live-macro-asof="{live_id}">라이브 연결 준비 중</div>
         </article>""")
     return "\n".join(cards)
 
@@ -1153,7 +1161,7 @@ def inline_price_trends_html(rows: list[PriceRow]) -> str:
           </article>""")
     return f"""
       <figure class="chart-card native-chart-card">
-        <div class="chart-title-row"><h3>종목별 최근 4거래일 가격 흐름</h3><span>SVG 직접 렌더링</span></div>
+        <div class="chart-title-row"><h3>종목별 실시간 120분 가격 흐름</h3><span>틱 반영 · 1분 기준</span></div>
         <div class="native-trend-grid">{''.join(cards)}</div>
         <figcaption>PNG 대신 각 카드 안에서 SVG 선 그래프를 직접 그립니다.</figcaption>
       </figure>"""
@@ -1347,9 +1355,9 @@ def render_html(rows: list[PriceRow], news: dict, macro: dict, valuation: dict, 
         </section>
 
         <section class="section side-card" aria-labelledby="macro-title">
-          <div class="section-head">
-            <div class="section-kicker">Macro</div>
-            <h2 id="macro-title">매크로 팩터</h2>
+          <div class="section-head macro-section-head">
+            <div><div class="section-kicker">Live Macro</div><h2 id="macro-title">매크로 팩터</h2></div>
+            <span class="macro-live-status" id="live-macro-status">5초 갱신 준비 중</span>
           </div>
           <div class="factor-grid">{factor_cards}
           </div>

@@ -80,9 +80,38 @@
     }
   }
 
+  function formatMacroValue(item) {
+    const value = validNumber(item.value);
+    if (value === null) return '—';
+    if (item.unit === '%') return `${value.toFixed(3)}%`;
+    if (item.unit === '원') return `${number.format(value)}원`;
+    return value.toLocaleString('ko-KR', { maximumFractionDigits: 2 });
+  }
+
+  function applyMacro(payload) {
+    if (!payload || !Array.isArray(payload.items)) return;
+    payload.items.forEach((item) => {
+      if (!item.id) return;
+      const id = String(item.id);
+      const change = validNumber(item.changePct);
+      setText('data-live-macro-value', id, formatMacroValue(item));
+      setText('data-live-macro-change', id, change === null ? '전일 대비 확인 중' : signedPct(change));
+      const card = document.querySelector(`[data-live-macro="${id}"]`);
+      if (card) {
+        card.classList.remove('up', 'down');
+        card.classList.add(change !== null && change < 0 ? 'down' : 'up');
+      }
+      const asOf = document.querySelector(`[data-live-macro-asof="${id}"]`);
+      if (asOf) asOf.textContent = item.live ? '실시간 갱신' : '일별 확정 데이터';
+    });
+    const macroStatus = document.querySelector('#live-macro-status');
+    if (macroStatus) macroStatus.textContent = `${payload.refreshSeconds || 5}초 갱신 · 토스`;
+  }
+
   function applyFeed(payload) {
     if (!payload || !Array.isArray(payload.instruments)) throw new Error('invalid live feed');
     activePayload = payload;
+    if (payload.macro) applyMacro(payload.macro);
     const maxMove = Math.max(0.01, ...payload.instruments.map((item) => Math.abs(validNumber(item.changePct) ?? 0)));
     payload.instruments.forEach((instrument) => {
       const price = validNumber(instrument.price);
@@ -140,7 +169,10 @@
       try {
         const event = JSON.parse(message.data);
         if (event.type === 'snapshot') applyFeed(event.payload);
-        else applyTrade(event);
+        else if (event.type === 'macro') {
+          if (activePayload) activePayload.macro = event.payload;
+          applyMacro(event.payload);
+        } else applyTrade(event);
       } catch (_) { /* keep static/JSON polling fallback active */ }
     };
     stream.onerror = () => {
