@@ -7,6 +7,7 @@
   const streamUrl = status.dataset.liveStream;
   const refreshMs = 20_000;
   let activePayload = null;
+  let streamConnected = false;
   const number = new Intl.NumberFormat('ko-KR', { maximumFractionDigits: 0 });
   const decimal = new Intl.NumberFormat('ko-KR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
   const svgNs = 'http://www.w3.org/2000/svg';
@@ -131,7 +132,10 @@
     url.pathname = '/api/v1/live-ws';
     url.search = '';
     const stream = new WebSocket(url);
-    stream.onopen = () => { status.textContent = '실시간 체결 수신 중 · 토스증권 Open API'; };
+    stream.onopen = () => {
+      streamConnected = true;
+      status.textContent = '실시간 체결 수신 중 · 토스증권 Open API';
+    };
     stream.onmessage = (message) => {
       try {
         const event = JSON.parse(message.data);
@@ -142,10 +146,14 @@
     stream.onerror = () => {
       if (status.dataset.liveState !== 'ok') status.textContent = '실시간 체결 재연결 중 · 표시 가격은 마지막 수신값';
     };
-    stream.onclose = () => window.setTimeout(connectStream, 1000);
+    stream.onclose = () => {
+      streamConnected = false;
+      window.setTimeout(connectStream, 1000);
+    };
   }
 
   async function refresh() {
+    if (streamConnected) return;
     try {
       const url = new URL(feedUrl, window.location.href);
       url.searchParams.set('_', String(Date.now()));
