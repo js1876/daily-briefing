@@ -104,6 +104,10 @@ class TossMarketClient:
         except Exception as exc:
             raise TossMarketError(f"토스 시장조회 숫자 형식 오류: {field}") from exc
 
+    def get_access_token(self) -> str:
+        """Return the cached OAuth token for a read-only market-data WebSocket handshake."""
+        return self._access_token or self._issue_access_token()
+
     def get_quotes(self, symbols: list[str]) -> list[Quote]:
         clean = [symbol.strip() for symbol in symbols if symbol.strip()]
         if not clean:

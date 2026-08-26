@@ -46,6 +46,7 @@ def build_live_feed(client: TossMarketClient, *, now: datetime | None = None) ->
                 "name": name,
                 "currency": quote.currency,
                 "price": float(quote.last_price),
+                "previousClose": float(previous_close),
                 "change": float(change),
                 "changePct": round(change_pct, 4),
                 "asOf": quote.timestamp,

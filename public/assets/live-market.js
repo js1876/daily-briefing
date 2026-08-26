@@ -4,7 +4,9 @@
   const status = document.querySelector('[data-live-feed]');
   if (!status || !window.fetch) return;
   const feedUrl = status.dataset.liveFeed;
+  const streamUrl = status.dataset.liveStream;
   const refreshMs = 20_000;
+  let activePayload = null;
   const number = new Intl.NumberFormat('ko-KR', { maximumFractionDigits: 0 });
   const decimal = new Intl.NumberFormat('ko-KR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
   const svgNs = 'http://www.w3.org/2000/svg';
@@ -79,6 +81,7 @@
 
   function applyFeed(payload) {
     if (!payload || !Array.isArray(payload.instruments)) throw new Error('invalid live feed');
+    activePayload = payload;
     const maxMove = Math.max(0.01, ...payload.instruments.map((item) => Math.abs(validNumber(item.changePct) ?? 0)));
     payload.instruments.forEach((instrument) => {
       const price = validNumber(instrument.price);
@@ -104,6 +107,39 @@
     status.dataset.liveState = 'ok';
   }
 
+  function applyTrade(event) {
+    if (!activePayload || !event || event.type !== 'trade') return;
+    const instrument = activePayload.instruments.find((item) => String(item.symbol) === String(event.symbol));
+    if (!instrument) return;
+    instrument.price = event.price;
+    instrument.change = event.change;
+    instrument.changePct = event.changePct;
+    instrument.asOf = event.asOf;
+    const chart = Array.isArray(instrument.chart) ? instrument.chart : (instrument.chart = []);
+    const point = { timestamp: event.asOf, price: event.price };
+    if (chart.length && String(chart.at(-1).timestamp).slice(0, 16) === String(event.asOf).slice(0, 16)) chart[chart.length - 1] = point;
+    else chart.push(point);
+    while (chart.length > 120) chart.shift();
+    activePayload.generatedAt = event.asOf;
+    applyFeed(activePayload);
+  }
+
+  function connectStream() {
+    if (!streamUrl || !window.EventSource) return;
+    const stream = new EventSource(streamUrl, { withCredentials: false });
+    stream.onopen = () => { status.textContent = '실시간 체결 수신 중 · 토스증권 Open API'; };
+    stream.onmessage = (message) => {
+      try {
+        const event = JSON.parse(message.data);
+        if (event.type === 'snapshot') applyFeed(event.payload);
+        else applyTrade(event);
+      } catch (_) { /* keep static/JSON polling fallback active */ }
+    };
+    stream.onerror = () => {
+      if (status.dataset.liveState !== 'ok') status.textContent = '실시간 체결 재연결 중 · 표시 가격은 마지막 수신값';
+    };
+  }
+
   async function refresh() {
     try {
       const url = new URL(feedUrl, window.location.href);
@@ -117,5 +153,6 @@
   }
 
   refresh();
+  connectStream();
   window.setInterval(refresh, refreshMs);
 })();
