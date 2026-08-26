@@ -1,0 +1,7 @@
+# 실제 값은 로컬 config/toss_market.toml에만 입력하세요.
+# 이 파일과 실제 설정 파일은 Git에 포함되지 않습니다.
+[toss_market]
+client_id = "PASTE_CLIENT_ID_HERE"
+client_secret = "PASTE_CLIENT_SECRET_HERE"
+base_url = "https://openapi.tossinvest.com"
+timeout_seconds = 12
