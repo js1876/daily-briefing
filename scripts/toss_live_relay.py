@@ -163,6 +163,52 @@ def response_headers(status: str, content_type: str, origin: str | None) -> byte
     ).encode()
 
 
+def websocket_frame(data: bytes) -> bytes:
+    """Encode a server-to-browser text frame; browser frames are never trusted."""
+    size = len(data)
+    if size < 126:
+        return bytes((0x81, size)) + data
+    if size < 65536:
+        return bytes((0x81, 126)) + size.to_bytes(2, "big") + data
+    return bytes((0x81, 127)) + size.to_bytes(8, "big") + data
+
+
+async def handle_websocket(state: LiveMarketState, writer: asyncio.StreamWriter, origin: str | None, headers: dict[str, str]) -> None:
+    queue: asyncio.Queue[dict[str, Any]] | None = None
+    try:
+        key = headers.get("sec-websocket-key")
+        if origin != ALLOWED_ORIGIN or not key:
+            writer.write(b"HTTP/1.1 403 Forbidden\r\nConnection: close\r\n\r\n")
+            await writer.drain()
+            return
+        import base64
+        import hashlib
+        accept = base64.b64encode(hashlib.sha1(f"{key}258EAFA5-E914-47DA-95CA-C5AB0DC85B11".encode()).digest()).decode()
+        writer.write((
+            "HTTP/1.1 101 Switching Protocols\r\n"
+            "Upgrade: websocket\r\nConnection: Upgrade\r\n"
+            f"Sec-WebSocket-Accept: {accept}\r\n\r\n"
+        ).encode())
+        await writer.drain()
+        queue = await state.register()
+        if queue is None:
+            return
+        initial = {"type": "snapshot", "payload": await state.snapshot()}
+        writer.write(websocket_frame(json.dumps(initial, ensure_ascii=False, separators=(",", ":")).encode()))
+        await writer.drain()
+        while True:
+            event = await queue.get()
+            writer.write(websocket_frame(json.dumps(event, ensure_ascii=False, separators=(",", ":")).encode()))
+            await writer.drain()
+    except (ConnectionError, asyncio.IncompleteReadError):
+        pass
+    finally:
+        if queue is not None:
+            await state.unregister(queue)
+        writer.close()
+        await writer.wait_closed()
+
+
 async def handle_http(state: LiveMarketState, reader: asyncio.StreamReader, writer: asyncio.StreamWriter) -> None:
     queue: asyncio.Queue[dict[str, Any]] | None = None
     try:
@@ -173,6 +219,9 @@ async def handle_http(state: LiveMarketState, reader: asyncio.StreamReader, writ
         method, path, _ = lines[0].split(" ", 2)
         headers = {key.strip().lower(): value.strip() for line in lines[1:] if ":" in line for key, value in [line.split(":", 1)]}
         origin = headers.get("origin")
+        if path == "/api/v1/live-ws" and headers.get("upgrade", "").lower() == "websocket":
+            await handle_websocket(state, writer, origin, headers)
+            return
         if method == "OPTIONS":
             writer.write(response_headers("204 No Content", "text/plain", origin))
             await writer.drain()

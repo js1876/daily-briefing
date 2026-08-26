@@ -125,8 +125,12 @@
   }
 
   function connectStream() {
-    if (!streamUrl || !window.EventSource) return;
-    const stream = new EventSource(streamUrl, { withCredentials: false });
+    if (!streamUrl || !window.WebSocket) return;
+    const url = new URL(streamUrl);
+    url.protocol = url.protocol === 'https:' ? 'wss:' : 'ws:';
+    url.pathname = '/api/v1/live-ws';
+    url.search = '';
+    const stream = new WebSocket(url);
     stream.onopen = () => { status.textContent = '실시간 체결 수신 중 · 토스증권 Open API'; };
     stream.onmessage = (message) => {
       try {
@@ -138,6 +142,7 @@
     stream.onerror = () => {
       if (status.dataset.liveState !== 'ok') status.textContent = '실시간 체결 재연결 중 · 표시 가격은 마지막 수신값';
     };
+    stream.onclose = () => window.setTimeout(connectStream, 1000);
   }
 
   async function refresh() {
