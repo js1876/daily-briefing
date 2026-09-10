@@ -555,13 +555,13 @@ def css_from_existing() -> str:
       --surface-elevated: #ffffff;
       --surface-muted: #f4f7fb;
       --text: #101828;
-      --text-muted: #667085;
+      --text-muted: #475467;
       --border: rgba(15, 23, 42, 0.10);
       --accent: #2563eb;
       --accent-strong: #1d4ed8;
       --accent-soft: rgba(37, 99, 235, 0.11);
-      --up: #d92d20;
-      --down: #2563eb;
+      --up: #b42318;
+      --down: #175cd3;
       --neutral: #64748b;
       --shadow: 0 20px 55px rgba(30, 41, 59, 0.10);
       --shadow-soft: 0 10px 28px rgba(15, 23, 42, 0.055);
@@ -670,12 +670,13 @@ def css_from_existing() -> str:
     .market-stage { display:grid; gap:18px; margin-bottom:var(--space); padding:clamp(18px, 3vw, 30px); background:var(--surface); border:1px solid var(--border); border-radius:var(--radius-xl); box-shadow:var(--shadow); backdrop-filter:blur(22px); -webkit-backdrop-filter:blur(22px); }
     .market-stage-head { display:flex; align-items:flex-end; justify-content:space-between; gap:18px; }
     .market-stage-title { display:grid; gap:6px; }
-    .market-stage-title h1 { font-size:clamp(28px, 5vw, 52px); }
+    .market-stage-title h2 { font-size:clamp(28px, 5vw, 52px); }
     .market-stage-status { display:grid; justify-items:end; gap:7px; text-align:right; }
     .market-stage-status .live-market-status { margin:0; }
     .briefing-hero { min-height:auto; padding:clamp(20px, 3vw, 30px); }
     .briefing-hero .hero-content { gap:9px; }
     .briefing-hero h1 { font-size:clamp(28px, 4vw, 42px); }
+    .side-column h3 { font-size:22px; line-height:1.15; letter-spacing:-.04em; }
 
     .hero-card, .section, .side-card {
       background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-xl); box-shadow: var(--shadow);
@@ -698,7 +699,7 @@ def css_from_existing() -> str:
       display: inline-flex; align-items: center; gap: 5px; max-width: 100%; border-radius: 999px; padding: 7px 11px;
       background: var(--accent-soft); color: var(--accent-strong); font-size: 12px; font-weight: 850; border: 1px solid color-mix(in srgb, var(--accent) 22%, transparent);
     }
-    .badge.neutral { background: var(--surface-muted); color: var(--text-muted); border-color: var(--border); }
+    .badge.neutral, .tag.neutral { background: var(--surface-muted); color: var(--text-muted); border-color: var(--border); }
     .badge.up, .tag.up { background: rgba(255, 107, 107, .13); color: var(--up); border-color: rgba(255,107,107,.20); }
     .badge.down, .tag.down { background: rgba(96, 165, 250, .14); color: var(--down); border-color: rgba(96,165,250,.24); }
 
@@ -763,7 +764,7 @@ def css_from_existing() -> str:
     .market-trend-chart .trend-card:last-child:nth-child(odd) { grid-column:1 / -1; }
     .trend-head, .trend-value, .trend-dates { display:flex; justify-content:space-between; align-items:center; gap:8px; }
     .trend-head strong { font-size:15px; }
-    .trend-head span, .trend-dates { color:var(--text-muted); font-size:11px; }
+    .trend-head span, .trend-dates { color:var(--text-muted); font-size:12px; }
     .trend-value { margin-top:9px; }
     .trend-value b { font-size:clamp(22px, 2vw, 30px); letter-spacing:-.04em; }
     .trend-value em { font-style:normal; font-weight:900; color:var(--up); }
@@ -831,7 +832,7 @@ def css_from_existing() -> str:
     .factor-card { display: grid; gap: 8px; }
     .factor-head, .macro-section-head { display:flex; align-items:flex-start; justify-content:space-between; gap:10px; }
     .macro-section-head { flex-direction:row; }
-    .macro-live-status, .factor-asof { color:var(--text-muted); font-size:11px; font-weight:800; font-variant-numeric:tabular-nums; }
+    .macro-live-status, .factor-asof { color:var(--text-muted); font-size:12px; font-weight:800; font-variant-numeric:tabular-nums; }
     .macro-live-status { display:inline-flex; white-space:nowrap; border:1px solid var(--border); border-radius:999px; padding:5px 8px; background:var(--surface-muted); }
     .live-dot { width:7px; height:7px; border-radius:999px; background:#16a34a; box-shadow:0 0 0 4px rgba(22,163,74,.12); animation: live-pulse 1.8s ease-in-out infinite; }
     @keyframes live-pulse { 50% { transform:scale(.76); opacity:.62; } }
@@ -870,7 +871,7 @@ def css_from_existing() -> str:
       .hero-card { min-height: 360px; display: flex; align-items: end; }
       .briefing-hero { min-height:auto; display:block; }
       .side-column .section { padding: 20px; border-radius: 26px; }
-      .side-column h2 { font-size: 22px; }
+      .side-column h3 { font-size: 22px; }
       .stock-grid { grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); }
     }
     @media (max-width: 720px) {
@@ -951,19 +952,15 @@ def cycle_report_cards_html(report_html: str) -> str:
 
 
 def stock_tags(row: PriceRow) -> list[str]:
-    tags = []
     if "삼성" in row.name:
-        tags = ["HBM 추격", "NAND", "파운드리"]
-    elif "하이닉스" in row.name:
-        tags = ["HBM 순도", "AI 서버", "DRAM"]
-    elif "TIGER" in row.name:
-        tags = ["반도체 ETF", "대형주", "분산"]
-    elif "KODEX" in row.name:
-        tags = ["커버드콜", "분배", "방어"]
-    else:
-        tags = ["포트폴리오", "관찰"]
-    tags.append("상승" if row.change_pct >= 0 else "하락")
-    return tags[:4]
+        return ["HBM 추격", "NAND", "파운드리"]
+    if "하이닉스" in row.name:
+        return ["HBM 순도", "AI 서버", "DRAM"]
+    if "TIGER" in row.name:
+        return ["반도체 ETF", "대형주", "분산"]
+    if "KODEX" in row.name:
+        return ["커버드콜", "분배", "방어"]
+    return ["포트폴리오", "관찰"]
 
 
 def stock_summary(row: PriceRow) -> str:
@@ -978,14 +975,15 @@ def stock_summary(row: PriceRow) -> str:
         base = "분배와 변동성 완충 목적의 보유 성격이 강한 상품입니다."
     else:
         base = "포트폴리오 내 상대 강도와 수급을 함께 확인합니다."
-    return f"오늘은 {direction} 마감했습니다. {base}"
+    return f"전일 종가 기준 {direction} 마감했습니다. {base}"
 
 
 def stock_cards_html(rows: list[PriceRow]) -> str:
     cards = []
     for row in rows:
         direction = "up" if row.change_pct >= 0 else "down"
-        tags = "".join(f'<span class="tag {direction}">{html.escape(tag)}</span>' for tag in stock_tags(row))
+        tags = "".join(f'<span class="tag neutral">{html.escape(tag)}</span>' for tag in stock_tags(row))
+        direction_label = "▲ 전일 종가 상승" if row.change_pct >= 0 else "▼ 전일 종가 하락"
         cards.append(f"""
         <article class="stock-card" data-live-card="{row.ticker}">
           <div class="stock-top">
@@ -998,8 +996,8 @@ def stock_cards_html(rows: list[PriceRow]) -> str:
               <div class="change-line {direction}" data-live-change="{row.ticker}">{signed_money(row.change)} · {signed_pct(row.change_pct)}</div>
             </div>
           </div>
-          <div class="tag-row">{tags}</div>
-          <p class="stock-summary">{html.escape(stock_summary(row))}</p>
+          <div class="tag-row">{tags}<span class="tag direction-tag {direction}" data-live-direction-label="{row.ticker}">{direction_label}</span></div>
+          <p class="stock-summary" data-live-summary="{row.ticker}">{html.escape(stock_summary(row))}</p>
         </article>""")
     return "\n".join(cards)
 
@@ -1081,14 +1079,22 @@ def news_timeline_html(rows: list[PriceRow], news: dict) -> str:
         for item in articles:
             items.append({**item, "stock": name_by_ticker.get(ticker, ticker)})
     items.sort(key=lambda item: item.get("time", ""), reverse=True)
-    if not items:
+    deduplicated = []
+    seen = set()
+    for item in items:
+        key = (str(item.get("link", "")).strip(), str(item.get("title", "")).strip())
+        if key in seen:
+            continue
+        seen.add(key)
+        deduplicated.append(item)
+    if not deduplicated:
         return '<article class="news-card"><div class="news-title">오늘자 뉴스가 아직 충분히 수집되지 않았습니다.</div><p class="muted">장중 업데이트와 원문 확인이 필요합니다.</p></article>'
     cards = []
-    for item in items[:12]:
+    for item in deduplicated[:12]:
         cards.append(f"""
         <article class="news-card">
           <div class="news-meta">{html.escape(item.get('time',''))} · {html.escape(item.get('source',''))} · {html.escape(item.get('stock',''))}</div>
-          <a class="news-title" href="{safe_href(item.get('link',''))}">{html.escape(item.get('title',''))}</a>
+          <a class="news-title" href="{safe_href(item.get('link',''))}" target="_blank" rel="noopener noreferrer">{html.escape(item.get('title',''))}</a>
         </article>""")
     return "\n".join(cards)
 
@@ -1296,7 +1302,7 @@ def render_html(rows: list[PriceRow], news: dict, macro: dict, valuation: dict, 
       <div class="market-stage-head">
         <div class="market-stage-title">
           <div class="eyebrow">LIVE MARKET CANVAS</div>
-          <h1 id="live-market-title">오늘의 가격 흐름</h1>
+          <h2 id="live-market-title">오늘의 가격 흐름</h2>
           <p class="meta">보유 종목의 120분 실시간 흐름을 먼저 확인하세요.</p>
         </div>
         <div class="market-stage-status">
@@ -1385,7 +1391,7 @@ def render_html(rows: list[PriceRow], news: dict, macro: dict, valuation: dict, 
         <section class="section side-card" aria-labelledby="momentum-title">
           <div class="section-head">
             <div class="section-kicker">Snapshot</div>
-            <h2 id="momentum-title">요약 지표</h2>
+            <h3 id="momentum-title">요약 지표</h3>
           </div>
           <div class="mini-bars">{mini_bars}
           </div>
@@ -1393,7 +1399,7 @@ def render_html(rows: list[PriceRow], news: dict, macro: dict, valuation: dict, 
 
         <section class="section side-card" aria-labelledby="macro-title">
           <div class="section-head macro-section-head">
-            <div><div class="section-kicker">Live Macro</div><h2 id="macro-title">매크로 팩터</h2></div>
+            <div><div class="section-kicker">Live Macro</div><h3 id="macro-title">매크로 팩터</h3></div>
             <span class="macro-live-status" id="live-macro-status">5초 갱신 준비 중</span>
           </div>
           <div class="factor-grid">{factor_cards}
@@ -1403,7 +1409,7 @@ def render_html(rows: list[PriceRow], news: dict, macro: dict, valuation: dict, 
         <section class="section side-card" aria-labelledby="news-title">
           <div class="section-head">
             <div class="section-kicker">News</div>
-            <h2 id="news-title">뉴스 타임라인</h2>
+            <h3 id="news-title">뉴스 타임라인</h3>
             <p class="meta">KST 기준 {today_s} 발행분입니다.</p>
           </div>
           <div class="news-timeline">{timeline}
@@ -1414,7 +1420,7 @@ def render_html(rows: list[PriceRow], news: dict, macro: dict, valuation: dict, 
           <article class="check-card">
             <div class="section-head">
               <div class="section-kicker">Action</div>
-              <h2 id="actions-title">오늘의 액션</h2>
+              <h3 id="actions-title">오늘의 액션</h3>
               <p class="meta">장 시작 전 체크리스트처럼 확인하세요.</p>
             </div>
             <ul class="check-list">

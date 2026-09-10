@@ -193,3 +193,30 @@ def test_rendered_html_uses_cards_instead_of_price_table():
     assert 'dataset.counted' in rendered
     assert 'requestAnimationFrame' in rendered
     assert 'prefers-reduced-motion: reduce' in rendered
+
+
+def test_stock_card_keeps_close_interpretation_separate_from_live_price():
+    rendered = sample_rendered_html()
+
+    assert '전일 종가 기준 상승 마감했습니다.' in rendered
+    assert 'data-live-direction-label="005930"' in rendered
+    assert 'data-live-summary="005930"' in rendered
+    assert '실시간 체결 기준' not in rendered.split('data-live-summary="005930"', 1)[1].split('</p>', 1)[0]
+
+
+def test_news_timeline_deduplicates_and_opens_external_links_safely():
+    rows = [
+        gdb.PriceRow("005930", "삼성전자", 1000, 900, 100, 11.1, datetime(2026, 6, 17, tzinfo=ZoneInfo("Asia/Seoul")), [900, 1000], ["6/16", "6/17"]),
+        gdb.PriceRow("000660", "SK하이닉스", 2000, 1900, 100, 5.2, datetime(2026, 6, 17, tzinfo=ZoneInfo("Asia/Seoul")), [1900, 2000], ["6/16", "6/17"]),
+    ]
+    article = {"time": "09:10", "source": "테스트뉴스", "title": "중복 뉴스", "link": "https://example.com/news"}
+
+    rendered = gdb.news_timeline_html(rows, {"005930": [article], "000660": [article]})
+
+    assert rendered.count('중복 뉴스') == 1
+    assert 'target="_blank"' in rendered
+    assert 'rel="noopener noreferrer"' in rendered
+    page = sample_rendered_html()
+    assert page.count('<h1') == 1
+    assert '<h2 id="live-market-title">오늘의 가격 흐름</h2>' in page
+    assert '<h3 id="macro-title">매크로 팩터</h3>' in page

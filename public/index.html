@@ -12,13 +12,13 @@
       --surface-elevated: #ffffff;
       --surface-muted: #f4f7fb;
       --text: #101828;
-      --text-muted: #667085;
+      --text-muted: #475467;
       --border: rgba(15, 23, 42, 0.10);
       --accent: #2563eb;
       --accent-strong: #1d4ed8;
       --accent-soft: rgba(37, 99, 235, 0.11);
-      --up: #d92d20;
-      --down: #2563eb;
+      --up: #b42318;
+      --down: #175cd3;
       --neutral: #64748b;
       --shadow: 0 20px 55px rgba(30, 41, 59, 0.10);
       --shadow-soft: 0 10px 28px rgba(15, 23, 42, 0.055);
@@ -127,12 +127,13 @@
     .market-stage { display:grid; gap:18px; margin-bottom:var(--space); padding:clamp(18px, 3vw, 30px); background:var(--surface); border:1px solid var(--border); border-radius:var(--radius-xl); box-shadow:var(--shadow); backdrop-filter:blur(22px); -webkit-backdrop-filter:blur(22px); }
     .market-stage-head { display:flex; align-items:flex-end; justify-content:space-between; gap:18px; }
     .market-stage-title { display:grid; gap:6px; }
-    .market-stage-title h1 { font-size:clamp(28px, 5vw, 52px); }
+    .market-stage-title h2 { font-size:clamp(28px, 5vw, 52px); }
     .market-stage-status { display:grid; justify-items:end; gap:7px; text-align:right; }
     .market-stage-status .live-market-status { margin:0; }
     .briefing-hero { min-height:auto; padding:clamp(20px, 3vw, 30px); }
     .briefing-hero .hero-content { gap:9px; }
     .briefing-hero h1 { font-size:clamp(28px, 4vw, 42px); }
+    .side-column h3 { font-size:22px; line-height:1.15; letter-spacing:-.04em; }
 
     .hero-card, .section, .side-card {
       background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-xl); box-shadow: var(--shadow);
@@ -155,7 +156,7 @@
       display: inline-flex; align-items: center; gap: 5px; max-width: 100%; border-radius: 999px; padding: 7px 11px;
       background: var(--accent-soft); color: var(--accent-strong); font-size: 12px; font-weight: 850; border: 1px solid color-mix(in srgb, var(--accent) 22%, transparent);
     }
-    .badge.neutral { background: var(--surface-muted); color: var(--text-muted); border-color: var(--border); }
+    .badge.neutral, .tag.neutral { background: var(--surface-muted); color: var(--text-muted); border-color: var(--border); }
     .badge.up, .tag.up { background: rgba(255, 107, 107, .13); color: var(--up); border-color: rgba(255,107,107,.20); }
     .badge.down, .tag.down { background: rgba(96, 165, 250, .14); color: var(--down); border-color: rgba(96,165,250,.24); }
 
@@ -220,7 +221,7 @@
     .market-trend-chart .trend-card:last-child:nth-child(odd) { grid-column:1 / -1; }
     .trend-head, .trend-value, .trend-dates { display:flex; justify-content:space-between; align-items:center; gap:8px; }
     .trend-head strong { font-size:15px; }
-    .trend-head span, .trend-dates { color:var(--text-muted); font-size:11px; }
+    .trend-head span, .trend-dates { color:var(--text-muted); font-size:12px; }
     .trend-value { margin-top:9px; }
     .trend-value b { font-size:clamp(22px, 2vw, 30px); letter-spacing:-.04em; }
     .trend-value em { font-style:normal; font-weight:900; color:var(--up); }
@@ -288,7 +289,7 @@
     .factor-card { display: grid; gap: 8px; }
     .factor-head, .macro-section-head { display:flex; align-items:flex-start; justify-content:space-between; gap:10px; }
     .macro-section-head { flex-direction:row; }
-    .macro-live-status, .factor-asof { color:var(--text-muted); font-size:11px; font-weight:800; font-variant-numeric:tabular-nums; }
+    .macro-live-status, .factor-asof { color:var(--text-muted); font-size:12px; font-weight:800; font-variant-numeric:tabular-nums; }
     .macro-live-status { display:inline-flex; white-space:nowrap; border:1px solid var(--border); border-radius:999px; padding:5px 8px; background:var(--surface-muted); }
     .live-dot { width:7px; height:7px; border-radius:999px; background:#16a34a; box-shadow:0 0 0 4px rgba(22,163,74,.12); animation: live-pulse 1.8s ease-in-out infinite; }
     @keyframes live-pulse { 50% { transform:scale(.76); opacity:.62; } }
@@ -327,7 +328,7 @@
       .hero-card { min-height: 360px; display: flex; align-items: end; }
       .briefing-hero { min-height:auto; display:block; }
       .side-column .section { padding: 20px; border-radius: 26px; }
-      .side-column h2 { font-size: 22px; }
+      .side-column h3 { font-size: 22px; }
       .stock-grid { grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); }
     }
     @media (max-width: 720px) {
@@ -375,7 +376,7 @@
       <div class="market-stage-head">
         <div class="market-stage-title">
           <div class="eyebrow">LIVE MARKET CANVAS</div>
-          <h1 id="live-market-title">오늘의 가격 흐름</h1>
+          <h2 id="live-market-title">오늘의 가격 흐름</h2>
           <p class="meta">보유 종목의 120분 실시간 흐름을 먼저 확인하세요.</p>
         </div>
         <div class="market-stage-status">
@@ -425,7 +426,7 @@
           <div class="hero-content">
             <div class="eyebrow">DAILY SEMICONDUCTOR BRIEFING</div>
             <h1>일일 포트폴리오 브리핑</h1>
-            <p class="meta">작성일: 2026-09-10 KST · 가격 확인: 2026-09-10 16:03 KST · 표시 가격: 조회 시점 최신가</p>
+            <p class="meta">작성일: 2026-09-10 KST · 가격 확인: 2026-09-10 23:43 KST · 표시 가격: 조회 시점 최신가</p>
             <div class="badge-row" aria-label="오늘 요약 지표">
               <span class="badge up">상승 1</span>
               <span class="badge down">하락 2</span>
@@ -473,8 +474,8 @@
               <div class="change-line up" data-live-change="396500">+90원 · +0.24%</div>
             </div>
           </div>
-          <div class="tag-row"><span class="tag up">반도체 ETF</span><span class="tag up">대형주</span><span class="tag up">분산</span><span class="tag up">상승</span></div>
-          <p class="stock-summary">오늘은 상승 마감했습니다. 반도체 대형주 흐름을 묶어서 보는 섹터 온도계 역할입니다.</p>
+          <div class="tag-row"><span class="tag neutral">반도체 ETF</span><span class="tag neutral">대형주</span><span class="tag neutral">분산</span><span class="tag direction-tag up" data-live-direction-label="396500">▲ 전일 종가 상승</span></div>
+          <p class="stock-summary" data-live-summary="396500">전일 종가 기준 상승 마감했습니다. 반도체 대형주 흐름을 묶어서 보는 섹터 온도계 역할입니다.</p>
         </article>
 
         <article class="stock-card" data-live-card="005930">
@@ -488,8 +489,8 @@
               <div class="change-line down" data-live-change="005930">-500원 · -0.19%</div>
             </div>
           </div>
-          <div class="tag-row"><span class="tag down">HBM 추격</span><span class="tag down">NAND</span><span class="tag down">파운드리</span><span class="tag down">하락</span></div>
-          <p class="stock-summary">오늘은 하락 마감했습니다. HBM·NAND·파운드리 회복 기대와 수급 변화를 함께 확인할 종목입니다.</p>
+          <div class="tag-row"><span class="tag neutral">HBM 추격</span><span class="tag neutral">NAND</span><span class="tag neutral">파운드리</span><span class="tag direction-tag down" data-live-direction-label="005930">▼ 전일 종가 하락</span></div>
+          <p class="stock-summary" data-live-summary="005930">전일 종가 기준 하락 마감했습니다. HBM·NAND·파운드리 회복 기대와 수급 변화를 함께 확인할 종목입니다.</p>
         </article>
 
         <article class="stock-card" data-live-card="000660">
@@ -503,8 +504,8 @@
               <div class="change-line down" data-live-change="000660">-3,000원 · -0.16%</div>
             </div>
           </div>
-          <div class="tag-row"><span class="tag down">HBM 순도</span><span class="tag down">AI 서버</span><span class="tag down">DRAM</span><span class="tag down">하락</span></div>
-          <p class="stock-summary">오늘은 하락 마감했습니다. HBM 노출도가 높아 AI 메모리 사이클을 가장 직접적으로 반영합니다.</p>
+          <div class="tag-row"><span class="tag neutral">HBM 순도</span><span class="tag neutral">AI 서버</span><span class="tag neutral">DRAM</span><span class="tag direction-tag down" data-live-direction-label="000660">▼ 전일 종가 하락</span></div>
+          <p class="stock-summary" data-live-summary="000660">전일 종가 기준 하락 마감했습니다. HBM 노출도가 높아 AI 메모리 사이클을 가장 직접적으로 반영합니다.</p>
         </article>
           </div>
         </section>
@@ -666,7 +667,7 @@
         <section class="section side-card" aria-labelledby="momentum-title">
           <div class="section-head">
             <div class="section-kicker">Snapshot</div>
-            <h2 id="momentum-title">요약 지표</h2>
+            <h3 id="momentum-title">요약 지표</h3>
           </div>
           <div class="mini-bars">
         <div class="mini-bar-row">
@@ -691,14 +692,14 @@
 
         <section class="section side-card" aria-labelledby="macro-title">
           <div class="section-head macro-section-head">
-            <div><div class="section-kicker">Live Macro</div><h2 id="macro-title">매크로 팩터</h2></div>
+            <div><div class="section-kicker">Live Macro</div><h3 id="macro-title">매크로 팩터</h3></div>
             <span class="macro-live-status" id="live-macro-status">5초 갱신 준비 중</span>
           </div>
           <div class="factor-grid">
         <article class="factor-card macro-factor-card up" data-live-macro="USD_KRW">
           <div class="factor-head"><div class="card-label">원/달러</div><span class="live-dot" aria-hidden="true"></span></div>
-          <div class="factor-value num-animate" data-live-macro-value="USD_KRW">1340.08원</div>
-          <div class="change-line up num-animate" data-live-macro-change="USD_KRW">+0.06%</div>
+          <div class="factor-value num-animate" data-live-macro-value="USD_KRW">1345.68원</div>
+          <div class="change-line up num-animate" data-live-macro-change="USD_KRW">+0.48%</div>
           <p class="factor-copy">외국인 수급과 반도체 대형주 투자심리에 직접 영향을 줍니다.</p>
           <div class="factor-asof" data-live-macro-asof="USD_KRW">라이브 연결 준비 중</div>
         </article>
@@ -721,8 +722,8 @@
 
         <article class="factor-card macro-factor-card up" data-live-macro="KR_BOND_10Y">
           <div class="factor-head"><div class="card-label">국고채 10년</div><span class="live-dot" aria-hidden="true"></span></div>
-          <div class="factor-value num-animate" data-live-macro-value="KR_BOND_10Y">4.84%</div>
-          <div class="change-line up num-animate" data-live-macro-change="KR_BOND_10Y">+0.65%</div>
+          <div class="factor-value num-animate" data-live-macro-value="KR_BOND_10Y">4.91%</div>
+          <div class="change-line up num-animate" data-live-macro-change="KR_BOND_10Y">+1.59%</div>
           <p class="factor-copy">장기금리는 성장주·AI 반도체의 할인율을 좌우합니다.</p>
           <div class="factor-asof" data-live-macro-asof="KR_BOND_10Y">라이브 연결 준비 중</div>
         </article>
@@ -732,38 +733,33 @@
         <section class="section side-card" aria-labelledby="news-title">
           <div class="section-head">
             <div class="section-kicker">News</div>
-            <h2 id="news-title">뉴스 타임라인</h2>
+            <h3 id="news-title">뉴스 타임라인</h3>
             <p class="meta">KST 기준 2026-09-10 발행분입니다.</p>
           </div>
           <div class="news-timeline">
         <article class="news-card">
-          <div class="news-meta">14:53 · v.daum.net · 삼성전자</div>
-          <a class="news-title" href="https://news.google.com/rss/articles/CBMiT0FVX3lxTE5DWmFfQkgwVi1GUVNyT1pxZWY4WHVfclZTVE9pcnlaYlNGZzhXN2VNTHpEbllGWUtmT3FyYW9CTzhPR1F2M3FXV2pFbVp1Y3M?oc=5">[그래픽] 삼성전자·SK하이닉스 코스피 등락 기여율 - v.daum.net</a>
-        </article>
-
-        <article class="news-card">
           <div class="news-meta">14:53 · v.daum.net · SK하이닉스</div>
-          <a class="news-title" href="https://news.google.com/rss/articles/CBMiT0FVX3lxTE5DWmFfQkgwVi1GUVNyT1pxZWY4WHVfclZTVE9pcnlaYlNGZzhXN2VNTHpEbllGWUtmT3FyYW9CTzhPR1F2M3FXV2pFbVp1Y3M?oc=5">[그래픽] 삼성전자·SK하이닉스 코스피 등락 기여율 - v.daum.net</a>
+          <a class="news-title" href="https://news.google.com/rss/articles/CBMiT0FVX3lxTE5DWmFfQkgwVi1GUVNyT1pxZWY4WHVfclZTVE9pcnlaYlNGZzhXN2VNTHpEbllGWUtmT3FyYW9CTzhPR1F2M3FXV2pFbVp1Y3M?oc=5" target="_blank" rel="noopener noreferrer">[그래픽] 삼성전자·SK하이닉스 코스피 등락 기여율 - v.daum.net</a>
         </article>
 
         <article class="news-card">
-          <div class="news-meta">10:53 · infostockdaily.co.kr · SK하이닉스</div>
-          <a class="news-title" href="https://news.google.com/rss/articles/CBMidkFVX3lxTE5ydmxkZ2NJQ1Y3Y0tIM0J5STQ1Y3pDZUFtd20yVnl2NDlpazlXV0hOd2w1NGxGX1k5OUpfeGxxdTEwNllTQ0hhaG5UaEdhZk5ZcmxNOGNDcG45WGxETjRjd2MtQzZ0a3JwMUF4S2J5SWozRDdpdXc?oc=5">SK하이닉스 노사, 성과급 현금 비중 50%로 상향... 15~16일 총투표 - infostockdaily.co.kr</a>
+          <div class="news-meta">14:51 · 연합뉴스 · 삼성전자</div>
+          <a class="news-title" href="https://news.google.com/rss/articles/CBMiYEFVX3lxTE5nRW84ZkdBaVV4Um8tYW5MTkxSTkF0LUhDbGo2QkNSV0tnWUdKV05jR2pUbXNIQnJJSXdUZDBRYTFoZVE3b05WUXZDUE1yX1pPWXlmRDJhZDFFVXlzTmlpTNIBYEFVX3lxTE5nRW84ZkdBaVV4Um8tYW5MTkxSTkF0LUhDbGo2QkNSV0tnWUdKV05jR2pUbXNIQnJJSXdUZDBRYTFoZVE3b05WUXZDUE1yX1pPWXlmRDJhZDFFVXlzTmlpTA?oc=5" target="_blank" rel="noopener noreferrer">[그래픽] 삼성전자·SK하이닉스 코스피 등락 기여율 - 연합뉴스</a>
         </article>
 
         <article class="news-card">
-          <div class="news-meta">10:10 · yna.co.kr · SK하이닉스</div>
-          <a class="news-title" href="https://news.google.com/rss/articles/CBMiYEFVX3lxTE9tS1FZVGs4NnlYYmpBZkp2NU9IWEFnTWtyVVBtaXpKWnFWenV0YnJXODd0MzBkQl9xbzZpdmtXOHFKTWV4dDhtODJ5YjZzZXdSUDcweEUxbDgyMFJLYUpKS9IBYEFVX3lxTE9tS1FZVGs4NnlYYmpBZkp2NU9IWEFnTWtyVVBtaXpKWnFWenV0YnJXODd0MzBkQl9xbzZpdmtXOHFKTWV4dDhtODJ5YjZzZXdSUDcweEUxbDgyMFJLYUpKSw?oc=5">SK하이닉스, 3조 채권 투자 재개하나…신탁 대신 운용사 위탁 - yna.co.kr</a>
-        </article>
-
-        <article class="news-card">
-          <div class="news-meta">09:46 · 매일경제 마켓 · 삼성전자</div>
-          <a class="news-title" href="https://news.google.com/rss/articles/CBMilwFBVV95cUxNQllxbHFZeS0zYXQ5VTlQbzBCN2t2d2dVZm42dl9DR08tTUhVOFlTaVlNcTcxSWp3MGVDbjBwZmZMdC1UZl85Rk92cUdIVmF5bHBlZi1xMHNEQ0R4a3RscWxEVmRLeHZ4ZW1kLTJBNWN1NzJHbkxsa1kyUFg5NFJ6R3dDcVBNM0N4RFFlczZ6SE1VTG83UC1v?oc=5">삼성전자 - 매일경제 마켓</a>
+          <div class="news-meta">10:53 · 인포스탁데일리 · SK하이닉스</div>
+          <a class="news-title" href="https://news.google.com/rss/articles/CBMidkFVX3lxTE5ydmxkZ2NJQ1Y3Y0tIM0J5STQ1Y3pDZUFtd20yVnl2NDlpazlXV0hOd2w1NGxGX1k5OUpfeGxxdTEwNllTQ0hhaG5UaEdhZk5ZcmxNOGNDcG45WGxETjRjd2MtQzZ0a3JwMUF4S2J5SWozRDdpdXc?oc=5" target="_blank" rel="noopener noreferrer">SK하이닉스 노사, 성과급 현금 비중 50%로 상향... 15~16일 총투표 - 인포스탁데일리</a>
         </article>
 
         <article class="news-card">
           <div class="news-meta">09:46 · 매일경제 마켓 · 삼성전자</div>
-          <a class="news-title" href="https://news.google.com/rss/articles/CBMimgFBVV95cUxQRnBhQlEzZ2liU0FwR1QxRXQ1UTc4X2FsREVPWjV5WDhWTUFLcUptZ2V4MDE2YmVtZDAyb05jQjllQUZHNW1qZjNZVXltemt1anNYc2FjakZWYklwN1FpX0J3NDF2bFh1c3NsaHpyYnRweXlrVktHZ04wR0xoV1BMWWJnQ1ZpZ2xyRzBpN0lIbjlBX05QanBOUG53?oc=5">삼성전자 - 매일경제 마켓</a>
+          <a class="news-title" href="https://news.google.com/rss/articles/CBMilwFBVV95cUxNQllxbHFZeS0zYXQ5VTlQbzBCN2t2d2dVZm42dl9DR08tTUhVOFlTaVlNcTcxSWp3MGVDbjBwZmZMdC1UZl85Rk92cUdIVmF5bHBlZi1xMHNEQ0R4a3RscWxEVmRLeHZ4ZW1kLTJBNWN1NzJHbkxsa1kyUFg5NFJ6R3dDcVBNM0N4RFFlczZ6SE1VTG83UC1v?oc=5" target="_blank" rel="noopener noreferrer">삼성전자 - 매일경제 마켓</a>
+        </article>
+
+        <article class="news-card">
+          <div class="news-meta">09:46 · 매일경제 마켓 · 삼성전자</div>
+          <a class="news-title" href="https://news.google.com/rss/articles/CBMimgFBVV95cUxQRnBhQlEzZ2liU0FwR1QxRXQ1UTc4X2FsREVPWjV5WDhWTUFLcUptZ2V4MDE2YmVtZDAyb05jQjllQUZHNW1qZjNZVXltemt1anNYc2FjakZWYklwN1FpX0J3NDF2bFh1c3NsaHpyYnRweXlrVktHZ04wR0xoV1BMWWJnQ1ZpZ2xyRzBpN0lIbjlBX05QanBOUG53?oc=5" target="_blank" rel="noopener noreferrer">삼성전자 - 매일경제 마켓</a>
         </article>
           </div>
         </section>
@@ -772,7 +768,7 @@
           <article class="check-card">
             <div class="section-head">
               <div class="section-kicker">Action</div>
-              <h2 id="actions-title">오늘의 액션</h2>
+              <h3 id="actions-title">오늘의 액션</h3>
               <p class="meta">장 시작 전 체크리스트처럼 확인하세요.</p>
             </div>
             <ul class="check-list">
@@ -789,7 +785,7 @@
     </div>
   </main>
 
-  <script src="https://js1876.github.io/daily-briefing/public/assets/live-market.js?v=2026-09-101603" defer></script>
+  <script src="https://js1876.github.io/daily-briefing/public/assets/live-market.js?v=2026-09-102343" defer></script>
   <script>
     (() => {
       const root = document.documentElement;

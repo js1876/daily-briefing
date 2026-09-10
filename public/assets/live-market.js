@@ -33,14 +33,22 @@
 
   function setDirection(symbol, changePct) {
     const direction = changePct >= 0 ? 'up' : 'down';
-    document.querySelectorAll(`[data-live-card="${symbol}"], [data-live-trend-card="${symbol}"], [data-live-change-row="${symbol}"]`).forEach((node) => {
+    const arrow = direction === 'up' ? '▲' : '▼';
+    const label = direction === 'up' ? '실시간 상승' : '실시간 하락';
+    document.querySelectorAll(`[data-live-card="${symbol}"]`).forEach((node) => {
+      node.classList.remove('is-up', 'is-down');
+      node.classList.add(`is-${direction}`);
+    });
+    document.querySelectorAll(`[data-live-trend-card="${symbol}"], [data-live-change-row="${symbol}"]`).forEach((node) => {
       node.classList.remove('up', 'down');
       node.classList.add(direction);
     });
-    document.querySelectorAll(`[data-live-change="${symbol}"], [data-live-trend-change="${symbol}"]`).forEach((node) => {
+    document.querySelectorAll(`[data-live-change="${symbol}"], [data-live-trend-change="${symbol}"], [data-live-direction-label="${symbol}"]`).forEach((node) => {
       node.classList.remove('up', 'down');
       node.classList.add(direction);
     });
+    setText('data-live-direction-label', symbol, `${arrow} ${label}`);
+    setText('data-live-summary', symbol, `실시간 체결 기준 ${label.replace('실시간 ', '')} 중입니다. 전일 종가 기준 해석은 생성 시점 브리핑을 확인하세요.`);
   }
 
   function updateTrend(symbol, instrument) {
@@ -98,8 +106,8 @@
       setText('data-live-macro-change', id, change === null ? '전일 대비 확인 중' : signedPct(change));
       const card = document.querySelector(`[data-live-macro="${id}"]`);
       if (card) {
-        card.classList.remove('up', 'down');
-        card.classList.add(change !== null && change < 0 ? 'down' : 'up');
+        card.classList.remove('is-up', 'is-down');
+        card.classList.add(change !== null && change < 0 ? 'is-down' : 'is-up');
       }
       const asOf = document.querySelector(`[data-live-macro-asof="${id}"]`);
       if (asOf) asOf.textContent = item.live ? '실시간 갱신' : '일별 확정 데이터';
