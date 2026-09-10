@@ -210,8 +210,9 @@ def test_news_timeline_deduplicates_and_opens_external_links_safely():
         gdb.PriceRow("000660", "SK하이닉스", 2000, 1900, 100, 5.2, datetime(2026, 6, 17, tzinfo=ZoneInfo("Asia/Seoul")), [1900, 2000], ["6/16", "6/17"]),
     ]
     article = {"time": "09:10", "source": "테스트뉴스", "title": "중복 뉴스", "link": "https://example.com/news"}
+    same_title_other_link = {**article, "link": "https://other.example.com/news"}
 
-    rendered = gdb.news_timeline_html(rows, {"005930": [article], "000660": [article]})
+    rendered = gdb.news_timeline_html(rows, {"005930": [article], "000660": [same_title_other_link]})
 
     assert rendered.count('중복 뉴스') == 1
     assert 'target="_blank"' in rendered

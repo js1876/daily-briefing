@@ -1080,12 +1080,16 @@ def news_timeline_html(rows: list[PriceRow], news: dict) -> str:
             items.append({**item, "stock": name_by_ticker.get(ticker, ticker)})
     items.sort(key=lambda item: item.get("time", ""), reverse=True)
     deduplicated = []
-    seen = set()
+    seen_titles = set()
+    seen_links = set()
     for item in items:
-        key = (str(item.get("link", "")).strip(), str(item.get("title", "")).strip())
-        if key in seen:
+        title = str(item.get("title", "")).strip()
+        link = str(item.get("link", "")).strip()
+        if title in seen_titles or (link and link in seen_links):
             continue
-        seen.add(key)
+        seen_titles.add(title)
+        if link:
+            seen_links.add(link)
         deduplicated.append(item)
     if not deduplicated:
         return '<article class="news-card"><div class="news-title">오늘자 뉴스가 아직 충분히 수집되지 않았습니다.</div><p class="muted">장중 업데이트와 원문 확인이 필요합니다.</p></article>'
