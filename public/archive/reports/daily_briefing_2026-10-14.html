@@ -1,0 +1,863 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>일일 포트폴리오 브리핑 - 2026-10-14</title>
+  <style>
+    :root {
+      --bg: #eef3f8;
+      --bg2: #f8fbff;
+      --surface: rgba(255, 255, 255, 0.78);
+      --surface-elevated: #ffffff;
+      --surface-muted: #f4f7fb;
+      --text: #101828;
+      --text-muted: #475467;
+      --border: rgba(15, 23, 42, 0.10);
+      --accent: #2563eb;
+      --accent-strong: #1d4ed8;
+      --accent-soft: rgba(37, 99, 235, 0.11);
+      --up: #b42318;
+      --down: #175cd3;
+      --neutral: #64748b;
+      --shadow: 0 20px 55px rgba(30, 41, 59, 0.10);
+      --shadow-soft: 0 10px 28px rgba(15, 23, 42, 0.055);
+      --radius-xl: 32px;
+      --radius-lg: 24px;
+      --radius-md: 18px;
+      --space: clamp(14px, 2.4vw, 28px);
+      --content-max: 1320px;
+      --chart-bg: #ffffff;
+      --bar-track: #e5edf7;
+      color-scheme: light;
+
+      /* backward-compatible aliases used by older generated fragments */
+      --panel: var(--surface-elevated);
+      --panel-soft: var(--surface-muted);
+      --line: var(--border);
+      --muted: var(--text-muted);
+      --hero-panel: var(--surface);
+      --body-end: #f9fafb;
+      --card-shadow: var(--shadow-soft);
+      --summary-text: #344054;
+    }
+
+    html[data-theme="dark"] {
+      --bg: #101114;
+      --bg2: #14161b;
+      --surface: rgba(28, 30, 36, 0.88);
+      --surface-elevated: #1b1d23;
+      --surface-muted: #242730;
+      --text: #f5f5f5;
+      --text-muted: #b7b7b7;
+      --border: rgba(255, 255, 255, 0.12);
+      --accent: #7dd3fc;
+      --accent-strong: #38bdf8;
+      --accent-soft: rgba(125, 211, 252, 0.12);
+      --up: #ff7a70;
+      --down: #60a5fa;
+      --neutral: #a3a3a3;
+      --shadow: 0 24px 60px rgba(0, 0, 0, 0.52);
+      --shadow-soft: 0 14px 34px rgba(0, 0, 0, 0.38);
+      --chart-bg: #f8fafc;
+      --bar-track: #2c303a;
+      --body-end: #101114;
+      --summary-text: #d4d4d4;
+      color-scheme: dark;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; }
+    html, body { width: 100%; max-width: 100%; overflow-x: hidden; }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      background:
+        radial-gradient(circle at 10% -8%, rgba(37,99,235,.18), transparent 30%),
+        radial-gradient(circle at 88% 12%, rgba(125,211,252,.13), transparent 26%),
+        linear-gradient(180deg, var(--bg) 0%, var(--bg2) 48%, var(--body-end) 100%);
+      color: var(--text);
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "SF Pro Display", "Apple SD Gothic Neo", "Noto Sans KR", "Malgun Gothic", sans-serif;
+      line-height: 1.66;
+      word-break: keep-all;
+      overflow-wrap: anywhere;
+      -webkit-font-smoothing: antialiased;
+      text-rendering: optimizeLegibility;
+    }
+    html[data-theme="dark"] body {
+      background: linear-gradient(180deg, #101114 0%, #14161b 48%, #101114 100%);
+    }
+    img, svg, canvas, video { display: block; max-width: 100%; height: auto; }
+    p, li, span, div, a, h1, h2, h3, h4 { overflow-wrap: anywhere; word-break: keep-all; }
+    a { color: var(--accent-strong); text-decoration: none; transition: color .22s ease, opacity .22s ease; }
+    a:hover { text-decoration: underline; }
+    main { width: min(var(--content-max), calc(100% - clamp(24px, 5vw, 56px))); margin: 0 auto; padding: clamp(14px, 2.2vw, 28px) 0 clamp(44px, 6vw, 76px); }
+    .section, .card, .stock-card, .factor-card, .news-card, .action-card, .company-card, .hero-card, .chart-card, .cycle-card, .check-card, .metric-card, .side-card, .trend-card, .cycle-point, .check-item { min-width: 0; }
+
+    .skeleton-screen { position: fixed; inset: 0; z-index: 20; display: none; align-items: center; justify-content: center; padding: 24px; background: var(--bg); transition: opacity .28s ease, visibility .28s ease; }
+    body.is-loading .skeleton-screen { display: flex; }
+    body.is-loaded .skeleton-screen { opacity: 0; visibility: hidden; pointer-events: none; }
+    .skeleton-stack { width: min(860px, 100%); display: grid; gap: 14px; }
+    .skeleton-card { border-radius: var(--radius-lg); border: 1px solid var(--border); background: var(--surface-elevated); padding: 18px; box-shadow: var(--shadow-soft); overflow: hidden; }
+    .skeleton-line { height: 14px; border-radius: 999px; margin: 10px 0; background: linear-gradient(90deg, var(--surface-muted), color-mix(in srgb, var(--surface-muted) 72%, var(--accent-soft)), var(--surface-muted)); background-size: 220% 100%; animation: skeleton-shimmer 1.15s ease-in-out infinite; }
+    .skeleton-line.short { width: 38%; }
+    .skeleton-line.mid { width: 62%; }
+    .skeleton-line.long { width: 88%; }
+    @keyframes skeleton-shimmer { 0% { background-position: 120% 0; } 100% { background-position: -120% 0; } }
+
+    .num-animate { font-variant-numeric: tabular-nums; }
+
+    .topbar { display: flex; justify-content: flex-end; margin: 4px 0 12px; }
+    .theme-toggle {
+      display: inline-flex; align-items: center; gap: 8px; min-height: 44px;
+      border: 1px solid var(--border); border-radius: 999px; padding: 10px 14px;
+      background: color-mix(in srgb, var(--surface-elevated) 84%, transparent);
+      color: var(--text); box-shadow: var(--shadow-soft); font: inherit; font-size: 13px; font-weight: 850; cursor: pointer;
+      backdrop-filter: blur(18px); -webkit-backdrop-filter: blur(18px); transition: transform .2s ease, background-color .22s ease, border-color .22s ease, box-shadow .22s ease, color .22s ease;
+    }
+    .theme-toggle:hover { transform: translateY(-1px); box-shadow: 0 14px 34px rgba(15, 23, 42, .09); }
+    .theme-toggle:active { transform: scale(.985); }
+    .theme-toggle:focus-visible { outline: 3px solid var(--accent-soft); outline-offset: 3px; }
+    .theme-icon { font-size: 15px; line-height: 1; }
+
+    .dashboard-shell { display: grid; gap: var(--space); align-items: start; }
+    .main-column, .side-column { display: grid; gap: var(--space); min-width: 0; }
+    .side-column { align-content: start; }
+
+    /* The live price canvas leads the page; briefing detail deliberately follows it. */
+    .market-stage { display:grid; gap:18px; margin-bottom:var(--space); padding:clamp(18px, 3vw, 30px); background:var(--surface); border:1px solid var(--border); border-radius:var(--radius-xl); box-shadow:var(--shadow); backdrop-filter:blur(22px); -webkit-backdrop-filter:blur(22px); }
+    .market-stage-head { display:flex; align-items:flex-end; justify-content:space-between; gap:18px; }
+    .market-stage-title { display:grid; gap:6px; }
+    .market-stage-title h2 { font-size:clamp(28px, 5vw, 52px); }
+    .market-stage-status { display:grid; justify-items:end; gap:7px; text-align:right; }
+    .market-stage-status .live-market-status { margin:0; }
+    .briefing-hero { min-height:auto; padding:clamp(20px, 3vw, 30px); }
+    .briefing-hero .hero-content { gap:9px; }
+    .briefing-hero h1 { font-size:clamp(28px, 4vw, 42px); }
+    .side-column h3 { font-size:22px; line-height:1.15; letter-spacing:-.04em; }
+
+    .hero-card, .section, .side-card {
+      background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-xl); box-shadow: var(--shadow);
+      backdrop-filter: blur(22px); -webkit-backdrop-filter: blur(22px);
+    }
+    .hero-card { padding: clamp(22px, 5vw, 44px); overflow: hidden; position: relative; }
+    .hero-card::after { content: ""; position: absolute; inset: auto -18% -38% 36%; height: 180px; border-radius: 999px; background: rgba(37,99,235,.12); filter: blur(34px); pointer-events: none; }
+    .hero-content { position: relative; z-index: 1; display: grid; gap: 12px; }
+    .eyebrow, .section-kicker, .card-label { color: var(--accent-strong); font-size: 12px; font-weight: 900; letter-spacing: .045em; text-transform: uppercase; }
+    h1 { margin: 0; font-size: clamp(32px, 8vw, 64px); line-height: .98; letter-spacing: -.06em; }
+    h2 { margin: 0; font-size: clamp(22px, 4vw, 34px); line-height: 1.12; letter-spacing: -.045em; }
+    h3 { margin: 0; font-size: clamp(17px, 2vw, 21px); line-height: 1.28; letter-spacing: -.025em; }
+    p { margin: 0; }
+    .meta, .muted { color: var(--text-muted); font-size: clamp(13px, 1.5vw, 14px); }
+    .hero-summary { color: var(--summary-text); font-size: clamp(15px, 2.1vw, 18px); max-width: 860px; }
+    .hero-summary strong { color: var(--text); font-size: clamp(18px, 3vw, 28px); letter-spacing: -.035em; }
+
+    .badge-row, .tag-row, .metric-row { display: flex; flex-wrap: wrap; gap: 8px; min-width: 0; }
+    .badge, .tag {
+      display: inline-flex; align-items: center; gap: 5px; max-width: 100%; border-radius: 999px; padding: 7px 11px;
+      background: var(--accent-soft); color: var(--accent-strong); font-size: 12px; font-weight: 850; border: 1px solid color-mix(in srgb, var(--accent) 22%, transparent);
+    }
+    .badge.neutral, .tag.neutral { background: var(--surface-muted); color: var(--text-muted); border-color: var(--border); }
+    .badge.up, .tag.up { background: rgba(255, 107, 107, .13); color: var(--up); border-color: rgba(255,107,107,.20); }
+    .badge.down, .tag.down { background: rgba(96, 165, 250, .14); color: var(--down); border-color: rgba(96,165,250,.24); }
+
+    .section, .side-card { padding: clamp(18px, 3vw, 30px); }
+    .section-head { display: flex; flex-direction: column; gap: 7px; margin-bottom: clamp(14px, 2.4vw, 22px); }
+    .section-subtitle { max-width: 760px; }
+
+    .metric-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; margin-top: 8px; }
+    .metric-card { background: var(--surface-elevated); border: 1px solid var(--border); border-radius: var(--radius-md); padding: 13px; box-shadow: var(--shadow-soft); }
+    .metric-value { font-size: clamp(22px, 5vw, 32px); font-weight: 950; letter-spacing: -.045em; line-height: 1; margin-top: 5px; }
+
+    .stock-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 238px), 1fr)); gap: clamp(12px, 2vw, 18px); }
+    .company-grid, .chart-grid { display: grid; grid-template-columns: 1fr; gap: clamp(12px, 2vw, 18px); }
+    .factor-grid { display: grid; grid-template-columns: 1fr; gap: 12px; }
+    .stock-card, .company-card, .factor-card, .chart-card, .cycle-card, .news-card, .check-card, .metric-card, .report-card {
+      background: var(--surface-elevated); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: clamp(15px, 2.4vw, 20px); box-shadow: var(--shadow-soft);
+      transition: transform .22s cubic-bezier(.22, 1, .36, 1), box-shadow .22s ease, border-color .22s ease, background-color .22s ease, color .22s ease;
+      will-change: transform;
+    }
+    @media (hover: hover) and (pointer: fine) {
+      .stock-card:hover, .company-card:hover, .factor-card:hover, .news-card:hover, .metric-card:hover, .trend-card:hover, .check-item:hover { transform: translateY(-2px); border-color: color-mix(in srgb, var(--accent) 24%, var(--border)); box-shadow: 0 16px 38px rgba(15, 23, 42, .09); }
+    }
+    .stock-card:active, .company-card:active, .factor-card:active, .news-card:active, .metric-card:active, .check-item:active, .theme-toggle:active { transform: scale(.99); }
+    .stock-card { container-type: inline-size; display: grid; gap: 13px; }
+    .stock-top { display: flex; align-items: flex-start; justify-content: space-between; gap: 14px; }
+    .stock-name { font-size: clamp(18px, 4vw, 22px); font-weight: 950; letter-spacing: -.04em; word-break: keep-all; overflow-wrap: normal; }
+    .ticker { color: var(--text-muted); font-size: 12px; font-weight: 850; margin-top: 2px; }
+    .price-box { text-align: right; flex: 0 0 auto; }
+    .price { font-size: clamp(20px, 5vw, 28px); font-weight: 950; letter-spacing: -.045em; white-space: nowrap; line-height: 1.05; }
+    .change-line { font-size: 13px; font-weight: 900; white-space: nowrap; }
+    .up { color: var(--up); }
+    .down { color: var(--down); }
+    .stock-summary, .company-copy, .factor-copy, .cycle-copy { color: var(--summary-text); font-size: 15px; margin-top: 2px; line-height: 1.62; }
+
+    .mini-bars { display: grid; gap: 12px; }
+    .mini-bar-row { display: grid; grid-template-columns: minmax(0,1fr) auto; gap: 10px; align-items: center; font-size: 14px; }
+    .bar-track { grid-column: 1 / -1; height: 10px; border-radius: 999px; background: var(--bar-track); overflow: hidden; }
+    .bar-fill { height: 100%; border-radius: 999px; }
+    .bar-fill.up-bg { background: var(--up); }
+    .bar-fill.down-bg { background: var(--down); }
+
+    figure { margin: 0; }
+    .chart-card { overflow: hidden; }
+    .chart-card img { width: 100%; border-radius: 20px; background: var(--chart-bg); }
+    .native-chart-card { display: grid; gap: 14px; }
+    .chart-title-row { display:flex; justify-content:space-between; align-items:flex-start; gap:12px; margin-bottom:2px; flex-wrap:wrap; }
+    .chart-title-row h3 { margin:0; font-size: clamp(17px, 2vw, 22px); letter-spacing:-.03em; }
+    .chart-title-row span { flex:0 0 auto; font-size:12px; color:var(--text-muted); border:1px solid var(--border); border-radius:999px; padding:5px 9px; background:var(--surface-muted); }
+    .native-change-chart { display:grid; gap:12px; padding: 4px 0 2px; }
+    .change-row { display:grid; grid-template-columns:minmax(92px, 180px) minmax(120px, 1fr) 74px; gap:12px; align-items:center; }
+    .change-label { font-size:13px; font-weight:800; color:var(--text); }
+    .change-track { height:16px; border-radius:999px; background:var(--bar-track); overflow:hidden; box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--border) 72%, transparent); }
+    .change-track span { display:block; height:100%; border-radius:999px; background:var(--up); box-shadow:0 5px 16px color-mix(in srgb, var(--up) 22%, transparent); }
+    .change-row.down .change-track span { background:var(--down); box-shadow:0 5px 16px color-mix(in srgb, var(--down) 22%, transparent); }
+    .change-row strong { text-align:right; font-size:13px; color:var(--up); }
+    .change-row.down strong { color:var(--down); }
+    .native-trend-grid { display:grid; grid-template-columns:repeat(2, minmax(0, 1fr)); gap:16px; }
+    .market-trend-chart { gap:18px; padding:0; background:transparent; border:0; box-shadow:none; }
+    .market-trend-chart .chart-title-row { padding:0 2px; }
+    .trend-card { min-height:400px; border:1px solid var(--border); border-radius:22px; padding:clamp(18px, 2.3vw, 26px); background:linear-gradient(180deg, var(--surface-muted), color-mix(in srgb, var(--surface-elevated) 84%, transparent)); transition: transform .22s cubic-bezier(.22,1,.36,1), box-shadow .22s ease, border-color .22s ease; }
+    .market-trend-chart .trend-card { min-height:clamp(390px, 34vw, 510px); }
+    .market-trend-chart .trend-card:last-child:nth-child(odd) { grid-column:1 / -1; }
+    .trend-head, .trend-value, .trend-dates { display:flex; justify-content:space-between; align-items:center; gap:8px; }
+    .trend-head strong { font-size:15px; }
+    .trend-head span, .trend-dates { color:var(--text-muted); font-size:12px; }
+    .trend-value { margin-top:9px; }
+    .trend-value b { font-size:clamp(22px, 2vw, 30px); letter-spacing:-.04em; }
+    .trend-value em { font-style:normal; font-weight:900; color:var(--up); }
+    .trend-card.down .trend-value em { color:var(--down); }
+    .trend-svg { width:100%; height:clamp(245px, 26vw, 370px); margin:18px 0 5px; }
+    .market-trend-chart .trend-svg { height:clamp(270px, 27vw, 390px); }
+    .trend-svg polygon { fill: color-mix(in srgb, var(--up) 15%, transparent); }
+    .trend-card.down .trend-svg polygon { fill: color-mix(in srgb, var(--down) 15%, transparent); }
+    .trend-svg polyline { fill:none; stroke:var(--up); stroke-width:4; stroke-linecap:round; stroke-linejoin:round; }
+    .trend-card.down .trend-svg polyline { stroke:var(--down); }
+    .trend-svg circle { fill:var(--surface-elevated); stroke:var(--up); stroke-width:3; }
+    .trend-card.down .trend-svg circle { stroke:var(--down); }
+    .cycle-native-card { background:linear-gradient(180deg, var(--surface-elevated), color-mix(in srgb, var(--surface-muted) 72%, var(--surface-elevated))); }
+    .cycle-svg { width:100%; min-height:270px; }
+    .cycle-bg { fill:var(--surface-muted); stroke:var(--border); }
+    .zone-hot { fill:color-mix(in srgb, var(--up) 10%, transparent); }
+    .zone-mid { fill:rgba(245,158,11,.10); }
+    .zone-cool { fill:color-mix(in srgb, var(--down) 10%, transparent); }
+    .cycle-zero { stroke:var(--border); stroke-width:2; }
+    .cycle-wave { fill:none; stroke:var(--text); stroke-width:5; stroke-linecap:round; }
+    .cycle-node circle { fill:var(--accent); stroke:var(--surface-elevated); stroke-width:4; }
+    .cycle-node.hot circle, .current-dot { fill:var(--up); }
+    .cycle-node.cool circle { fill:var(--down); }
+    .cycle-node.warn circle { fill:#f59e0b; }
+    .cycle-node.purple circle { fill:#8b5cf6; }
+    .cycle-node.ok circle { fill:#10b981; }
+    .cycle-node text { fill:var(--text); font-size:13px; font-weight:800; }
+    .cycle-node .node-sub { fill:var(--text-muted); font-size:11px; font-weight:600; }
+    .current-line { stroke:var(--up); stroke-width:3; stroke-dasharray:8 8; }
+    .current-dot { stroke:var(--surface-elevated); stroke-width:5; }
+    .current-arrow { fill:none; stroke:var(--up); stroke-width:3; stroke-linecap:round; }
+    .current-callout { font: 14px/1.35 system-ui, sans-serif; border:1px solid color-mix(in srgb, var(--up) 48%, var(--border)); border-radius:16px; padding:11px 13px; color:var(--up); background:var(--surface-elevated); box-shadow:var(--shadow-soft); }
+    .current-callout strong { display:block; margin-bottom:3px; }
+    .evidence-box { display:grid; gap:8px; font: 13px/1.3 system-ui, sans-serif; color:var(--text); }
+    .evidence-box strong { font-size:18px; margin-bottom:3px; }
+    .evidence-box span { display:inline-flex; align-items:center; justify-content:center; border-radius:999px; padding:6px 10px; background:var(--text); color:var(--surface-elevated); font-weight:800; }
+    .cycle-label-hot { fill:var(--up); font-size:22px; font-weight:900; }
+    .cycle-label-cool { fill:var(--down); font-size:22px; font-weight:900; }
+    figcaption { margin-top: 10px; color: var(--text-muted); font-size: 13px; }
+
+    .cycle-card { display: grid; gap: clamp(14px, 2vw, 22px); }
+    .cycle-grid { display: grid; grid-template-columns: 1fr; gap: 10px; }
+    .cycle-point { background: var(--surface-muted); border: 1px solid var(--border); border-radius: var(--radius-md); padding: 13px; }
+    .cycle-point strong { display: block; margin-bottom: 4px; color: var(--text); }
+    details.detail-pack { border: 1px solid var(--border); border-radius: var(--radius-lg); background: var(--surface-muted); padding: 4px; transition: background-color .22s ease, border-color .22s ease, box-shadow .22s ease; }
+    details.detail-pack > summary { cursor: pointer; list-style: none; padding: 13px 14px; font-weight: 900; color: var(--text); }
+    details.detail-pack > summary::-webkit-details-marker { display: none; }
+    details.detail-pack > summary::after { content: "＋"; float: right; color: var(--accent-strong); }
+    details.detail-pack[open] > summary::after { content: "－"; }
+    .cycle-report { display: grid; gap: 12px; padding: 0 10px 12px; }
+    .report-card { border-radius: var(--radius-md); display: grid; gap: 8px; }
+    .report-field { display: grid; gap: 3px; font-size: 14px; line-height: 1.58; }
+    .report-field strong { color: var(--text-muted); font-size: 12px; }
+    .cycle-report table { display: block; width: 100%; border: 0; }
+    .cycle-report thead { display: none; }
+    .cycle-report tbody, .cycle-report tr, .cycle-report th, .cycle-report td { display: block; width: 100%; }
+
+    .company-card { display: grid; gap: 12px; }
+    .company-card .position { width: fit-content; }
+    .split-list { display: grid; gap: 8px; }
+    .split-list div { background: var(--surface-muted); border: 1px solid var(--border); border-radius: var(--radius-md); padding: 11px; font-size: 14px; }
+    .split-list strong { display: block; margin-bottom: 3px; color: var(--text); }
+    .checkpoint-row { display: flex; flex-wrap: wrap; gap: 8px; }
+
+    .factor-card { display: grid; gap: 8px; }
+    .factor-head, .macro-section-head { display:flex; align-items:flex-start; justify-content:space-between; gap:10px; }
+    .macro-section-head { flex-direction:row; }
+    .macro-live-status, .factor-asof { color:var(--text-muted); font-size:12px; font-weight:800; font-variant-numeric:tabular-nums; }
+    .macro-live-status { display:inline-flex; white-space:nowrap; border:1px solid var(--border); border-radius:999px; padding:5px 8px; background:var(--surface-muted); }
+    .live-dot { width:7px; height:7px; border-radius:999px; background:#16a34a; box-shadow:0 0 0 4px rgba(22,163,74,.12); animation: live-pulse 1.8s ease-in-out infinite; }
+    @keyframes live-pulse { 50% { transform:scale(.76); opacity:.62; } }
+    .macro-factor-card { min-height:164px; align-content:start; }
+    .factor-value { font-size: clamp(22px, 5vw, 30px); font-weight: 950; letter-spacing: -.045em; line-height: 1.05; }
+
+    .news-timeline { display: grid; gap: 10px; }
+    .news-card { position: relative; padding-left: 20px; }
+    .news-card::before { content: ""; position: absolute; left: 8px; top: 22px; width: 8px; height: 8px; border-radius: 999px; background: var(--accent-strong); box-shadow: 0 0 0 5px var(--accent-soft); }
+    .news-meta { color: var(--text-muted); font-size: 12px; margin-bottom: 5px; }
+    .news-title { display: block; font-size: 15px; font-weight: 850; line-height: 1.48; }
+    .news-desc { margin-top: 6px; color: var(--summary-text); font-size: 13px; }
+
+    .check-card { background: linear-gradient(180deg,var(--surface-elevated) 0%,var(--surface-muted) 100%); }
+    .check-list { display: grid; gap: 10px; margin: 12px 0 0; padding: 0; list-style: none; }
+    .check-item { display: grid; grid-template-columns: 26px minmax(0,1fr); gap: 11px; align-items: start; background: var(--surface-elevated); border: 1px solid var(--border); border-radius: var(--radius-md); padding: 13px; font-size: 15px; min-height: 48px; }
+    .check-box { width: 19px; height: 19px; border: 2px solid var(--accent-strong); border-radius: 7px; margin-top: 2px; background: var(--accent-soft); }
+    .footer-note { color: var(--text-muted); font-size: 12px; margin-top: 14px; }
+
+    @container (min-width: 360px) {
+      .stock-card { grid-template-rows: auto 1fr auto; }
+    }
+    @container (max-width: 280px) {
+      .stock-top { flex-direction: column; }
+      .price-box { text-align: left; }
+    }
+    @media (min-width: 720px) {
+      .metric-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+      .company-grid, .chart-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .factor-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .cycle-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    }
+    @media (min-width: 1100px) {
+      .dashboard-shell { grid-template-columns: minmax(0, 2fr) minmax(320px, .82fr); }
+      .side-column { align-self: start; padding-right: 2px; }
+      .hero-card { min-height: 360px; display: flex; align-items: end; }
+      .briefing-hero { min-height:auto; display:block; }
+      .side-column .section { padding: 20px; border-radius: 26px; }
+      .side-column h3 { font-size: 22px; }
+      .stock-grid { grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); }
+    }
+    @media (max-width: 720px) {
+      .market-stage { padding:18px; gap:16px; }
+      .market-stage-head { display:grid; align-items:start; }
+      .market-stage-status { justify-items:start; text-align:left; }
+      .native-trend-grid { grid-template-columns:1fr; }
+      .market-trend-chart .trend-card { min-height:360px; }
+      .market-trend-chart .trend-svg { height:250px; }
+    }
+    @media (max-width: 520px) {
+      main { width: min(100% - 24px, 100%); }
+      .metric-grid { grid-template-columns: 1fr; }
+      .stock-top { flex-direction: column; }
+      .price-box { text-align: left; }
+      .side-column { gap: 16px; }
+      .hero-card, .section { border-radius: 26px; }
+      .change-row { grid-template-columns:minmax(74px, 1fr) minmax(84px, 1fr) 58px; gap:8px; }
+      .change-label, .change-row strong { font-size:12px; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; scroll-behavior: auto !important; transition-duration: 0.01ms !important; }
+      .skeleton-line { animation: none !important; }
+    }
+  
+  </style>
+</head>
+<body class="is-loading">
+  <div class="skeleton-screen" aria-hidden="true">
+    <div class="skeleton-stack">
+      <div class="skeleton-card"><div class="skeleton-line short"></div><div class="skeleton-line long"></div><div class="skeleton-line mid"></div></div>
+      <div class="skeleton-card"><div class="skeleton-line mid"></div><div class="skeleton-line long"></div><div class="skeleton-line long"></div></div>
+      <div class="skeleton-card"><div class="skeleton-line short"></div><div class="skeleton-line mid"></div></div>
+    </div>
+  </div>
+  <main>
+    <div class="topbar">
+      <button class="theme-toggle" type="button" aria-label="다크모드 전환" aria-pressed="false" data-theme-toggle>
+        <span class="theme-icon" aria-hidden="true">🌙</span>
+        <span class="theme-label">다크모드</span>
+      </button>
+    </div>
+
+    <section class="market-stage" aria-labelledby="live-market-title">
+      <div class="market-stage-head">
+        <div class="market-stage-title">
+          <div class="eyebrow">LIVE MARKET CANVAS</div>
+          <h2 id="live-market-title">오늘의 가격 흐름</h2>
+          <p class="meta">보유 종목의 120분 실시간 흐름을 먼저 확인하세요.</p>
+        </div>
+        <div class="market-stage-status">
+          <p class="meta live-market-status" id="live-market-status" data-live-feed="https://js1876.github.io/daily-briefing/public/market-live.json" data-live-stream="https://expiration-infectious-boulevard-veteran.trycloudflare.com/api/v1/live-stream">실시간 체결 연결 준비 중</p>
+          <span class="badge neutral">토스증권 Open API</span>
+        </div>
+      </div>
+      <figure class="chart-card native-chart-card market-trend-chart">
+        <div class="chart-title-row"><h3>실시간 가격 흐름</h3><span>120분 · 틱 반영</span></div>
+        <div class="native-trend-grid">
+          <article class="trend-card up" data-live-trend-card="005930">
+            <div class="trend-head"><strong>삼성전자</strong><span>005930</span></div>
+            <div class="trend-value"><b class="num-animate" data-live-trend-price="005930">241,000원</b><em class="num-animate" data-live-trend-change="005930">+3.88%</em></div>
+            <svg class="trend-svg" data-live-trend="005930" viewBox="0 0 320 128" role="img" aria-label="삼성전자 최근 가격 흐름">
+              <polygon points="18.0,102.0 18.0,14.0 114.0,50.4 210.0,102.0 306.0,80.8 306.0,102.0" />
+              <polyline points="18.0,14.0 114.0,50.4 210.0,102.0 306.0,80.8" />
+              <circle cx="18.0" cy="14.0" r="4.4" /><circle cx="114.0" cy="50.4" r="4.4" /><circle cx="210.0" cy="102.0" r="4.4" /><circle cx="306.0" cy="80.8" r="4.4" />
+            </svg>
+            <div class="trend-dates" data-live-trend-dates="005930"><span>10/8</span><span>10/12</span><span>10/13</span><span>10/14</span></div>
+          </article>
+          <article class="trend-card up" data-live-trend-card="000660">
+            <div class="trend-head"><strong>SK하이닉스</strong><span>000660</span></div>
+            <div class="trend-value"><b class="num-animate" data-live-trend-price="000660">1.49백만원</b><em class="num-animate" data-live-trend-change="000660">+3.12%</em></div>
+            <svg class="trend-svg" data-live-trend="000660" viewBox="0 0 320 128" role="img" aria-label="SK하이닉스 최근 가격 흐름">
+              <polygon points="18.0,102.0 18.0,14.0 114.0,45.0 210.0,102.0 306.0,89.8 306.0,102.0" />
+              <polyline points="18.0,14.0 114.0,45.0 210.0,102.0 306.0,89.8" />
+              <circle cx="18.0" cy="14.0" r="4.4" /><circle cx="114.0" cy="45.0" r="4.4" /><circle cx="210.0" cy="102.0" r="4.4" /><circle cx="306.0" cy="89.8" r="4.4" />
+            </svg>
+            <div class="trend-dates" data-live-trend-dates="000660"><span>10/8</span><span>10/12</span><span>10/13</span><span>10/14</span></div>
+          </article>
+          <article class="trend-card up" data-live-trend-card="396500">
+            <div class="trend-head"><strong>TIGER 반도체TOP10</strong><span>396500</span></div>
+            <div class="trend-value"><b class="num-animate" data-live-trend-price="396500">33,780원</b><em class="num-animate" data-live-trend-change="396500">+2.07%</em></div>
+            <svg class="trend-svg" data-live-trend="396500" viewBox="0 0 320 128" role="img" aria-label="TIGER 반도체TOP10 최근 가격 흐름">
+              <polygon points="18.0,102.0 18.0,14.0 114.0,50.8 210.0,102.0 306.0,90.2 306.0,102.0" />
+              <polyline points="18.0,14.0 114.0,50.8 210.0,102.0 306.0,90.2" />
+              <circle cx="18.0" cy="14.0" r="4.4" /><circle cx="114.0" cy="50.8" r="4.4" /><circle cx="210.0" cy="102.0" r="4.4" /><circle cx="306.0" cy="90.2" r="4.4" />
+            </svg>
+            <div class="trend-dates" data-live-trend-dates="396500"><span>10/8</span><span>10/12</span><span>10/13</span><span>10/14</span></div>
+          </article></div>
+      </figure>
+    </section>
+
+    <div class="dashboard-shell">
+      <div class="main-column">
+        <header class="hero-card briefing-hero">
+          <div class="hero-content">
+            <div class="eyebrow">DAILY SEMICONDUCTOR BRIEFING</div>
+            <h1>일일 포트폴리오 브리핑</h1>
+            <p class="meta">작성일: 2026-10-14 KST · 가격 확인: 2026-10-14 09:31 KST · 표시 가격: 조회 시점 최신가</p>
+            <div class="badge-row" aria-label="오늘 요약 지표">
+              <span class="badge up">상승 3</span>
+              <span class="badge down">하락 0</span>
+              <span class="badge up">최대 변동 삼성전자 +3.88%</span>
+              <span class="badge neutral">반도체 사이클 점검</span>
+            </div>
+            <p class="hero-summary"><strong>반등은 왔지만 검증 필요</strong></p>
+            <p class="hero-summary">전일 급락 뒤 삼성전자·SK하이닉스가 +3%대 기술적 반등을 보이고 있으나, 간밤 SOX와 미국 AI 반도체주 약세·원화 약세·유가 상승이 추세 복귀를 제한합니다.</p>
+            
+      <div class="metric-grid dashboard-metrics">
+        <article class="metric-card">
+          <div class="card-label">상승 종목</div>
+          <div class="metric-value up num-animate">3</div>
+          <p class="muted">포트폴리오 내 상승 마감</p>
+        </article>
+        <article class="metric-card">
+          <div class="card-label">하락 종목</div>
+          <div class="metric-value down num-animate">0</div>
+          <p class="muted">포트폴리오 내 하락 마감</p>
+        </article>
+        <article class="metric-card">
+          <div class="card-label">최대 변동</div>
+          <div class="metric-value up num-animate">+3.88%</div>
+          <p class="muted">삼성전자 · 상승 삼성전자 +3.88% / 하락 TIGER 반도체TOP10 +2.07%</p>
+        </article>
+      </div>
+          </div>
+        </header>
+
+        <section class="section" aria-labelledby="stocks-title">
+          <div class="section-head">
+            <div class="section-kicker">Portfolio</div>
+            <h2 id="stocks-title">오늘의 종목 브리핑</h2>
+            <p class="meta section-subtitle">가격표 대신 종목별 앱 카드로 현재가, 등락, 핵심 태그와 한 줄 해석을 먼저 보여줍니다.</p>
+          </div>
+          <div class="stock-grid">
+        <article class="stock-card" data-live-card="396500">
+          <div class="stock-top">
+            <div>
+              <h3 class="stock-name">TIGER 반도체TOP10</h3>
+              <div class="ticker">396500</div>
+            </div>
+            <div class="price-box">
+              <div class="price num-animate" data-live-price="396500">33,780원</div>
+              <div class="change-line up" data-live-change="396500">+685원 · +2.07%</div>
+            </div>
+          </div>
+          <div class="tag-row"><span class="tag neutral">반도체 ETF</span><span class="tag neutral">대형주</span><span class="tag neutral">분산</span><span class="tag direction-tag up" data-live-direction-label="396500">▲ 전일 종가 상승</span></div>
+          <p class="stock-summary" data-live-summary="396500">전일 종가 기준 상승 마감했습니다. 반도체 대형주 흐름을 묶어서 보는 섹터 온도계 역할입니다.</p>
+        </article>
+
+        <article class="stock-card" data-live-card="005930">
+          <div class="stock-top">
+            <div>
+              <h3 class="stock-name">삼성전자</h3>
+              <div class="ticker">005930</div>
+            </div>
+            <div class="price-box">
+              <div class="price num-animate" data-live-price="005930">241,000원</div>
+              <div class="change-line up" data-live-change="005930">+9,000원 · +3.88%</div>
+            </div>
+          </div>
+          <div class="tag-row"><span class="tag neutral">HBM 추격</span><span class="tag neutral">NAND</span><span class="tag neutral">파운드리</span><span class="tag direction-tag up" data-live-direction-label="005930">▲ 전일 종가 상승</span></div>
+          <p class="stock-summary" data-live-summary="005930">전일 종가 기준 상승 마감했습니다. HBM·NAND·파운드리 회복 기대와 수급 변화를 함께 확인할 종목입니다.</p>
+        </article>
+
+        <article class="stock-card" data-live-card="000660">
+          <div class="stock-top">
+            <div>
+              <h3 class="stock-name">SK하이닉스</h3>
+              <div class="ticker">000660</div>
+            </div>
+            <div class="price-box">
+              <div class="price num-animate" data-live-price="000660">1,488,000원</div>
+              <div class="change-line up" data-live-change="000660">+45,000원 · +3.12%</div>
+            </div>
+          </div>
+          <div class="tag-row"><span class="tag neutral">HBM 순도</span><span class="tag neutral">AI 서버</span><span class="tag neutral">DRAM</span><span class="tag direction-tag up" data-live-direction-label="000660">▲ 전일 종가 상승</span></div>
+          <p class="stock-summary" data-live-summary="000660">전일 종가 기준 상승 마감했습니다. HBM 노출도가 높아 AI 메모리 사이클을 가장 직접적으로 반영합니다.</p>
+        </article>
+          </div>
+        </section>
+
+        <section class="section" aria-labelledby="visual-title">
+          <div class="section-head">
+            <div class="section-kicker">Snapshot</div>
+            <h2 id="visual-title">오늘의 변동 폭</h2>
+            <p class="meta section-subtitle">실시간 그래프 아래에서 등락폭을 짧게 비교합니다.</p>
+          </div>
+          <div class="chart-grid">
+            
+      <figure class="chart-card native-chart-card">
+        <div class="chart-title-row"><h3>전 거래일 대비 변동률</h3><span>기준 2026-10-14</span></div>
+        <div class="native-change-chart" role="img" aria-label="전 거래일 대비 변동률 막대 차트">
+          
+          <div class="change-row up" data-live-change-row="396500">
+            <div class="change-label">TIGER 반도체TOP10</div>
+            <div class="change-track" aria-hidden="true"><span data-live-change-bar="396500" style="width:53.4%"></span></div>
+            <strong class="num-animate" data-live-change-pct="396500">+2.07%</strong>
+          </div>
+          <div class="change-row up" data-live-change-row="000660">
+            <div class="change-label">SK하이닉스</div>
+            <div class="change-track" aria-hidden="true"><span data-live-change-bar="000660" style="width:80.4%"></span></div>
+            <strong class="num-animate" data-live-change-pct="000660">+3.12%</strong>
+          </div>
+          <div class="change-row up" data-live-change-row="005930">
+            <div class="change-label">삼성전자</div>
+            <div class="change-track" aria-hidden="true"><span data-live-change-bar="005930" style="width:100.0%"></span></div>
+            <strong class="num-animate" data-live-change-pct="005930">+3.88%</strong>
+          </div>
+        </div>
+        <figcaption>이미지 없이 HTML/CSS 막대로 직접 렌더링한 변동률 차트입니다.</figcaption>
+      </figure>
+          </div>
+        </section>
+
+        <section class="section" aria-labelledby="cycle-title">
+          <div class="section-head">
+            <div class="section-kicker">Cycle Check</div>
+            <h2 id="cycle-title">사이클 진단</h2>
+            <p class="meta section-subtitle">모바일에서는 요약을 먼저 보고, 상세 근거는 접어서 확인하는 구조입니다.</p>
+          </div>
+          <article class="cycle-card">
+            
+      <figure class="chart-card native-chart-card cycle-native-card">
+        <div class="chart-title-row"><h3>반도체 메모리 사이클 위치 추정</h3><span>SVG native</span></div>
+        <svg class="cycle-svg" viewBox="0 0 920 430" role="img" aria-label="반도체 메모리 사이클 위치 추정 다이어그램">
+          <rect x="24" y="42" width="690" height="326" rx="28" class="cycle-bg" />
+          <rect x="24" y="42" width="690" height="122" rx="28" class="zone-hot" />
+          <rect x="24" y="164" width="690" height="102" class="zone-mid" />
+          <rect x="24" y="266" width="690" height="102" rx="28" class="zone-cool" />
+          <line x1="42" y1="205" x2="696" y2="205" class="cycle-zero" />
+          <polyline class="cycle-wave" points="56.0,205.0 59.4,200.7 62.8,196.5 66.2,192.2 69.6,188.0 72.9,183.8 76.3,179.6 79.7,175.5 83.1,171.4 86.5,167.3 89.9,163.3 93.3,159.3 96.7,155.4 100.1,151.5 103.4,147.7 106.8,144.0 110.2,140.3 113.6,136.8 117.0,133.3 120.4,129.9 123.8,126.6 127.2,123.4 130.6,120.3 133.9,117.2 137.3,114.3 140.7,111.5 144.1,108.9 147.5,106.3 150.9,103.9 154.3,101.5 157.7,99.3 161.1,97.3 164.4,95.3 167.8,93.5 171.2,91.9 174.6,90.4 178.0,89.0 181.4,87.7 184.8,86.6 188.2,85.7 191.6,84.9 194.9,84.2 198.3,83.7 201.7,83.3 205.1,83.1 208.5,83.0 211.9,83.1 215.3,83.3 218.7,83.7 222.1,84.2 225.4,84.9 228.8,85.7 232.2,86.6 235.6,87.7 239.0,89.0 242.4,90.4 245.8,91.9 249.2,93.5 252.6,95.3 255.9,97.3 259.3,99.3 262.7,101.5 266.1,103.9 269.5,106.3 272.9,108.9 276.3,111.5 279.7,114.3 283.1,117.2 286.4,120.3 289.8,123.4 293.2,126.6 296.6,129.9 300.0,133.3 303.4,136.8 306.8,140.3 310.2,144.0 313.6,147.7 316.9,151.5 320.3,155.4 323.7,159.3 327.1,163.3 330.5,167.3 333.9,171.4 337.3,175.5 340.7,179.6 344.1,183.8 347.4,188.0 350.8,192.2 354.2,196.5 357.6,200.7 361.0,205.0 364.4,209.3 367.8,213.5 371.2,217.8 374.6,222.0 377.9,226.2 381.3,230.4 384.7,234.5 388.1,238.6 391.5,242.7 394.9,246.7 398.3,250.7 401.7,254.6 405.1,258.5 408.4,262.3 411.8,266.0 415.2,269.7 418.6,273.2 422.0,276.7 425.4,280.1 428.8,283.4 432.2,286.6 435.6,289.7 438.9,292.8 442.3,295.7 445.7,298.5 449.1,301.1 452.5,303.7 455.9,306.1 459.3,308.5 462.7,310.7 466.1,312.7 469.4,314.7 472.8,316.5 476.2,318.1 479.6,319.6 483.0,321.0 486.4,322.3 489.8,323.4 493.2,324.3 496.6,325.1 499.9,325.8 503.3,326.3 506.7,326.7 510.1,326.9 513.5,327.0 516.9,326.9 520.3,326.7 523.7,326.3 527.1,325.8 530.4,325.1 533.8,324.3 537.2,323.4 540.6,322.3 544.0,321.0 547.4,319.6 550.8,318.1 554.2,316.5 557.6,314.7 560.9,312.7 564.3,310.7 567.7,308.5 571.1,306.1 574.5,303.7 577.9,301.1 581.3,298.5 584.7,295.7 588.1,292.8 591.4,289.7 594.8,286.6 598.2,283.4 601.6,280.1 605.0,276.7 608.4,273.2 611.8,269.7 615.2,266.0 618.6,262.3 621.9,258.5 625.3,254.6 628.7,250.7 632.1,246.7 635.5,242.7 638.9,238.6 642.3,234.5 645.7,230.4 649.1,226.2 652.4,222.0 655.8,217.8 659.2,213.5 662.6,209.3 666.0,205.0" />
+          <g class="cycle-node ok"><circle cx="86.5" cy="167.3" r="7"/><text x="86.5" y="137.3" text-anchor="middle"><tspan class="node-title">회복</tspan><tspan x="86.5" dy="16" class="node-sub">재고 감소</tspan></text></g><g class="cycle-node warn"><circle cx="141.4" cy="111.0" r="7"/><text x="141.4" y="81.0" text-anchor="middle"><tspan class="node-title">가격 상승</tspan><tspan x="141.4" dy="16" class="node-sub">ASP 개선</tspan></text></g><g class="cycle-node hot"><circle cx="208.5" cy="83.0" r="7"/><text x="208.5" y="53.0" text-anchor="middle"><tspan class="node-title">실적 호황</tspan><tspan x="208.5" dy="16" class="node-sub">이익 폭증</tspan></text></g><g class="cycle-node purple"><circle cx="287.8" cy="121.5" r="7"/><text x="287.8" y="91.5" text-anchor="middle"><tspan class="node-title">CAPEX</tspan><tspan x="287.8" dy="16" class="node-sub">공급 준비</tspan></text></g><g class="cycle-node hot"><circle cx="361.0" cy="205.0" r="7"/><text x="361.0" y="247.0" text-anchor="middle"><tspan class="node-title">피크 경계</tspan><tspan x="361.0" dy="16" class="node-sub">선반영 점검</tspan></text></g><g class="cycle-node cool"><circle cx="458.6" cy="308.0" r="7"/><text x="458.6" y="350.0" text-anchor="middle"><tspan class="node-title">가격 하락</tspan><tspan x="458.6" dy="16" class="node-sub">과잉 공급</tspan></text></g><g class="cycle-node cool"><circle cx="513.5" cy="327.0" r="7"/><text x="513.5" y="369.0" text-anchor="middle"><tspan class="node-title">불황 저점</tspan><tspan x="513.5" dy="16" class="node-sub">감산</tspan></text></g><g class="cycle-node ok"><circle cx="598.9" cy="282.8" r="7"/><text x="598.9" y="324.8" text-anchor="middle"><tspan class="node-title">회복 준비</tspan><tspan x="598.9" dy="16" class="node-sub">재고 소진</tspan></text></g>
+          <line x1="187.2" y1="344" x2="187.2" y2="85.9" class="current-line" />
+          <circle class="current-dot" cx="187.2" cy="85.9" r="13" />
+          <path class="current-arrow" d="M 205.2 67.9 C 259.1 -8.1, 317.1 78, 373.1 72" />
+          <foreignObject x="377.1" y="38" width="245" height="96"><div xmlns="http://www.w3.org/1999/xhtml" class="current-callout"><strong>현재 위치</strong><span>호황 중반~후반 진입<br/>약 3.5~4.5단계</span></div></foreignObject>
+          <foreignObject x="720" y="58" width="176" height="226"><div xmlns="http://www.w3.org/1999/xhtml" class="evidence-box"><strong>판단 근거</strong><span>가격</span><span>실적</span><span>밸류</span><span>수급</span><span>CAPEX</span></div></foreignObject>
+          <text x="370" y="30" text-anchor="middle" class="cycle-label-hot">호황</text>
+          <text x="370" y="404" text-anchor="middle" class="cycle-label-cool">불황</text>
+        </svg>
+        <figcaption>메모리 사이클은 회복 초입이 아니라 가격 상승과 실적 호황을 지난 중후반부입니다. HBM 공급 부족은 중장기 지지 요인이지만 주가 선반영, CAPEX 확대, 환율·금리·유가 충격에는 민감합니다.</figcaption>
+      </figure>
+            <div class="cycle-grid">
+              <div class="cycle-point"><strong>현재 구간</strong><span>반등은 왔지만 검증 필요</span></div>
+              <div class="cycle-point"><strong>판단</strong><span>AI·HBM 메모리 사이클은 호황 중반~후반을 유지하지만, 오늘 반등은 전일 과매도 해소 성격이 커서 24만원·150만원 안착과 외국인 수급 회복 확인이 필요합니다.</span></div>
+              <div class="cycle-point"><strong>근거</strong><span>가격 흐름, HBM 수요, 수급, 환율·금리·유가를 함께 확인합니다.</span></div>
+              <div class="cycle-point"><strong>주의점</strong><span>급등 후 추격보다 장중 수급과 매크로 변화를 먼저 봅니다.</span></div>
+            </div>
+            <details class="detail-pack cycle-detail">
+              <summary>상세 분석 카드 펼치기</summary>
+              <div class="cycle-report">
+                <h3>1. 요약</h3>
+<p><strong>오늘 오전의 핵심은 ‘전일 급락 뒤 기술적 반등은 강하지만, 글로벌 AI·반도체는 아직 차익실현 압력이 남아 있는 구간’입니다.</strong> 간밤 미국 증시는 S&amp;P500 -0.02%, 나스닥 -0.15%, 다우 -0.35%로 약보합권이었고 필라델피아 반도체지수도 -0.23%로 추가 하락했습니다. 다만 국내 장 초반 삼성전자와 SK하이닉스는 전일 과매도 이후 각각 +3.99%, +3.12% 반등하며 저점 방어를 시도하고 있습니다.</p>
+<p>메모리 사이클은 AI 서버·HBM·고성능 DRAM 수요가 공급자 우위 가격을 지지하는 호황 중반~후반부로 봅니다. 단, 마이크론 -3.88%, AMD -2.28%, TSMC -1.98%, 엔비디아 -1.29% 등 글로벌 AI 공급망 대표주가 직전 거래일 약세를 보였고, 원/달러가 1,339원대로 되오른 점은 외국인 수급 회복을 제한할 수 있습니다.</p>
+<article class="report-card"><div class="report-field"><strong>구분</strong><span>미국 증시</span></div><div class="report-field"><strong>최신 신호</strong><span>S&amp;P500 -0.02%, 나스닥 -0.15%, 다우 -0.35%</span></div><div class="report-field"><strong>국내 반도체 영향</strong><span>지수 충격은 제한적이나 성장주 차익실현은 지속</span></div></article><article class="report-card"><div class="report-field"><strong>구분</strong><span>글로벌 반도체</span></div><div class="report-field"><strong>최신 신호</strong><span>SOX -0.23%, 마이크론 -3.88%, 엔비디아 -1.29%</span></div><div class="report-field"><strong>국내 반도체 영향</strong><span>HBM·메모리 펀더멘털보다 단기 포지션 정리가 우세</span></div></article><article class="report-card"><div class="report-field"><strong>구분</strong><span>국내 대형주</span></div><div class="report-field"><strong>최신 신호</strong><span>삼성전자 241,250원 +3.99%, SK하이닉스 1,488,000원 +3.12%</span></div><div class="report-field"><strong>국내 반도체 영향</strong><span>전일 급락 뒤 저점 매수 유입, 추세 복귀 여부는 마감가가 관건</span></div></article><article class="report-card"><div class="report-field"><strong>구분</strong><span>환율·금리</span></div><div class="report-field"><strong>최신 신호</strong><span>원/달러 약 1,339.6원, 미국 10년물 약 5.22%</span></div><div class="report-field"><strong>국내 반도체 영향</strong><span>금리 완화는 일부 긍정적이나 원화 약세는 외국인 매수 부담</span></div></article><article class="report-card"><div class="report-field"><strong>구분</strong><span>유가·지정학</span></div><div class="report-field"><strong>최신 신호</strong><span>WTI 약 94.9달러, 중동 해상 리스크 보도</span></div><div class="report-field"><strong>국내 반도체 영향</strong><span>인플레이션 기대와 제조업 비용 부담을 통해 멀티플 상단 제한</span></div></article>
+
+<h3>2. 반도체 사이클 진단</h3>
+<p>현재 사이클 위치는 <strong>공급 부족 → 가격 상승 → 실적 호황 → 주가 선반영</strong>이 겹친 호황 중반~후반부입니다. DRAM과 HBM은 AI 서버 수요가 강하고 고부가 제품의 공급 병목이 가격 협상력을 높이는 단계지만, 주가는 이미 이익 개선을 선반영해 글로벌 AI주 조정과 금리·환율 변화에 민감합니다.</p>
+<ul><li><strong>DRAM/HBM:</strong> HBM은 삼성전자·SK하이닉스의 이익 전망을 지지하는 핵심 축입니다. 다만 전일 국내 급락과 간밤 SOX 약세는 업황 훼손보다 ‘강한 호황을 이미 반영한 가격의 숨고르기’ 성격이 큽니다.</li><li><strong>NAND:</strong> 엔터프라이즈 SSD와 AI 스토리지 수요는 회복에 우호적이나, 주가 설명력은 여전히 HBM·고성능 DRAM보다 낮습니다.</li><li><strong>CAPEX:</strong> 호황 기대가 장비·증설 투자 확대로 이어질수록 장기 공급 증가 리스크도 커집니다. 지금은 가격 상승 수혜를 누리되 피크아웃 신호를 선제적으로 점검할 구간입니다.</li><li><strong>가격 신호:</strong> 전일 삼성전자 -6.59%, SK하이닉스 -9.28% 급락 뒤 오늘 +3%대 반등은 과매도 해소입니다. 추세 회복으로 보려면 오후장까지 거래대금이 유지되고 전일 낙폭의 절반 이상을 회복해야 합니다.</li></ul>
+
+<h3>3. 기업별 상대 비교 분석</h3>
+<article class="report-card"><div class="report-field"><strong>종목</strong><span>삼성전자</span></div><div class="report-field"><strong>오전 확인가</strong><span>241,250원, +3.99%</span></div><div class="report-field"><strong>해석</strong><span>범용 메모리·파운드리·모바일이 섞인 종합 반도체 성격입니다. HBM 후발 모멘텀과 범용 DRAM 가격 회복이 동시에 확인될 때 리레이팅 폭이 커집니다.</span></div><div class="report-field"><strong>체크포인트</strong><span>24만원 회복 안착, HBM 공급 확대 뉴스, 외국인 순매수 전환</span></div></article><article class="report-card"><div class="report-field"><strong>종목</strong><span>SK하이닉스</span></div><div class="report-field"><strong>오전 확인가</strong><span>1,488,000원, +3.12%</span></div><div class="report-field"><strong>해석</strong><span>HBM 순도와 이익 민감도가 가장 높아 호황 수혜가 크지만, 글로벌 AI주 조정 때 낙폭도 커지는 고베타 성격입니다.</span></div><div class="report-field"><strong>체크포인트</strong><span>150만원 재돌파, 전일 저점 142.5만원 방어, 마이크론 약세 영향 소화</span></div></article><article class="report-card"><div class="report-field"><strong>종목</strong><span>TIGER 반도체TOP10</span></div><div class="report-field"><strong>오전 확인가</strong><span>33,820원, +2.19%</span></div><div class="report-field"><strong>해석</strong><span>대형 메모리와 소부장·장비를 함께 반영하는 섹터 베타 상품으로, 개별 종목보다 리스크 분산에 유리합니다.</span></div><div class="report-field"><strong>체크포인트</strong><span>33,800~34,000원대 안착, 삼성전자·하이닉스 동반 회복 여부</span></div></article>
+<p>상대적으로는 <strong>SK하이닉스는 HBM 순도 높은 공격형, 삼성전자는 후발 모멘텀과 방어력이 섞인 확인형</strong>입니다. 오늘 반등장에서 추격 우선순위는 상승률 자체보다 전일 저점 대비 회복률, 거래대금, 외국인 수급 변화로 판단합니다.</p>
+
+<h3>4. 매크로 및 리스크 팩터 분석</h3>
+<ul><li><strong>간밤 글로벌 이슈:</strong> Investing.com은 나스닥이 은행 실적과 반도체주 하락 속 약세 마감했다고 전했습니다. 지수 하락폭은 작았지만 AI·반도체 대표주의 조정이 국내 대형 메모리주 심리에 직접 영향을 줍니다.</li><li><strong>금리:</strong> 미국 10년물은 약 5.22%로 소폭 하락해 할인율 부담은 전일보다 완화됐습니다. 그러나 절대 레벨은 여전히 높아 고PER AI 밸류체인에는 멀티플 상단 제약입니다.</li><li><strong>환율:</strong> 원/달러가 약 1,339.6원으로 다시 상승했습니다. 반도체 수출주 실적 환산에는 우호적이나, 외국인 입장에서는 원화 약세가 환차손 경계와 순매수 지연 요인이 될 수 있습니다.</li><li><strong>유가·지정학:</strong> WTI는 약 94.9달러로 상승했고, 중동 해상·공급 불확실성 관련 뉴스가 유가 프리미엄을 키웠습니다. 유가 재상승은 인플레이션 기대와 금리 경로를 통해 국내 성장주에 부담입니다.</li><li><strong>정책·규제:</strong> 미·중 반도체 수출 규제, AI 가속기 통제, 공급망 보조금·관세 변화는 HBM 주문과 장비 투자 심리에 계속 영향을 주는 상수 리스크입니다.</li></ul>
+
+<h3>5. 실전 투자 체크리스트</h3>
+<ol><li>오늘 반등은 ‘전일 과매도 회복’ 성격이 강하므로, 오전 고점 돌파보다 <strong>마감가가 24만원·150만원 근처에서 유지되는지</strong>를 우선 확인합니다.</li><li>삼성전자와 SK하이닉스가 동반 상승하더라도 TIGER 반도체TOP10의 회복률이 뒤처지면 소부장·장비까지 온기가 확산되지 않은 것으로 봅니다.</li><li>원/달러가 1,340원 위로 재상승하고 외국인 매도가 이어지면 반등 추격보다 기존 보유분의 손익분기·비중 관리가 우선입니다.</li><li>마이크론·엔비디아·SOX가 다음 거래일 반등하지 못하면 국내 HBM주는 실적 기대와 별개로 글로벌 포지션 축소 압력을 다시 받을 수 있습니다.</li><li>WTI 95달러 전후와 10년물 5.2%대가 동시에 유지되는 동안은 밸류에이션 상단을 보수적으로 잡고 분할 매수·분할 매도 원칙을 적용합니다.</li></ol>
+              </div>
+            </details>
+          </article>
+        </section>
+
+        <section class="section" aria-labelledby="company-title">
+          <div class="section-head">
+            <div class="section-kicker">Company</div>
+            <h2 id="company-title">기업별 분석</h2>
+            <p class="meta section-subtitle">비교표 대신 각 기업의 포지션, 강점, 리스크, 체크포인트를 독립 카드로 정리했습니다.</p>
+          </div>
+          <div class="company-grid">
+        <article class="company-card">
+          <div>
+            <h3>삼성전자</h3>
+            <div class="badge neutral position">HBM 추격형 · 복합 회복형</div>
+          </div>
+          <div class="checkpoint-row" aria-label="핵심 체크포인트"><span class="tag">HBM 수주</span><span class="tag">저가 매수</span><span class="tag">파운드리 손익</span></div>
+          <div class="split-list">
+            <div><strong>강점</strong>메모리, NAND, 파운드리까지 회복 레버리지가 넓습니다.</div>
+            <div><strong>리스크</strong>HBM 경쟁력 확인과 파운드리 부담이 같이 남아 있습니다.</div>
+          </div>
+          <details class="detail-pack company-detail">
+            <summary>오늘의 해석 자세히 보기</summary>
+            <div class="split-list">
+              <div><strong>오늘의 해석</strong>오늘 변동률은 +3.88%입니다. 시총 약 1561조원, Forward PE 3.32 기준으로 추세 지속성을 점검합니다.</div>
+            </div>
+          </details>
+        </article>
+
+        <article class="company-card">
+          <div>
+            <h3>SK하이닉스</h3>
+            <div class="badge neutral position">HBM 순도 우위</div>
+          </div>
+          <div class="checkpoint-row" aria-label="핵심 체크포인트"><span class="tag">HBM 가격</span><span class="tag">거래대금</span><span class="tag">고객 다변화</span></div>
+          <div class="split-list">
+            <div><strong>강점</strong>AI 서버와 HBM 사이클을 가장 직접적으로 반영합니다.</div>
+            <div><strong>리스크</strong>급등 후 밸류에이션 부담과 CAPEX 확대 속도를 확인해야 합니다.</div>
+          </div>
+          <details class="detail-pack company-detail">
+            <summary>오늘의 해석 자세히 보기</summary>
+            <div class="split-list">
+              <div><strong>오늘의 해석</strong>오늘 변동률은 +3.12%입니다. 시총 약 1055조원, Forward PE 3.16 기준으로 추세 지속성을 점검합니다.</div>
+            </div>
+          </details>
+        </article>
+          </div>
+        </section>
+      </div>
+
+      <aside class="side-column" aria-label="요약, 매크로, 뉴스, 액션 사이드 패널">
+        <section class="section side-card" aria-labelledby="momentum-title">
+          <div class="section-head">
+            <div class="section-kicker">Snapshot</div>
+            <h3 id="momentum-title">요약 지표</h3>
+          </div>
+          <div class="mini-bars">
+        <div class="mini-bar-row">
+          <strong>삼성전자</strong>
+          <span class="up num-animate">▲ +3.88%</span>
+          <div class="bar-track"><div class="bar-fill up-bg" style="width: 100%"></div></div>
+        </div>
+
+        <div class="mini-bar-row">
+          <strong>SK하이닉스</strong>
+          <span class="up num-animate">▲ +3.12%</span>
+          <div class="bar-track"><div class="bar-fill up-bg" style="width: 80%"></div></div>
+        </div>
+
+        <div class="mini-bar-row">
+          <strong>TIGER 반도체TOP10</strong>
+          <span class="up num-animate">▲ +2.07%</span>
+          <div class="bar-track"><div class="bar-fill up-bg" style="width: 53%"></div></div>
+        </div>
+          </div>
+        </section>
+
+        <section class="section side-card" aria-labelledby="macro-title">
+          <div class="section-head macro-section-head">
+            <div><div class="section-kicker">Live Macro</div><h3 id="macro-title">매크로 팩터</h3></div>
+            <span class="macro-live-status" id="live-macro-status">5초 갱신 준비 중</span>
+          </div>
+          <div class="factor-grid">
+        <article class="factor-card macro-factor-card up" data-live-macro="USD_KRW">
+          <div class="factor-head"><div class="card-label">원/달러</div><span class="live-dot" aria-hidden="true"></span></div>
+          <div class="factor-value num-animate" data-live-macro-value="USD_KRW">1339.98원</div>
+          <div class="change-line up num-animate" data-live-macro-change="USD_KRW">+0.44%</div>
+          <p class="factor-copy">외국인 수급과 반도체 대형주 투자심리에 직접 영향을 줍니다.</p>
+          <div class="factor-asof" data-live-macro-asof="USD_KRW">라이브 연결 준비 중</div>
+        </article>
+
+        <article class="factor-card macro-factor-card down" data-live-macro="KOSPI">
+          <div class="factor-head"><div class="card-label">KOSPI</div><span class="live-dot" aria-hidden="true"></span></div>
+          <div class="factor-value num-animate" data-live-macro-value="KOSPI">6152.57</div>
+          <div class="change-line down num-animate" data-live-macro-change="KOSPI">-3.63%</div>
+          <p class="factor-copy">국내 대형주 수급과 위험자산 선호를 보여줍니다.</p>
+          <div class="factor-asof" data-live-macro-asof="KOSPI">라이브 연결 준비 중</div>
+        </article>
+
+        <article class="factor-card macro-factor-card up" data-live-macro="KOSDAQ">
+          <div class="factor-head"><div class="card-label">KOSDAQ</div><span class="live-dot" aria-hidden="true"></span></div>
+          <div class="factor-value num-animate" data-live-macro-value="KOSDAQ">조회 제한</div>
+          <div class="change-line up num-animate" data-live-macro-change="KOSDAQ">조회 제한</div>
+          <p class="factor-copy">성장주·중소형주 위험 선호를 확인합니다.</p>
+          <div class="factor-asof" data-live-macro-asof="KOSDAQ">라이브 연결 준비 중</div>
+        </article>
+
+        <article class="factor-card macro-factor-card down" data-live-macro="KR_BOND_10Y">
+          <div class="factor-head"><div class="card-label">국고채 10년</div><span class="live-dot" aria-hidden="true"></span></div>
+          <div class="factor-value num-animate" data-live-macro-value="KR_BOND_10Y">5.22%</div>
+          <div class="change-line down num-animate" data-live-macro-change="KR_BOND_10Y">-0.44%</div>
+          <p class="factor-copy">장기금리는 성장주·AI 반도체의 할인율을 좌우합니다.</p>
+          <div class="factor-asof" data-live-macro-asof="KR_BOND_10Y">라이브 연결 준비 중</div>
+        </article>
+          </div>
+        </section>
+
+        <section class="section side-card" aria-labelledby="news-title">
+          <div class="section-head">
+            <div class="section-kicker">News</div>
+            <h3 id="news-title">뉴스 타임라인</h3>
+            <p class="meta">KST 기준 2026-10-14 발행분입니다.</p>
+          </div>
+          <div class="news-timeline">
+        <article class="news-card">
+          <div class="news-meta">09:20 · 연합뉴스 · SK하이닉스</div>
+          <a class="news-title" href="https://news.google.com/rss/articles/CBMiW0FVX3lxTE5LMWgwVHZoU0FMSV9OU2lNbUp1a3NNcHNYNnUwbWpuaEoyWndHc25vUkFRMHVfMEhEd3JmTWVWVVFDYWNpc1p4Mm1IT2EzX1NsVmFSQUNxNVNUblHSAWBBVV95cUxNc3hJN1J5Z0ZCQzFCN1lGSjNhcXZIVjhsRUpFeThxWUhqNjczbUl2dW43TUpDRFQtZjBvYTAzdTF1ODJ6TFAzNHhERF90V1REOEV4YTlRQXdROVNuc1VhbHA?oc=5" target="_blank" rel="noopener noreferrer">[특징주] 삼전·닉스, 전날 급락 딛고 장초반 2∼3%대 상승 - 연합뉴스</a>
+        </article>
+
+        <article class="news-card">
+          <div class="news-meta">09:09 · 연합인포맥스 · 삼성전자</div>
+          <a class="news-title" href="https://news.google.com/rss/articles/CBMicEFVX3lxTE1paUZEWGVwekpuYWhkSTVWTTFUUWtiQTBtWW9xZkRZb3JfXzlHWThoZi1KMU1ndHhCNHpCUm91VjN1RXVvUGhydm5tN3QwSU5wQy1nejNaVVhSMXJFenBFNTB3a09BZWNqRHZsMmdwTmo?oc=5" target="_blank" rel="noopener noreferrer">[CXMT 추격③] 삼전하닉 급락, 中반도체뿐일까…내달 9일이 걸리는 이유 - 연합인포맥스</a>
+        </article>
+
+        <article class="news-card">
+          <div class="news-meta">08:33 · 연합뉴스 · 삼성전자</div>
+          <a class="news-title" href="https://news.google.com/rss/articles/CBMiYEFVX3lxTE9TajNEeXc1VTJPY1dtYnVBTkVuWmozZ0Nub2tKR09QOXBqRk0tQXpsNU5fWkJwQkZkV1pQNl9DUmZwby0wVG94dU4xTjFaMVdsSGxhdl9PWlBleHJObnZINdIBYEFVX3lxTE9TajNEeXc1VTJPY1dtYnVBTkVuWmozZ0Nub2tKR09QOXBqRk0tQXpsNU5fWkJwQkZkV1pQNl9DUmZwby0wVG94dU4xTjFaMVdsSGxhdl9PWlBleHJObnZINQ?oc=5" target="_blank" rel="noopener noreferrer">삼성 헬스, 수면·러닝 맞춤 코칭 강화…운동 수준별 훈련 - 연합뉴스</a>
+        </article>
+
+        <article class="news-card">
+          <div class="news-meta">07:44 · 이데일리 · 삼성전자</div>
+          <a class="news-title" href="https://news.google.com/rss/articles/CBMigAFBVV95cUxPSHI1dF9KclZ0R3k4aXl0UllPbWZvcGRfV1N5YzhkZlFMUjdFX1ZZWVZ6TzQ1aXJOaDRlUWt5a0FiMHY2eG16dzBYOWxKVnpSVm9MYmZNZVlpX01oa0ZJOTlxeTM3SDlPQ0NiVlBRMUdUQkl4azhYTzJzWGpMZDMyRA?oc=5" target="_blank" rel="noopener noreferrer">삼성전자·SK하이닉스, 두번째 바닥 찍었나…“W자 반등 기대” - 이데일리</a>
+        </article>
+          </div>
+        </section>
+
+        <section class="section side-card action-card" aria-labelledby="actions-title">
+          <article class="check-card">
+            <div class="section-head">
+              <div class="section-kicker">Action</div>
+              <h3 id="actions-title">오늘의 액션</h3>
+              <p class="meta">장 시작 전 체크리스트처럼 확인하세요.</p>
+            </div>
+            <ul class="check-list">
+              <li class="check-item"><span class="check-box" aria-hidden="true"></span><span>삼성전자는 24만원 회복 후 거래대금이 유지되는지, SK하이닉스는 150만원 재돌파와 전일 저점 142.5만원 방어를 함께 확인합니다.</span></li>
+<li class="check-item"><span class="check-box" aria-hidden="true"></span><span>전일 급락 뒤 오늘 +3%대 반등은 과매도 해소 성격이 크므로 오후장에 상승폭을 반납하면 추격 매수보다 비중 관리로 대응합니다.</span></li>
+<li class="check-item"><span class="check-box" aria-hidden="true"></span><span>원/달러가 1,340원 근처로 되오른 만큼 외국인 순매수 전환이 동반되지 않으면 환율 상승을 반도체 수출주 호재로만 해석하지 않습니다.</span></li>
+<li class="check-item"><span class="check-box" aria-hidden="true"></span><span>마이크론 -3.88%, 엔비디아 -1.29%, SOX -0.23%의 후속 반응을 확인해 글로벌 AI 메모리 차익실현이 멈췄는지 점검합니다.</span></li>
+<li class="check-item"><span class="check-box" aria-hidden="true"></span><span>WTI 95달러 전후와 미국 10년물 5.2%대가 유지되는 동안은 HBM 호재주도 목표 밸류에이션을 보수적으로 두고 분할 접근합니다.</span></li>
+            </ul>
+            <p class="footer-note">이 파일은 자동 생성 결과입니다. 투자 판단 전 원문 뉴스와 실시간 호가를 다시 확인하세요.</p>
+          </article>
+        </section>
+      </aside>
+    </div>
+  </main>
+
+  <script src="https://js1876.github.io/daily-briefing/public/assets/live-market.js?v=2026-10-140931" defer></script>
+  <script>
+    (() => {
+      const root = document.documentElement;
+      const body = document.body;
+      const button = document.querySelector('[data-theme-toggle]');
+      const storageKey = 'daily-briefing-theme';
+      const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      const preferred = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+      const saved = localStorage.getItem(storageKey);
+      const setTheme = (theme) => {
+        root.dataset.theme = theme;
+        localStorage.setItem(storageKey, theme);
+        const isDark = theme === 'dark';
+        if (button) {
+          button.setAttribute('aria-pressed', String(isDark));
+          button.querySelector('.theme-icon').textContent = isDark ? '☀️' : '🌙';
+          button.querySelector('.theme-label').textContent = isDark ? '라이트모드' : '다크모드';
+        }
+      };
+
+      const animateNumbers = () => {
+        if (reduceMotion) return;
+        const formatter = new Intl.NumberFormat('ko-KR');
+        const numberPattern = /[-+]?\d[\d,]*(?:\.\d+)?/;
+        const nodes = [...document.querySelectorAll('.num-animate')];
+        const run = (el) => {
+          if (el.dataset.counted === 'true') return;
+          const finalText = el.dataset.finalText || el.textContent.trim();
+          el.dataset.finalText = finalText;
+          const match = finalText.match(numberPattern);
+          if (!match) {
+            el.dataset.counted = 'true';
+            return;
+          }
+          const raw = match[0];
+          const finalValue = Number(raw.replace(/,/g, ''));
+          if (!Number.isFinite(finalValue)) {
+            el.dataset.counted = 'true';
+            return;
+          }
+          const decimals = raw.includes('.') ? raw.split('.')[1].length : 0;
+          const startValue = Math.abs(finalValue) < 1 ? 0 : finalValue * 0.97;
+          const duration = 720;
+          const started = performance.now();
+          el.dataset.counted = 'true';
+          const formatValue = (value) => {
+            const fixed = decimals ? value.toFixed(decimals) : String(Math.round(value));
+            const [intPart, decimalPart] = fixed.split('.');
+            return formatter.format(Number(intPart)) + (decimalPart ? `.${decimalPart}` : '');
+          };
+          const tick = (now) => {
+            const progress = Math.min((now - started) / duration, 1);
+            const eased = 1 - Math.pow(1 - progress, 3);
+            const current = startValue + (finalValue - startValue) * eased;
+            el.textContent = finalText.replace(raw, formatValue(current));
+            if (progress < 1) requestAnimationFrame(tick);
+            else {
+              el.textContent = finalText;
+              el.dataset.counted = 'true';
+            }
+          };
+          requestAnimationFrame(tick);
+        };
+        const observer = new IntersectionObserver((entries, io) => {
+          entries.forEach((entry) => {
+            const target = entry.target;
+            if (target.dataset.counted === 'true') {
+              io.unobserve(target);
+              return;
+            }
+            if (!entry.isIntersecting) return;
+            run(target);
+            io.unobserve(target);
+          });
+        }, { threshold: 0.35 });
+        nodes.forEach((el) => {
+          if (el.dataset.counted === 'true') return;
+          observer.observe(el);
+        });
+      };
+
+      setTheme(saved || preferred);
+      button?.addEventListener('click', () => setTheme(root.dataset.theme === 'dark' ? 'light' : 'dark'));
+      window.addEventListener('DOMContentLoaded', () => {
+        animateNumbers();
+        requestAnimationFrame(() => {
+          body.classList.remove('is-loading');
+          body.classList.add('is-loaded');
+        });
+      });
+    })();
+  </script>
+</body>
+</html>
